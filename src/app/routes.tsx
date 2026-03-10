@@ -1,0 +1,23 @@
+import { createBrowserRouter } from "react-router";
+import { Root } from "./components/Root";
+import { Dashboard } from "./pages/Dashboard";
+import { Orders } from "./pages/Orders";
+import { Flowers } from "./pages/Flowers";
+import { Inventory } from "./pages/Inventory";
+import { Analytics } from "./pages/Analytics";
+import { Settings } from "./pages/Settings";
+
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    Component: Root,
+    children: [
+      { index: true, Component: Dashboard },
+      { path: "orders", Component: Orders },
+      { path: "flowers", Component: Flowers },
+      { path: "inventory", Component: Inventory },
+      { path: "analytics", Component: Analytics },
+      { path: "settings", Component: Settings },
+    ],
+  },
+]);
