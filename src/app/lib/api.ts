@@ -216,6 +216,12 @@ export function createFlower(payload: CreateFlowerInput) {
   });
 }
 
+export function deleteFlower(flowerId: string) {
+  return request<{ id: string; name: string; deleted: boolean }>(`/flowers/${encodeURIComponent(flowerId)}`, {
+    method: "DELETE",
+  });
+}
+
 export function getInventory() {
   return request<InventoryPayload>("/inventory");
 }

@@ -15,6 +15,7 @@ import {
   createRestock as createRestockRequest,
   CreateRestockInput,
   DashboardData,
+  deleteFlower as deleteFlowerRequest,
   Flower,
   getAnalytics,
   getDashboard,
@@ -47,6 +48,7 @@ interface ShopDataContextValue {
   createOrder: (payload: CreateOrderInput) => Promise<Order>;
   updateOrderStatus: (orderId: string, status: string) => Promise<Order>;
   createFlower: (payload: CreateFlowerInput) => Promise<Flower>;
+  deleteFlower: (flowerId: string) => Promise<{ id: string; name: string; deleted: boolean }>;
   adjustInventory: (itemCode: string, delta: number) => Promise<InventoryItem>;
   updateInventoryParLevel: (itemCode: string, parLevel: number) => Promise<InventoryItem>;
   createRestock: (payload: CreateRestockInput) => Promise<RestockRecord>;
@@ -159,6 +161,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
         updateOrderStatus: (orderId, status) =>
           runMutation(() => updateOrderStatusRequest(orderId, status)),
         createFlower: (payload) => runMutation(() => createFlowerRequest(payload)),
+        deleteFlower: (flowerId) => runMutation(() => deleteFlowerRequest(flowerId)),
         adjustInventory: (itemCode, delta) =>
           runMutation(() => adjustInventoryRequest(itemCode, delta)),
         updateInventoryParLevel: (itemCode, parLevel) =>

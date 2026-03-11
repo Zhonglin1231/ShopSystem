@@ -81,3 +81,10 @@ export function buildChartScale(series: Array<{ amount: number }>, tickCount = 4
     }),
   };
 }
+
+export function getChartBarColor(amount: number, max: number) {
+  const ratio = max <= 0 ? 0 : Math.max(0, Math.min(amount / max, 1));
+  const saturation = 36 + ratio * 18;
+  const lightness = 86 - ratio * 28;
+  return `hsl(12 ${saturation}% ${lightness}%)`;
+}

@@ -5,9 +5,10 @@ import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { useShopData } from "../lib/shop-data";
 
 export function Flowers() {
-  const { flowers, createFlower, loading, error } = useShopData();
+  const { flowers, createFlower, deleteFlower, loading, error } = useShopData();
   const [search, setSearch] = useState("");
   const [addFlowerOpen, setAddFlowerOpen] = useState(false);
+  const [deletingFlowerId, setDeletingFlowerId] = useState<string | null>(null);
 
   const filteredFlowers = flowers.filter((flower) => {
     const query = search.trim().toLowerCase();
@@ -21,6 +22,23 @@ export function Flowers() {
       flower.color.toLowerCase().includes(query)
     );
   });
+
+  const handleDeleteFlower = async (flowerId: string, flowerName: string) => {
+    const confirmed = window.confirm(`Delete ${flowerName} from the catalogue? This also removes its inventory item.`);
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingFlowerId(flowerId);
+    try {
+      await deleteFlower(flowerId);
+      toast.success(`Deleted ${flowerName} from the catalogue.`);
+    } catch (deleteError) {
+      toast.error(deleteError instanceof Error ? deleteError.message : "Unable to delete the flower.");
+    } finally {
+      setDeletingFlowerId(null);
+    }
+  };
 
   return (
     <>
@@ -121,16 +139,40 @@ export function Flowers() {
                 </div>
 
                 <div style={{ padding: "var(--s-3)" }}>
-                  <h4
-                    style={{
-                      fontFamily: "var(--f-serif)",
-                      fontSize: "1.1rem",
-                      marginBottom: "4px",
-                      color: "var(--c-text-primary)",
-                    }}
-                  >
-                    {flower.name}
-                  </h4>
+                  <div className="flex items-start justify-between" style={{ gap: "var(--s-2)" }}>
+                    <h4
+                      style={{
+                        fontFamily: "var(--f-serif)",
+                        fontSize: "1.1rem",
+                        marginBottom: "4px",
+                        color: "var(--c-text-primary)",
+                        flex: 1,
+                      }}
+                    >
+                      {flower.name}
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => void handleDeleteFlower(flower.id, flower.name)}
+                      disabled={deletingFlowerId === flower.id}
+                      className="border"
+                      style={{
+                        padding: "4px 8px",
+                        minWidth: "64px",
+                        backgroundColor: deletingFlowerId === flower.id ? "#F4F1EC" : "transparent",
+                        borderColor: "#E2B4B4",
+                        color: "#A94442",
+                        fontFamily: "var(--f-sans)",
+                        fontSize: "0.68rem",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        cursor: deletingFlowerId === flower.id ? "wait" : "pointer",
+                        opacity: deletingFlowerId === flower.id ? 0.7 : 1,
+                      }}
+                    >
+                      {deletingFlowerId === flower.id ? "..." : "Delete"}
+                    </button>
+                  </div>
 
                   <p
                     style={{

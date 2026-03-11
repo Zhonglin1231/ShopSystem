@@ -96,6 +96,14 @@ def create_flower(payload: CreateFlowerRequest) -> dict:
         _handle_repository_error(error)
 
 
+@app.delete("/api/flowers/{flower_id}")
+def delete_flower(flower_id: str) -> dict:
+    try:
+        return repository.delete_flower(flower_id)
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
 @app.get("/api/inventory")
 def inventory() -> dict:
     try:

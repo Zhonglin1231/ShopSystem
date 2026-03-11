@@ -1,4 +1,4 @@
-import { buildChartBars, buildChartScale, formatCompactCurrency } from "../lib/format";
+import { buildChartBars, buildChartScale, formatCompactCurrency, getChartBarColor } from "../lib/format";
 import { useShopData } from "../lib/shop-data";
 
 export function Analytics() {
@@ -139,29 +139,32 @@ export function Analytics() {
                 ))}
 
                 <div className="relative z-10 flex h-full items-end justify-between">
-                  {chartBars.map((item) => (
-                    <div key={item.date} className="flex items-end justify-center" style={{ width: "11%", height: "100%" }}>
-                      <div
-                        className="transition-all hover:opacity-100"
-                        title={`${item.label}: ${formatCompactCurrency(item.amount, settings.currency)}`}
-                        style={{
-                          width: "70%",
-                          height: `${item.height}%`,
-                          backgroundColor: "var(--c-accent-pink)",
-                          opacity: "0.7",
-                          transition: "height 1s ease",
-                        }}
-                        onMouseEnter={(event) => {
-                          event.currentTarget.style.backgroundColor = "var(--c-accent-green)";
-                          event.currentTarget.style.opacity = "1";
-                        }}
-                        onMouseLeave={(event) => {
-                          event.currentTarget.style.backgroundColor = "var(--c-accent-pink)";
-                          event.currentTarget.style.opacity = "0.7";
-                        }}
-                      />
-                    </div>
-                  ))}
+                  {chartBars.map((item) => {
+                    const barColor = getChartBarColor(item.amount, chartScale.max);
+                    return (
+                      <div key={item.date} className="flex items-end justify-center" style={{ width: "11%", height: "100%" }}>
+                        <div
+                          className="transition-all hover:opacity-100"
+                          title={`${item.label}: ${formatCompactCurrency(item.amount, settings.currency)}`}
+                          style={{
+                            width: "70%",
+                            height: `${item.height}%`,
+                            backgroundColor: barColor,
+                            opacity: "0.82",
+                            transition: "height 1s ease",
+                          }}
+                          onMouseEnter={(event) => {
+                            event.currentTarget.style.backgroundColor = "var(--c-accent-green)";
+                            event.currentTarget.style.opacity = "1";
+                          }}
+                          onMouseLeave={(event) => {
+                            event.currentTarget.style.backgroundColor = barColor;
+                            event.currentTarget.style.opacity = "0.82";
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

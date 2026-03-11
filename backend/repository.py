@@ -130,6 +130,9 @@ class FirestoreStore(SnapshotStore):
             snapshot.get("settings", {}),
             timeout=2,
         )
+        # The app reads from the normalized collections; removing the legacy
+        # snapshot prevents stale records from lingering in Firestore.
+        self.client.collection(self.LEGACY_COLLECTION).document(self.LEGACY_DOCUMENT).delete(timeout=2)
 
     def save_inventory_item(self, inventory_item: dict) -> None:
         self.client.collection(self.INVENTORY_COLLECTION).document(str(inventory_item["code"])).set(
@@ -192,7 +195,7 @@ def create_store(config: AppConfig) -> tuple[SnapshotStore, str]:
 
     thread = Thread(target=attempt_firestore, daemon=True)
     thread.start()
-    thread.join(timeout=2.5)
+    thread.join(timeout=60)
 
     if "store" in result:
         return result["store"], "firestore"
@@ -576,6 +579,35 @@ class ShopRepository:
             self.store.save_snapshot(snapshot)
             inventory_by_code = {item["code"]: item for item in snapshot["inventory"]}
             return self._serialize_flower(flower, inventory_by_code, settings)
+
+    def delete_flower(self, flower_id: str) -> dict:
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            flower = next((entry for entry in snapshot["flowers"] if entry["id"] == flower_id), None)
+            if flower is None:
+                raise ValidationError("Flower not found.")
+
+            orders = self._load_order_records(snapshot)
+            active_order = next(
+                (
+                    order
+                    for order in orders
+                    if order["status"] not in {"Delivered", "Cancelled"}
+                    and any(line_item["flower_id"] == flower_id for line_item in order["line_items"])
+                ),
+                None,
+            )
+            if active_order is not None:
+                raise ValidationError(
+                    f"Cannot delete {flower['name']} because it is used in active order {active_order['display_id']}."
+                )
+
+            snapshot["flowers"] = [entry for entry in snapshot["flowers"] if entry["id"] != flower_id]
+            snapshot["inventory"] = [
+                entry for entry in snapshot["inventory"] if entry.get("linked_flower_id") != flower_id
+            ]
+            self.store.save_snapshot(snapshot)
+            return {"id": flower_id, "name": flower["name"], "deleted": True}
 
     def get_inventory(self) -> dict:
         snapshot, _ = self._load_snapshot()
