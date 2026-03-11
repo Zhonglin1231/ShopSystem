@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from .config import get_config
 from .repository import RepositoryError, ShopRepository, ValidationError, create_store
@@ -19,6 +23,9 @@ config = get_config()
 store, backend_name = create_store(config)
 repository = ShopRepository(store, backend_name)
 repository.initialize()
+
+DIST_DIR = Path(__file__).resolve().parent.parent / "dist"
+INDEX_FILE = DIST_DIR / "index.html"
 
 app = FastAPI(title="ShopSystem API", version="1.0.0")
 app.add_middleware(
@@ -143,3 +150,21 @@ def update_settings(payload: UpdateSettingsRequest) -> dict:
         return repository.update_settings(payload.model_dump())
     except RepositoryError as error:
         _handle_repository_error(error)
+
+
+if DIST_DIR.exists():
+    assets_dir = DIST_DIR / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="frontend-assets")
+
+    @app.get("/", include_in_schema=False)
+    def frontend_index() -> FileResponse:
+        return FileResponse(INDEX_FILE)
+
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def frontend_routes(full_path: str) -> FileResponse:
+        candidate = DIST_DIR / full_path
+        if candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(INDEX_FILE)
