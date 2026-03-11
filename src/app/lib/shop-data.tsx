@@ -27,6 +27,7 @@ import {
   Order,
   RestockRecord,
   StoreSettings,
+  updateInventoryParLevel as updateInventoryParLevelRequest,
   updateOrderStatus as updateOrderStatusRequest,
   updateSettings as updateSettingsRequest,
 } from "./api";
@@ -47,6 +48,7 @@ interface ShopDataContextValue {
   updateOrderStatus: (orderId: string, status: string) => Promise<Order>;
   createFlower: (payload: CreateFlowerInput) => Promise<Flower>;
   adjustInventory: (itemCode: string, delta: number) => Promise<InventoryItem>;
+  updateInventoryParLevel: (itemCode: string, parLevel: number) => Promise<InventoryItem>;
   createRestock: (payload: CreateRestockInput) => Promise<RestockRecord>;
   saveSettings: (payload: StoreSettings) => Promise<StoreSettings>;
 }
@@ -159,6 +161,8 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
         createFlower: (payload) => runMutation(() => createFlowerRequest(payload)),
         adjustInventory: (itemCode, delta) =>
           runMutation(() => adjustInventoryRequest(itemCode, delta)),
+        updateInventoryParLevel: (itemCode, parLevel) =>
+          runMutation(() => updateInventoryParLevelRequest(itemCode, parLevel)),
         createRestock: (payload) => runMutation(() => createRestockRequest(payload)),
         saveSettings: (payload) => runMutation(() => updateSettingsRequest(payload)),
       }}

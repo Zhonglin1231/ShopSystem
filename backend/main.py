@@ -9,6 +9,7 @@ from .schemas import (
     CreateFlowerRequest,
     CreateOrderRequest,
     CreateRestockRequest,
+    UpdateInventoryParRequest,
     UpdateInventoryRequest,
     UpdateOrderStatusRequest,
     UpdateSettingsRequest,
@@ -104,6 +105,14 @@ def adjust_inventory(item_code: str, payload: UpdateInventoryRequest) -> dict:
         _handle_repository_error(error)
 
 
+@app.patch("/api/inventory/{item_code}/par")
+def update_inventory_par(item_code: str, payload: UpdateInventoryParRequest) -> dict:
+    try:
+        return repository.update_inventory_par(item_code, payload.parLevel)
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
 @app.post("/api/inventory/restocks")
 def create_restock(payload: CreateRestockRequest) -> dict:
     try:
@@ -134,4 +143,3 @@ def update_settings(payload: UpdateSettingsRequest) -> dict:
         return repository.update_settings(payload.model_dump())
     except RepositoryError as error:
         _handle_repository_error(error)
-

@@ -63,6 +63,8 @@ export interface InventoryItem {
   category: string;
   stock: number;
   par: number;
+  averageCost: number | null;
+  averageCostDisplay: string;
   status: string;
   statusClass: string;
   unit: string;
@@ -222,6 +224,13 @@ export function adjustInventory(itemCode: string, delta: number) {
   return request<InventoryItem>(`/inventory/${encodeURIComponent(itemCode)}`, {
     method: "PATCH",
     body: JSON.stringify({ delta }),
+  });
+}
+
+export function updateInventoryParLevel(itemCode: string, parLevel: number) {
+  return request<InventoryItem>(`/inventory/${encodeURIComponent(itemCode)}/par`, {
+    method: "PATCH",
+    body: JSON.stringify({ parLevel }),
   });
 }
 

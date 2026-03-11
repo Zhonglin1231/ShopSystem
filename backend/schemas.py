@@ -35,6 +35,10 @@ class UpdateInventoryRequest(BaseModel):
     delta: int
 
 
+class UpdateInventoryParRequest(BaseModel):
+    parLevel: int = Field(ge=0)
+
+
 class CreateRestockRequest(BaseModel):
     itemCode: str = Field(min_length=1)
     quantity: int = Field(gt=0)
@@ -51,4 +55,3 @@ class UpdateSettingsRequest(BaseModel):
 
 class UpdateOrderStatusRequest(BaseModel):
     status: str = Field(min_length=1)
-

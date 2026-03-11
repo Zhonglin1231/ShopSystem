@@ -131,6 +131,24 @@ class FirestoreStore(SnapshotStore):
             timeout=2,
         )
 
+    def save_inventory_item(self, inventory_item: dict) -> None:
+        self.client.collection(self.INVENTORY_COLLECTION).document(str(inventory_item["code"])).set(
+            inventory_item,
+            timeout=2,
+        )
+
+    def save_restock_update(self, inventory_item: dict, restock_record: dict) -> None:
+        batch = self.client.batch()
+        batch.set(
+            self.client.collection(self.INVENTORY_COLLECTION).document(str(inventory_item["code"])),
+            inventory_item,
+        )
+        batch.set(
+            self.client.collection(self.RESTOCKS_COLLECTION).document(str(restock_record["id"])),
+            restock_record,
+        )
+        batch.commit(timeout=2)
+
     def _load_collection(self, collection_name: str) -> list[dict]:
         return [doc.to_dict() or {} for doc in self.client.collection(collection_name).stream(timeout=2)]
 
@@ -562,7 +580,11 @@ class ShopRepository:
     def get_inventory(self) -> dict:
         snapshot, _ = self._load_snapshot()
         settings = snapshot["settings"]
-        items = [self._serialize_inventory_item(item) for item in sorted(snapshot["inventory"], key=lambda item: item["code"])]
+        average_costs = self._average_costs_by_item(snapshot)
+        items = [
+            self._serialize_inventory_item(item, average_costs.get(item["code"]), settings["currency"])
+            for item in sorted(snapshot["inventory"], key=lambda item: item["code"])
+        ]
         restocks = [
             self._serialize_restock(record, settings)
             for record in sorted(snapshot["restocks"], key=lambda item: item["created_at"], reverse=True)
@@ -579,8 +601,29 @@ class ShopRepository:
 
             item["stock"] = max(0, int(item["stock"]) + delta)
             item["updated_at"] = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
-            self.store.save_snapshot(snapshot)
-            return self._serialize_inventory_item(item)
+            if isinstance(self.store, FirestoreStore):
+                self.store.save_inventory_item(item)
+            else:
+                self.store.save_snapshot(snapshot)
+            average_cost = self._average_costs_by_item(snapshot).get(item["code"])
+            return self._serialize_inventory_item(item, average_cost, settings["currency"])
+
+    def update_inventory_par(self, item_code: str, par_level: int) -> dict:
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            settings = snapshot["settings"]
+            item = next((entry for entry in snapshot["inventory"] if entry["code"] == item_code), None)
+            if item is None:
+                raise ValidationError("Inventory item not found.")
+
+            item["par"] = int(par_level)
+            item["updated_at"] = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
+            if isinstance(self.store, FirestoreStore):
+                self.store.save_inventory_item(item)
+            else:
+                self.store.save_snapshot(snapshot)
+            average_cost = self._average_costs_by_item(snapshot).get(item["code"])
+            return self._serialize_inventory_item(item, average_cost, settings["currency"])
 
     def create_restock(self, payload: dict) -> dict:
         with self._lock:
@@ -600,8 +643,13 @@ class ShopRepository:
                 "quantity": int(payload["quantity"]),
                 "unit_cost": float(payload["unitCost"]),
             }
-            snapshot["restocks"].append(record)
-            self.store.save_snapshot(snapshot)
+
+            if isinstance(self.store, FirestoreStore):
+                self.store.save_restock_update(item, record)
+            else:
+                snapshot["restocks"].append(record)
+                self.store.save_snapshot(snapshot)
+
             return self._serialize_restock(record, settings)
 
     def get_settings(self) -> dict:
@@ -930,7 +978,24 @@ class ShopRepository:
             "parLevel": par,
         }
 
-    def _serialize_inventory_item(self, item: dict) -> dict:
+    def _average_costs_by_item(self, snapshot: dict) -> dict[str, float]:
+        totals: dict[str, dict[str, float]] = {}
+        for record in snapshot.get("restocks", []):
+            item_code = str(record["item_code"])
+            quantity = int(record["quantity"])
+            if quantity <= 0:
+                continue
+            entry = totals.setdefault(item_code, {"quantity": 0.0, "cost": 0.0})
+            entry["quantity"] += quantity
+            entry["cost"] += quantity * float(record["unit_cost"])
+
+        return {
+            item_code: round(values["cost"] / values["quantity"], 2)
+            for item_code, values in totals.items()
+            if values["quantity"] > 0
+        }
+
+    def _serialize_inventory_item(self, item: dict, average_cost: float | None = None, currency: str = "USD") -> dict:
         status, status_class = _inventory_status(int(item["stock"]), int(item["par"]))
         return {
             "code": item["code"],
@@ -938,6 +1003,8 @@ class ShopRepository:
             "category": item["category"],
             "stock": int(item["stock"]),
             "par": int(item["par"]),
+            "averageCost": round(float(average_cost), 2) if average_cost is not None else None,
+            "averageCostDisplay": _format_currency(float(average_cost), currency) if average_cost is not None else "N/A",
             "status": status,
             "statusClass": status_class,
             "unit": item.get("unit", ""),

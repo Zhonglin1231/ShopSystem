@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AddRestockModal } from "../components/AddRestockModal";
 import { useShopData } from "../lib/shop-data";
@@ -12,14 +12,22 @@ function escapeCsvCell(value: string | number) {
 }
 
 export function Inventory() {
-  const { inventory, restocks, adjustInventory, createRestock, loading, error } = useShopData();
+  const { inventory, restocks, adjustInventory, updateInventoryParLevel, createRestock, loading, error } = useShopData();
   const [activeTab, setActiveTab] = useState<"stock" | "history">("stock");
   const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
+  const [parDrafts, setParDrafts] = useState<Record<string, string>>({});
+  const [savingParCode, setSavingParCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    setParDrafts(
+      Object.fromEntries(inventory.map((item) => [item.code, String(item.par)])),
+    );
+  }, [inventory]);
 
   const handleExportReport = () => {
     const rows = [
-      ["Item Code", "Item Name", "Category", "Current Stock", "Par Level", "Status"],
-      ...inventory.map((item) => [item.code, item.name, item.category, item.stock, item.par, item.status]),
+      ["Item Code", "Item Name", "Category", "Current Stock", "Par Level", "Avg Cost", "Status"],
+      ...inventory.map((item) => [item.code, item.name, item.category, item.stock, item.par, item.averageCostDisplay, item.status]),
     ];
     const csv = rows.map((row) => row.map(escapeCsvCell).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
@@ -29,6 +37,30 @@ export function Inventory() {
     anchor.download = `inventory-report-${new Date().toISOString().slice(0, 10)}.csv`;
     anchor.click();
     URL.revokeObjectURL(url);
+  };
+
+  const saveParLevel = async (itemCode: string, currentPar: number) => {
+    const rawValue = parDrafts[itemCode] ?? String(currentPar);
+    const nextPar = Number(rawValue);
+
+    if (!Number.isInteger(nextPar) || nextPar < 0) {
+      toast.error("Par level must be a whole number greater than or equal to 0.");
+      return;
+    }
+
+    if (nextPar === currentPar) {
+      return;
+    }
+
+    setSavingParCode(itemCode);
+    try {
+      await updateInventoryParLevel(itemCode, nextPar);
+      toast.success(`Updated par level for ${itemCode}.`);
+    } catch (saveError) {
+      toast.error(saveError instanceof Error ? saveError.message : "Unable to update par level.");
+    } finally {
+      setSavingParCode(null);
+    }
   };
 
   return (
@@ -143,7 +175,7 @@ export function Inventory() {
           <table className="w-full" style={{ borderCollapse: "collapse", fontSize: "0.9rem" }}>
             <thead>
               <tr>
-                {["Item Code", "Item Name", "Category", "Current Stock", "Par Level", "Status", "Quick Update"].map((header) => (
+                {["Item Code", "Item Name", "Category", "Current Stock", "Par Level", "Avg Cost", "Status", "Quick Update"].map((header) => (
                   <th
                     key={header}
                     className="text-left"
@@ -209,7 +241,66 @@ export function Inventory() {
                       color: "var(--c-text-primary)",
                     }}
                   >
-                    {item.par}
+                    <div className="flex items-center" style={{ gap: "8px" }}>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={parDrafts[item.code] ?? String(item.par)}
+                        onChange={(event) =>
+                          setParDrafts((currentDrafts) => ({
+                            ...currentDrafts,
+                            [item.code]: event.target.value,
+                          }))
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            void saveParLevel(item.code, item.par);
+                          }
+                        }}
+                        style={{
+                          width: "72px",
+                          padding: "6px 8px",
+                          border: "1px solid var(--c-border)",
+                          backgroundColor: "#FDFBFB",
+                          color: "var(--c-text-primary)",
+                          outline: "none",
+                        }}
+                      />
+                      <button
+                        onClick={() => void saveParLevel(item.code, item.par)}
+                        disabled={savingParCode === item.code || Number(parDrafts[item.code] ?? item.par) === item.par}
+                        className="border"
+                        style={{
+                          padding: "0 10px",
+                          height: "28px",
+                          backgroundColor: "transparent",
+                          borderColor: "var(--c-border)",
+                          color: "var(--c-text-primary)",
+                          fontFamily: "var(--f-sans)",
+                          fontSize: "0.72rem",
+                          letterSpacing: "0.08em",
+                          textTransform: "uppercase",
+                          cursor: savingParCode === item.code ? "wait" : "pointer",
+                          opacity:
+                            savingParCode === item.code || Number(parDrafts[item.code] ?? item.par) === item.par
+                              ? 0.5
+                              : 1,
+                        }}
+                      >
+                        {savingParCode === item.code ? "Saving" : "Save"}
+                      </button>
+                    </div>
+                  </td>
+                  <td
+                    style={{
+                      padding: "var(--s-3)",
+                      borderBottom: index === inventory.length - 1 ? "none" : "1px solid var(--c-border)",
+                      color: "var(--c-text-primary)",
+                    }}
+                  >
+                    {item.averageCostDisplay}
                   </td>
                   <td
                     style={{
