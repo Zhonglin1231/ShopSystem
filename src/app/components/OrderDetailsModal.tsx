@@ -114,7 +114,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                   color: "var(--c-text-primary)",
                 }}
               >
-                {order.id}
+                {order.displayId}
               </h2>
               <span
                 style={{

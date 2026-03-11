@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import re
 from collections import defaultdict
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone
 from pathlib import Path
 from threading import Lock, Thread
 from typing import Any
@@ -58,6 +58,15 @@ class LocalJsonStore(SnapshotStore):
 
 
 class FirestoreStore(SnapshotStore):
+    FLOWERS_COLLECTION = "flowers"
+    INVENTORY_COLLECTION = "inventory"
+    RESTOCKS_COLLECTION = "restocks"
+    SETTINGS_COLLECTION = "settings"
+    SETTINGS_DOCUMENT = "store"
+    ORDERS_COLLECTION = "orders"
+    LEGACY_COLLECTION = "shopsystem"
+    LEGACY_DOCUMENT = "default"
+
     def __init__(self, config: AppConfig):
         if firebase_admin is None or credentials is None or firestore is None:
             raise RepositoryError("Firebase Admin SDK is not installed.")
@@ -77,17 +86,78 @@ class FirestoreStore(SnapshotStore):
             existing_app = firebase_admin.initialize_app(cert, name=app_name)
 
         self.client = firestore.client(existing_app)
-        self.collection = config.firestore_collection
-        self.document = config.firestore_document
 
     def load_snapshot(self) -> dict:
-        doc = self.client.collection(self.collection).document(self.document).get(timeout=2)
+        flowers = self._load_collection(self.FLOWERS_COLLECTION)
+        inventory = self._load_collection(self.INVENTORY_COLLECTION)
+        restocks = self._load_collection(self.RESTOCKS_COLLECTION)
+        settings = self._load_settings()
+
+        snapshot = {
+            "flowers": flowers,
+            "inventory": inventory,
+            "orders": [],
+            "restocks": restocks,
+            "settings": settings,
+        }
+
+        legacy_snapshot = self._load_legacy_snapshot()
+        for key in ("flowers", "inventory", "orders", "restocks"):
+            if not snapshot[key] and legacy_snapshot.get(key):
+                snapshot[key] = legacy_snapshot[key]
+        if not snapshot["settings"] and legacy_snapshot.get("settings"):
+            snapshot["settings"] = legacy_snapshot["settings"]
+
+        return snapshot
+
+    def save_snapshot(self, snapshot: dict) -> None:
+        self._sync_collection(
+            self.FLOWERS_COLLECTION,
+            snapshot.get("flowers", []),
+            lambda flower: flower["id"],
+        )
+        self._sync_collection(
+            self.INVENTORY_COLLECTION,
+            snapshot.get("inventory", []),
+            lambda item: item["code"],
+        )
+        self._sync_collection(
+            self.RESTOCKS_COLLECTION,
+            snapshot.get("restocks", []),
+            lambda record: record["id"],
+        )
+        self.client.collection(self.SETTINGS_COLLECTION).document(self.SETTINGS_DOCUMENT).set(
+            snapshot.get("settings", {}),
+            timeout=2,
+        )
+
+    def _load_collection(self, collection_name: str) -> list[dict]:
+        return [doc.to_dict() or {} for doc in self.client.collection(collection_name).stream(timeout=2)]
+
+    def _load_settings(self) -> dict:
+        doc = self.client.collection(self.SETTINGS_COLLECTION).document(self.SETTINGS_DOCUMENT).get(timeout=2)
         if not doc.exists:
             return {}
         return doc.to_dict() or {}
 
-    def save_snapshot(self, snapshot: dict) -> None:
-        self.client.collection(self.collection).document(self.document).set(snapshot, timeout=2)
+    def _load_legacy_snapshot(self) -> dict:
+        doc = self.client.collection(self.LEGACY_COLLECTION).document(self.LEGACY_DOCUMENT).get(timeout=2)
+        if not doc.exists:
+            return {}
+        return doc.to_dict() or {}
+
+    def _sync_collection(self, collection_name: str, records: list[dict], key_fn) -> None:
+        collection = self.client.collection(collection_name)
+        existing_ids = {doc.id for doc in collection.stream(timeout=2)}
+        desired_ids = set()
+
+        for record in records:
+            doc_id = str(key_fn(record))
+            desired_ids.add(doc_id)
+            collection.document(doc_id).set(record, timeout=2)
+
+        for doc_id in existing_ids - desired_ids:
+            collection.document(doc_id).delete(timeout=2)
 
 
 def create_store(config: AppConfig) -> tuple[SnapshotStore, str]:
@@ -153,7 +223,10 @@ def _format_currency(amount: float, currency: str) -> str:
 
 
 def _parse_datetime(value: str, timezone_name: str) -> datetime:
-    parsed = datetime.fromisoformat(value)
+    if isinstance(value, datetime):
+        parsed = value
+    else:
+        parsed = datetime.fromisoformat(value)
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=ZoneInfo(timezone_name))
     return parsed.astimezone(ZoneInfo(timezone_name))
@@ -228,6 +301,30 @@ def _next_inventory_code(existing_codes: list[str], category: str) -> str:
     return f"{prefix}-{next_value:03d}"
 
 
+def _shop_status_from_firestore(status: str | None) -> str:
+    normalized = (status or "").strip()
+    if normalized in {"待取货", "待配送", "Ready"}:
+        return "Ready"
+    if normalized in {"已完成", "已送达", "Delivered"}:
+        return "Delivered"
+    if normalized in {"已取消", "Cancelled"}:
+        return "Cancelled"
+    return "Preparing"
+
+
+def _firestore_status_from_shop(status: str) -> str:
+    return {
+        "Preparing": "待确认",
+        "Ready": "待取货",
+        "Delivered": "已完成",
+        "Cancelled": "已取消",
+    }.get(status, "待确认")
+
+
+def _source_order_id_from_order(order: dict) -> str:
+    return order.get("source_order_id") or order.get("display_id") or order["id"]
+
+
 class ShopRepository:
     def __init__(self, store: SnapshotStore, backend_name: str):
         self.store = store
@@ -246,7 +343,7 @@ class ShopRepository:
     def list_orders(self) -> list[dict]:
         snapshot, _ = self._load_snapshot()
         settings = snapshot["settings"]
-        orders = sorted(snapshot["orders"], key=lambda order: order["created_at"], reverse=True)
+        orders = self._load_order_records(snapshot)
         return [self._serialize_order(order, settings) for order in orders]
 
     def create_order(self, payload: dict) -> dict:
@@ -255,6 +352,7 @@ class ShopRepository:
             settings = snapshot["settings"]
             flowers = {flower["id"]: flower for flower in snapshot["flowers"]}
             inventory_by_code = {item["code"]: item for item in snapshot["inventory"]}
+            current_orders = self._load_order_records(snapshot)
 
             line_items = []
             subtotal = 0.0
@@ -284,7 +382,12 @@ class ShopRepository:
                 subtotal += float(flower["price"]) * requested_item["quantity"]
 
             order = {
-                "id": _next_numeric_identifier([item["id"] for item in snapshot["orders"]], "#", 8896),
+                "id": _next_numeric_identifier(
+                    [_source_order_id_from_order(item) for item in current_orders],
+                    "#",
+                    8896,
+                ),
+                "display_id": None,
                 "created_at": datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat(),
                 "customer_name": payload["customerName"].strip(),
                 "phone": payload.get("phone", "").strip(),
@@ -298,6 +401,45 @@ class ShopRepository:
                 "line_items": line_items,
             }
 
+            if isinstance(self.store, FirestoreStore):
+                firestore_payload = {
+                    "customerName": order["customer_name"],
+                    "customerPhone": order["phone"],
+                    "deliveryAddress": order["delivery_address"],
+                    "deliveryDate": _parse_datetime(order["delivery_date"], settings["timezone"]).astimezone(timezone.utc),
+                    "specialRequests": order["notes"],
+                    "status": "待确认",
+                    "createdAt": _parse_datetime(order["created_at"], settings["timezone"]).astimezone(timezone.utc),
+                    "userId": "shop-admin",
+                    "sourceOrderId": order["id"],
+                    "bouquetData": {
+                        "name": f"{order['customer_name']} Bouquet",
+                        "note": order["notes"],
+                        "wrappingStyle": "Store Order",
+                        "ribbonColorHex": "#111111",
+                        "totalPrice": order["subtotal"],
+                        "createdAt": _parse_datetime(order["created_at"], settings["timezone"]).astimezone(timezone.utc),
+                        "items": [
+                            {
+                                "flowerId": item["flower_id"],
+                                "flowerName": item["name"],
+                                "flowerEmoji": "🌸",
+                                "flowerPrice": item["unit_price"],
+                                "quantity": item["qty"],
+                                "positionX": 0,
+                                "positionY": 0,
+                                "rotation": 0,
+                                "scale": 1.0,
+                            }
+                            for item in line_items
+                        ],
+                    },
+                }
+                doc_ref = self.store.client.collection(self.store.ORDERS_COLLECTION).document()
+                doc_ref.set(firestore_payload, timeout=2)
+                self.store.save_snapshot(snapshot)
+                return self._serialize_order(self._normalize_firestore_order(doc_ref.id, firestore_payload, settings), settings)
+
             snapshot["orders"].append(order)
             self.store.save_snapshot(snapshot)
             return self._serialize_order(order, settings)
@@ -310,6 +452,35 @@ class ShopRepository:
         with self._lock:
             snapshot, _ = self._load_snapshot()
             settings = snapshot["settings"]
+
+            if isinstance(self.store, FirestoreStore):
+                doc_ref = self.store.client.collection(self.store.ORDERS_COLLECTION).document(order_id)
+                doc = doc_ref.get(timeout=2)
+                if doc.exists:
+                    firestore_data = doc.to_dict() or {}
+                    order = self._normalize_firestore_order(doc.id, firestore_data, settings)
+                    previous_status = order["status"]
+
+                    if previous_status == "Delivered" and status != "Delivered":
+                        raise ValidationError("Delivered orders cannot move backwards.")
+
+                    if status == "Cancelled" and previous_status not in {"Cancelled", "Delivered"}:
+                        inventory_by_code = {item["code"]: item for item in snapshot["inventory"]}
+                        flowers = {flower["id"]: flower for flower in snapshot["flowers"]}
+                        for line_item in order["line_items"]:
+                            flower = flowers.get(line_item["flower_id"])
+                            if not flower:
+                                continue
+                            inventory_item = inventory_by_code.get(flower["inventory_code"])
+                            if inventory_item:
+                                inventory_item["stock"] += line_item["qty"]
+                                inventory_item["updated_at"] = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
+                        self.store.save_snapshot(snapshot)
+
+                    firestore_data["status"] = _firestore_status_from_shop(status)
+                    doc_ref.set({"status": firestore_data["status"]}, merge=True, timeout=2)
+                    return self._serialize_order(self._normalize_firestore_order(doc.id, firestore_data, settings), settings)
+
             order = next((item for item in snapshot["orders"] if item["id"] == order_id), None)
             if order is None:
                 raise ValidationError("Order not found.")
@@ -456,7 +627,7 @@ class ShopRepository:
         timezone_name = settings["timezone"]
         today = datetime.now(ZoneInfo(timezone_name)).date()
 
-        orders = sorted(snapshot["orders"], key=lambda order: order["created_at"], reverse=True)
+        orders = self._load_order_records(snapshot)
         today_orders = [order for order in orders if _parse_datetime(order["created_at"], timezone_name).date() == today]
         yesterday_orders = [
             order
@@ -528,7 +699,7 @@ class ShopRepository:
         timezone_name = settings["timezone"]
         today = datetime.now(ZoneInfo(timezone_name)).date()
 
-        orders = [order for order in snapshot["orders"] if order["status"] != "Cancelled"]
+        orders = [order for order in self._load_order_records(snapshot) if order["status"] != "Cancelled"]
         sales_series = self._sales_window(orders, timezone_name, end_day=today, days=7)
 
         sellers: dict[str, dict[str, Any]] = defaultdict(lambda: {"name": "", "revenue": 0.0, "unitsSold": 0})
@@ -609,6 +780,90 @@ class ShopRepository:
             for day in window_days
         ]
 
+    def _load_order_records(self, snapshot: dict) -> list[dict]:
+        settings = snapshot["settings"]
+
+        if isinstance(self.store, FirestoreStore):
+            docs = list(self.store.client.collection(self.store.ORDERS_COLLECTION).stream())
+            if docs:
+                orders = [self._normalize_firestore_order(doc.id, doc.to_dict() or {}, settings) for doc in docs]
+                return sorted(
+                    orders,
+                    key=lambda order: _parse_datetime(order["created_at"], settings["timezone"]),
+                    reverse=True,
+                )
+
+        snapshot_orders = [self._normalize_snapshot_order(order) for order in snapshot["orders"]]
+        return sorted(
+            snapshot_orders,
+            key=lambda order: _parse_datetime(order["created_at"], settings["timezone"]),
+            reverse=True,
+        )
+
+    def _normalize_snapshot_order(self, order: dict) -> dict:
+        return {
+            **order,
+            "display_id": order.get("display_id") or order["id"],
+            "source_order_id": order.get("source_order_id") or order["id"],
+        }
+
+    def _normalize_firestore_order(self, doc_id: str, data: dict, settings: dict) -> dict:
+        bouquet_data = data.get("bouquetData") or {}
+        bouquet_items = bouquet_data.get("items") or []
+        line_items = []
+
+        for item in bouquet_items:
+            quantity = int(item.get("quantity", item.get("qty", 1)) or 1)
+            unit_price = float(item.get("flowerPrice", item.get("unit_price", 0)) or 0)
+            line_items.append(
+                {
+                    "flower_id": item.get("flowerId") or item.get("flower_id") or _slugify(item.get("flowerName", "flower")),
+                    "name": item.get("flowerName") or item.get("name") or "Custom Flower",
+                    "qty": quantity,
+                    "unit": item.get("unit") or "stem",
+                    "unit_price": unit_price,
+                }
+            )
+
+        subtotal = float(bouquet_data.get("totalPrice") or 0)
+        if subtotal == 0:
+            subtotal = round(sum(item["qty"] * item["unit_price"] for item in line_items), 2)
+
+        if not line_items and subtotal > 0:
+            line_items = [
+                {
+                    "flower_id": "custom-bouquet",
+                    "name": bouquet_data.get("name") or "Custom Bouquet",
+                    "qty": 1,
+                    "unit": "bundle",
+                    "unit_price": subtotal,
+                }
+            ]
+
+        delivery_fee = float(data.get("deliveryFee") or 0)
+        total = float(data.get("totalPrice") or data.get("orderTotal") or (subtotal + delivery_fee))
+
+        created_at = data.get("createdAt") or bouquet_data.get("createdAt") or datetime.now(timezone.utc)
+        delivery_date = data.get("deliveryDate") or created_at
+        shop_status = _shop_status_from_firestore(data.get("status"))
+
+        return {
+            "id": doc_id,
+            "display_id": data.get("sourceOrderId") or f"#{doc_id[:6].upper()}",
+            "source_order_id": data.get("sourceOrderId") or f"#{doc_id[:6].upper()}",
+            "created_at": created_at,
+            "customer_name": data.get("customerName") or "Client Order",
+            "phone": data.get("customerPhone") or "",
+            "delivery_date": delivery_date,
+            "delivery_address": data.get("deliveryAddress") or "Pickup in store",
+            "notes": data.get("specialRequests") or bouquet_data.get("note") or "",
+            "status": shop_status,
+            "subtotal": round(subtotal, 2),
+            "delivery_fee": round(delivery_fee, 2),
+            "total": round(total, 2),
+            "line_items": line_items,
+        }
+
     def _serialize_order(self, order: dict, settings: dict) -> dict:
         currency = settings["currency"]
         timezone_name = settings["timezone"]
@@ -630,6 +885,7 @@ class ShopRepository:
 
         return {
             "id": order["id"],
+            "displayId": order.get("display_id") or order["id"],
             "createdAt": order["created_at"],
             "dateLabel": _format_datetime_label(order["created_at"], timezone_name),
             "customerName": order["customer_name"],

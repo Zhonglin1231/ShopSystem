@@ -11,8 +11,6 @@ class AppConfig:
     project_root: Path
     local_store_path: Path
     firebase_credentials_path: Path | None
-    firestore_collection: str
-    firestore_document: str
     allowed_origins: list[str]
 
 
@@ -36,8 +34,5 @@ def get_config() -> AppConfig:
         project_root=project_root,
         local_store_path=project_root / "backend" / "data" / "store.json",
         firebase_credentials_path=credentials_path if credentials_path.exists() else None,
-        firestore_collection=os.getenv("SHOPSYSTEM_FIRESTORE_COLLECTION", "shopsystem"),
-        firestore_document=os.getenv("SHOPSYSTEM_FIRESTORE_DOCUMENT", "default"),
         allowed_origins=allowed_origins,
     )
-

@@ -18,6 +18,7 @@ export interface OrderLineItem {
 
 export interface Order {
   id: string;
+  displayId: string;
   createdAt: string;
   dateLabel: string;
   customerName: string;
@@ -245,4 +246,3 @@ export function updateSettings(payload: StoreSettings) {
     body: JSON.stringify(payload),
   });
 }
-

@@ -287,7 +287,7 @@ export function Dashboard() {
                         fontFamily: "var(--f-serif)",
                       }}
                     >
-                      {order.id}
+                      {order.displayId}
                     </td>
                     <td
                       style={{

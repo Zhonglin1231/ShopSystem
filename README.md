@@ -15,7 +15,13 @@
 
 - `flower-757d9-firebase-adminsdk-fbsvc-d05a09dcce.json`
 
-如果 Firebase 可用，系统会把完整业务快照写到 Firestore。
+如果 Firebase 可用，系统会采用顶层集合结构：
+
+- `orders`：与客户端共享的真实订单数据
+- `flowers`：花材目录
+- `inventory`：库存项目
+- `restocks`：补货记录
+- `settings/store`：店铺设置
 
 如果 Firebase 不可用、依赖未安装，或数据库为空，系统会自动退回本地文件：
 
@@ -60,8 +66,6 @@ npm run dev:frontend
 ```bash
 export SHOPSYSTEM_FIREBASE_CREDENTIALS="/absolute/path/to/your-service-account.json"
 export SHOPSYSTEM_ALLOWED_ORIGINS="http://localhost:5173,http://127.0.0.1:5173"
-export SHOPSYSTEM_FIRESTORE_COLLECTION="shopsystem"
-export SHOPSYSTEM_FIRESTORE_DOCUMENT="default"
 ```
 
 ## 后端结构
@@ -73,5 +77,6 @@ export SHOPSYSTEM_FIRESTORE_DOCUMENT="default"
 
 ## 说明
 
-- 当前后端采用“完整快照”存储，适合课程项目和演示环境，结构简单、调试直接。
-- 若后续要扩展成多人并发或更大数据量，建议把 `orders`、`flowers`、`inventory` 拆成独立集合。
+- 本地 `local-json` 模式下仍使用完整快照，方便离线演示。
+- Firestore 模式下，后台数据直接存到顶层集合，不再使用 `shopsystem/default`。
+- 迁移脚本会先备份旧数据，再把本地数据同步到顶层集合。

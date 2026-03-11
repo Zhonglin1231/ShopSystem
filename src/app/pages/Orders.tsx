@@ -33,9 +33,10 @@ export function Orders() {
   const filteredOrders = orders
     .filter((order) => {
       const query = search.trim().toLowerCase();
-      const matchesQuery =
+        const matchesQuery =
         query.length === 0 ||
         order.id.toLowerCase().includes(query) ||
+        order.displayId.toLowerCase().includes(query) ||
         order.customerName.toLowerCase().includes(query);
       const matchesStatus = statusFilter === "All" || order.status === statusFilter;
       return matchesQuery && matchesStatus;
@@ -188,7 +189,7 @@ export function Orders() {
                           fontFamily: "var(--f-serif)",
                         }}
                       >
-                        {order.id}
+                        {order.displayId}
                       </td>
                       <td
                         style={{
