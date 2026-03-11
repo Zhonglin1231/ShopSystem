@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { buildChartBars } from "../lib/format";
+import { buildChartBars, buildChartScale, formatCompactCurrency } from "../lib/format";
 import { useShopData } from "../lib/shop-data";
 
 function statusStyles(statusClass: string) {
@@ -24,8 +24,9 @@ function statusStyles(statusClass: string) {
 }
 
 export function Dashboard() {
-  const { dashboard, loading, error } = useShopData();
+  const { dashboard, loading, error, settings } = useShopData();
   const chartBars = buildChartBars(dashboard.weeklySales);
+  const chartScale = buildChartScale(dashboard.weeklySales);
 
   if (loading && dashboard.kpis.length === 0) {
     return (
@@ -170,47 +171,103 @@ export function Dashboard() {
           </div>
 
           <div
-            className="w-full flex items-end justify-between border-b"
+            className="w-full border-b"
             style={{
               height: "200px",
               background: "linear-gradient(to bottom, #fff 0%, #F9FDF9 100%)",
-              padding: "0 var(--s-4)",
+              padding: "var(--s-3) var(--s-4) 0",
               borderColor: "var(--c-border)",
             }}
           >
-            {chartBars.map((item) => (
-              <div key={item.date} className="flex flex-col items-center justify-end" style={{ width: "11%" }}>
-                <div
-                  className="transition-all hover:opacity-100"
-                  title={`${item.label}: ${item.amount}`}
-                  style={{
-                    width: "70%",
-                    height: `${item.height}%`,
-                    backgroundColor: "var(--c-accent-pink)",
-                    opacity: "0.7",
-                    transition: "height 1s ease",
-                  }}
-                  onMouseEnter={(event) => {
-                    event.currentTarget.style.backgroundColor = "var(--c-accent-green)";
-                    event.currentTarget.style.opacity = "1";
-                  }}
-                  onMouseLeave={(event) => {
-                    event.currentTarget.style.backgroundColor = "var(--c-accent-pink)";
-                    event.currentTarget.style.opacity = "0.7";
-                  }}
-                />
-                <span
-                  style={{
-                    marginTop: "8px",
-                    fontFamily: "var(--f-sans)",
-                    fontSize: "0.72rem",
-                    color: "var(--c-text-secondary)",
-                  }}
-                >
-                  {item.label}
-                </span>
+            <div
+              className="grid h-full"
+              style={{
+                gridTemplateColumns: "56px 1fr",
+                gridTemplateRows: "1fr auto",
+                columnGap: "var(--s-3)",
+              }}
+            >
+              <div className="relative" style={{ gridColumn: "1", gridRow: "1" }}>
+                {chartScale.ticks.map((tick) => (
+                  <div
+                    key={tick.value}
+                    style={{
+                      position: "absolute",
+                      right: 0,
+                      bottom: `${tick.percent}%`,
+                      transform: "translateY(50%)",
+                      paddingRight: "8px",
+                      fontFamily: "var(--f-sans)",
+                      fontSize: "0.68rem",
+                      color: "var(--c-text-secondary)",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {formatCompactCurrency(tick.value, settings.currency)}
+                  </div>
+                ))}
               </div>
-            ))}
+
+              <div className="relative" style={{ gridColumn: "2", gridRow: "1" }}>
+                {chartScale.ticks.map((tick) => (
+                  <div
+                    key={tick.value}
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      right: 0,
+                      bottom: `${tick.percent}%`,
+                      borderTop: tick.value === 0 ? "1px solid var(--c-text-primary)" : "1px dashed var(--c-border)",
+                      opacity: tick.value === 0 ? 0.45 : 1,
+                    }}
+                  />
+                ))}
+
+                <div className="relative z-10 flex h-full items-end justify-between">
+                  {chartBars.map((item) => (
+                    <div key={item.date} className="flex items-end justify-center" style={{ width: "11%", height: "100%" }}>
+                      <div
+                        className="transition-all hover:opacity-100"
+                        title={`${item.label}: ${formatCompactCurrency(item.amount, settings.currency)}`}
+                        style={{
+                          width: "70%",
+                          height: `${item.height}%`,
+                          backgroundColor: "var(--c-accent-pink)",
+                          opacity: "0.7",
+                          transition: "height 1s ease",
+                        }}
+                        onMouseEnter={(event) => {
+                          event.currentTarget.style.backgroundColor = "var(--c-accent-green)";
+                          event.currentTarget.style.opacity = "1";
+                        }}
+                        onMouseLeave={(event) => {
+                          event.currentTarget.style.backgroundColor = "var(--c-accent-pink)";
+                          event.currentTarget.style.opacity = "0.7";
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ gridColumn: "1", gridRow: "2" }} />
+              <div className="flex justify-between" style={{ gridColumn: "2", gridRow: "2", paddingTop: "8px" }}>
+                {chartBars.map((item) => (
+                  <span
+                    key={item.date}
+                    className="text-center"
+                    style={{
+                      width: "11%",
+                      fontFamily: "var(--f-sans)",
+                      fontSize: "0.72rem",
+                      color: "var(--c-text-secondary)",
+                    }}
+                  >
+                    {item.label}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
