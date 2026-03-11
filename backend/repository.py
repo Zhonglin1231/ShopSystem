@@ -818,7 +818,7 @@ class ShopRepository:
     def _ensure_snapshot(self, snapshot: dict) -> tuple[dict, bool]:
         changed = False
         settings = snapshot.get("settings") or {}
-        timezone_name = settings.get("timezone", "America/New_York")
+        timezone_name = settings.get("timezone", "Asia/Shanghai")
         seeded = build_seed_snapshot(timezone_name)
 
         normalized = {

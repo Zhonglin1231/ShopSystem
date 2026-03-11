@@ -59,7 +59,7 @@ const defaultSettings: StoreSettings = {
   storeName: "Wai Lan Garden",
   contactEmail: "hello@wailangarden.com",
   currency: "USD",
-  timezone: "America/New_York",
+  timezone: "Asia/Shanghai",
   deliveryRadius: 15,
 };
 

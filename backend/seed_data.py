@@ -15,7 +15,7 @@ def _iso(value: datetime) -> str:
     return value.replace(microsecond=0).isoformat()
 
 
-def build_seed_snapshot(timezone_name: str = "America/New_York") -> dict:
+def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
     timezone = ZoneInfo(timezone_name)
     now = datetime.now(timezone).replace(second=0, microsecond=0)
 
@@ -367,4 +367,3 @@ def build_seed_snapshot(timezone_name: str = "America/New_York") -> dict:
         "restocks": deepcopy(restocks),
         "settings": deepcopy(settings),
     }
-

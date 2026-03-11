@@ -4,10 +4,10 @@ import { StoreSettings } from "../lib/api";
 import { useShopData } from "../lib/shop-data";
 
 const timezoneOptions = [
+  { value: "Asia/Shanghai", label: "UTC+8 (Shanghai)" },
+  { value: "Asia/Hong_Kong", label: "UTC+8 (Hong Kong)" },
   { value: "America/New_York", label: "EST / EDT (New York)" },
   { value: "America/Los_Angeles", label: "PST / PDT (Los Angeles)" },
-  { value: "Asia/Hong_Kong", label: "HKT (Hong Kong)" },
-  { value: "Asia/Shanghai", label: "CST (Shanghai)" },
 ];
 
 export function Settings() {
