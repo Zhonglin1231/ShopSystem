@@ -292,6 +292,170 @@ function formatCurrencyValue(amount: number, currency: string) {
   }
 }
 
+function toDateKey(value: string, timezone: string) {
+  try {
+    const normalized = value.includes("T") ? value : `${value}T09:00:00`;
+    return new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      timeZone: timezone,
+    }).format(new Date(normalized));
+  } catch {
+    return value;
+  }
+}
+
+function mergeIncomingOrder(currentOrders: Order[], nextOrder: Order) {
+  const merged = [nextOrder, ...currentOrders.filter((order) => order.id !== nextOrder.id)];
+  return merged.sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime());
+}
+
+function updateDashboardWithIncomingOrder(
+  currentDashboard: DashboardData,
+  order: Order,
+  settings: StoreSettings,
+) {
+  const orderDateKey = toDateKey(order.createdAt, settings.timezone);
+  const todayKey = toDateKey(new Date().toISOString(), settings.timezone);
+  const isTodayOrder = orderDateKey === todayKey;
+  const isPendingOrder = order.status !== "Delivered" && order.status !== "Cancelled";
+
+  const weeklySales = currentDashboard.weeklySales.map((entry) =>
+    entry.date === orderDateKey
+      ? {
+          ...entry,
+          amount: Math.round((entry.amount + order.total) * 100) / 100,
+        }
+      : entry,
+  );
+  const weeklyRevenue = weeklySales.reduce((sum, entry) => sum + entry.amount, 0);
+
+  return {
+    ...currentDashboard,
+    recentOrders: mergeIncomingOrder(currentDashboard.recentOrders, order).slice(0, 4),
+    weeklySales,
+    kpis: currentDashboard.kpis.map((kpi) => {
+      if (kpi.label === "Today's Orders" && isTodayOrder) {
+        const nextValue = Number.parseInt(kpi.value, 10);
+        return {
+          ...kpi,
+          value: String(Number.isNaN(nextValue) ? 1 : nextValue + 1),
+          trend: kpi.trend === "No change vs yesterday" ? "+1 vs yesterday" : kpi.trend,
+          isUp: true,
+        };
+      }
+
+      if (kpi.label === "Pending" && isPendingOrder) {
+        const nextValue = Number.parseInt(kpi.value, 10);
+        return {
+          ...kpi,
+          value: String(Number.isNaN(nextValue) ? 1 : nextValue + 1),
+          trend: "Action required",
+          isUp: false,
+        };
+      }
+
+      if (kpi.label === "Revenue") {
+        return {
+          ...kpi,
+          value: formatCurrencyValue(weeklyRevenue, settings.currency),
+        };
+      }
+
+      return kpi;
+    }),
+    maintenanceSummary: {
+      ...currentDashboard.maintenanceSummary,
+      pendingOrders: isPendingOrder
+        ? currentDashboard.maintenanceSummary.pendingOrders + 1
+        : currentDashboard.maintenanceSummary.pendingOrders,
+    },
+  };
+}
+
+function updateFlowersWithIncomingOrder(currentFlowers: Flower[], order: Order) {
+  const qtyByFlowerId = new Map<string, number>();
+  for (const item of order.lineItems) {
+    qtyByFlowerId.set(item.flowerId, (qtyByFlowerId.get(item.flowerId) ?? 0) + item.qty);
+  }
+
+  return currentFlowers.map((flower) => ({
+    ...flower,
+    stock: Math.max(0, flower.stock - (qtyByFlowerId.get(flower.id) ?? 0)),
+  }));
+}
+
+function updateInventoryWithIncomingOrder(currentInventory: InventoryItem[], flowers: Flower[], order: Order) {
+  const inventoryCodeByFlowerId = new Map(flowers.map((flower) => [flower.id, flower.inventoryCode]));
+  const qtyByInventoryCode = new Map<string, number>();
+
+  for (const item of order.lineItems) {
+    const inventoryCode = inventoryCodeByFlowerId.get(item.flowerId);
+    if (!inventoryCode) {
+      continue;
+    }
+    qtyByInventoryCode.set(inventoryCode, (qtyByInventoryCode.get(inventoryCode) ?? 0) + item.qty);
+  }
+
+  return currentInventory.map((item) => ({
+    ...item,
+    stock: Math.max(0, item.stock - (qtyByInventoryCode.get(item.code) ?? 0)),
+  }));
+}
+
+function updateAnalyticsWithIncomingOrder(currentAnalytics: AnalyticsData, order: Order, settings: StoreSettings) {
+  const orderDateKey = toDateKey(order.createdAt, settings.timezone);
+  const salesSeries = currentAnalytics.salesSeries.map((entry) =>
+    entry.date === orderDateKey
+      ? {
+          ...entry,
+          amount: Math.round((entry.amount + order.total) * 100) / 100,
+        }
+      : entry,
+  );
+
+  const sellerByName = new Map(
+    currentAnalytics.topSellers.map((seller) => [seller.name, { ...seller }]),
+  );
+
+  for (const item of order.lineItems) {
+    const existing = sellerByName.get(item.name);
+    if (existing) {
+      existing.revenue = Math.round((existing.revenue + item.lineTotal) * 100) / 100;
+      existing.revenueDisplay = formatCurrencyValue(existing.revenue, settings.currency);
+      existing.unitsSold += item.qty;
+      continue;
+    }
+
+    sellerByName.set(item.name, {
+      name: item.name,
+      revenue: item.lineTotal,
+      revenueDisplay: formatCurrencyValue(item.lineTotal, settings.currency),
+      unitsSold: item.qty,
+    });
+  }
+
+  const grossRevenue = Math.round((currentAnalytics.totals.grossRevenue + order.total) * 100) / 100;
+  const orderCountBase = currentAnalytics.totals.averageOrderValue > 0
+    ? Math.max(1, Math.round(currentAnalytics.totals.grossRevenue / currentAnalytics.totals.averageOrderValue))
+    : 0;
+  const nextOrderCount = orderCountBase + 1;
+  const averageOrderValue = nextOrderCount > 0 ? grossRevenue / nextOrderCount : 0;
+
+  return {
+    salesSeries,
+    topSellers: [...sellerByName.values()].sort((left, right) => right.revenue - left.revenue).slice(0, 5),
+    totals: {
+      grossRevenue,
+      grossRevenueDisplay: formatCurrencyValue(grossRevenue, settings.currency),
+      completedOrders: currentAnalytics.totals.completedOrders,
+      averageOrderValue: Math.round(averageOrderValue * 100) / 100,
+      averageOrderValueDisplay: formatCurrencyValue(averageOrderValue, settings.currency),
+    },
+  };
+}
+
 function summarizeItems(lineItems: Order["lineItems"]) {
   return lineItems.map((item) => `${item.name} x${item.qty}`).join(", ");
 }
@@ -605,7 +769,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const refreshOrdersFromListener = async (expectedOrderIds?: string[]) => {
+  const refreshOrdersOnly = async () => {
     if (!isOnline || orderRefreshInFlightRef.current) {
       return;
     }
@@ -613,43 +777,43 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
     orderRefreshInFlightRef.current = true;
 
     try {
-      const [nextDashboard, nextOrders, nextFlowers, nextInventory, nextAnalytics] = await Promise.all([
-        getDashboard(),
-        getOrders(),
-        getFlowers(),
-        getInventory(),
-        getAnalytics(),
-      ]);
-
-      const previousOrderIds = new Set(baseOrdersRef.current.map((order) => order.id));
-      const newLiveOrders = hasOrderBaselineRef.current
-        ? nextOrders.filter((order) => !previousOrderIds.has(order.id))
-        : [];
-      const matchedNewOrders =
-        expectedOrderIds && expectedOrderIds.length > 0
-          ? newLiveOrders.filter((order) => expectedOrderIds.includes(order.id))
-          : newLiveOrders;
-
-      setBaseDashboard(nextDashboard);
+      const nextOrders = await getOrders();
       baseOrdersRef.current = nextOrders;
       hasOrderBaselineRef.current = true;
       setBaseOrders(nextOrders);
-      setBaseFlowers(nextFlowers);
-      setBaseInventory(nextInventory.items);
-      setRestocks(nextInventory.restocks);
-      setAnalytics(nextAnalytics);
-
-      if (matchedNewOrders.length > 0) {
-        playNewOrderAlertSound();
-
-        if (!isOrdersRouteActive()) {
-          setNewOrderAlertCount((current) => current + matchedNewOrders.length);
-        }
-      }
     } catch {
-      // Keep listener refresh failures silent while EventSource reconnects.
+      // Keep listener resync failures silent while EventSource reconnects.
     } finally {
       orderRefreshInFlightRef.current = false;
+    }
+  };
+
+  const applyIncomingOrderEvent = (nextOrder: Order, options?: { notify?: boolean }) => {
+    const shouldNotify = options?.notify ?? true;
+
+    if (baseOrdersRef.current.some((order) => order.id === nextOrder.id)) {
+      return;
+    }
+
+    const nextOrders = mergeIncomingOrder(baseOrdersRef.current, nextOrder);
+    const nextFlowers = updateFlowersWithIncomingOrder(baseFlowersRef.current, nextOrder);
+
+    baseOrdersRef.current = nextOrders;
+    baseFlowersRef.current = nextFlowers;
+    hasOrderBaselineRef.current = true;
+
+    setBaseOrders(nextOrders);
+    setBaseDashboard((current) => updateDashboardWithIncomingOrder(current, nextOrder, settingsRef.current));
+    setBaseFlowers(nextFlowers);
+    setBaseInventory((current) => updateInventoryWithIncomingOrder(current, nextFlowers, nextOrder));
+    setAnalytics((current) => updateAnalyticsWithIncomingOrder(current, nextOrder, settingsRef.current));
+
+    if (shouldNotify) {
+      playNewOrderAlertSound();
+    }
+
+    if (shouldNotify && !isOrdersRouteActive()) {
+      setNewOrderAlertCount((current) => current + 1);
     }
   };
 
@@ -803,17 +967,13 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      void refreshOrdersFromListener();
+      void refreshOrdersOnly();
     };
 
     const handleOrderCreated = (event: MessageEvent<string>) => {
       try {
         const payload = JSON.parse(event.data) as OrderCreatedEvent;
-        if (baseOrdersRef.current.some((order) => order.id === payload.order.id)) {
-          return;
-        }
-
-        void refreshOrdersFromListener([payload.order.id]);
+        applyIncomingOrderEvent(payload.order);
       } catch {
         // Ignore malformed listener payloads and wait for the next valid event.
       }
@@ -933,7 +1093,9 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
           }
 
           try {
-            return await runMutation(() => createOrderRequest(payload));
+            return await runMutation(() => createOrderRequest(payload), (createdOrder) => {
+              applyIncomingOrderEvent(createdOrder, { notify: false });
+            });
           } catch (createError) {
             if (!isLikelyNetworkError(createError)) {
               throw createError;

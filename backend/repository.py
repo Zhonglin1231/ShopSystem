@@ -178,6 +178,15 @@ class FirestoreStore(SnapshotStore):
         )
         batch.commit(timeout=2)
 
+    def load_records(self, collection_name: str) -> list[dict]:
+        return self._load_collection(collection_name)
+
+    def load_settings_record(self) -> dict:
+        return self._load_settings()
+
+    def load_order_documents(self) -> list[Any]:
+        return list(self.client.collection(self.ORDERS_COLLECTION).stream())
+
     def _load_collection(self, collection_name: str) -> list[dict]:
         return [doc.to_dict() or {} for doc in self.client.collection(collection_name).stream(timeout=2)]
 
@@ -418,12 +427,76 @@ class ShopRepository:
     def _cache_local_snapshot(self, snapshot: dict) -> None:
         self.local_store.save_snapshot(snapshot)
 
-    def get_health(self) -> dict:
+    def _normalized_settings(self, settings: dict | None) -> dict:
+        normalized_snapshot, _ = self._ensure_snapshot({"settings": settings or {}})
+        return normalized_snapshot["settings"]
+
+    def _collection_key_for_name(self, collection_name: str) -> str:
+        if collection_name == FirestoreStore.FLOWERS_COLLECTION:
+            return "flowers"
+        if collection_name == FirestoreStore.INVENTORY_COLLECTION:
+            return "inventory"
+        if collection_name == FirestoreStore.RESTOCKS_COLLECTION:
+            return "restocks"
+        if collection_name == FirestoreStore.MAINTENANCE_LOGS_COLLECTION:
+            return "maintenance_logs"
+        if collection_name == FirestoreStore.MAINTENANCE_REPORTS_COLLECTION:
+            return "maintenance_reports"
+        raise ValidationError(f"Unsupported collection mapping for {collection_name}.")
+
+    def _load_settings_fast(self) -> dict:
+        if self._using_firestore():
+            try:
+                return self._normalized_settings(self.store.load_settings_record())
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+
         snapshot, _ = self._load_snapshot()
-        settings = snapshot["settings"]
+        return snapshot["settings"]
+
+    def _load_collection_fast(self, collection_name: str) -> list[dict]:
+        if self._using_firestore():
+            try:
+                return self.store.load_records(collection_name)
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+
+        snapshot, _ = self._load_snapshot()
+        return snapshot[self._collection_key_for_name(collection_name)]
+
+    def _load_orders_fast(self, settings: dict) -> list[dict]:
+        if self._using_firestore():
+            try:
+                docs = self.store.load_order_documents()
+                orders = [self._normalize_firestore_order(doc.id, doc.to_dict() or {}, settings) for doc in docs]
+                return sorted(
+                    orders,
+                    key=lambda order: _parse_datetime(order["created_at"], settings["timezone"]),
+                    reverse=True,
+                )
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+
+        snapshot, _ = self._load_snapshot()
+        snapshot_orders = [self._normalize_snapshot_order(order) for order in snapshot["orders"]]
+        return sorted(
+            snapshot_orders,
+            key=lambda order: _parse_datetime(order["created_at"], settings["timezone"]),
+            reverse=True,
+        )
+
+    def get_health(self) -> dict:
+        settings = self._load_settings_fast()
+        reports = self._load_collection_fast(FirestoreStore.MAINTENANCE_REPORTS_COLLECTION)
         checked_at = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
         latest_report = max(
-            snapshot.get("maintenance_reports", []),
+            reports,
             key=lambda report: report.get("created_at", ""),
             default=None,
         )
@@ -583,9 +656,8 @@ class ShopRepository:
             return None
 
     def list_orders(self) -> list[dict]:
-        snapshot, _ = self._load_snapshot()
-        settings = snapshot["settings"]
-        orders = self._load_order_records(snapshot)
+        settings = self._load_settings_fast()
+        orders = self._load_orders_fast(settings)
         return [self._serialize_order(order, settings) for order in orders]
 
     def create_order(self, payload: dict) -> dict:
@@ -758,10 +830,11 @@ class ShopRepository:
             return self._serialize_order(order, settings)
 
     def list_flowers(self) -> list[dict]:
-        snapshot, _ = self._load_snapshot()
-        inventory_by_code = {item["code"]: item for item in snapshot["inventory"]}
-        settings = snapshot["settings"]
-        flowers = sorted(snapshot["flowers"], key=lambda flower: flower["name"].lower())
+        settings = self._load_settings_fast()
+        inventory = self._load_collection_fast(FirestoreStore.INVENTORY_COLLECTION)
+        flowers = self._load_collection_fast(FirestoreStore.FLOWERS_COLLECTION)
+        inventory_by_code = {item["code"]: item for item in inventory}
+        flowers = sorted(flowers, key=lambda flower: flower["name"].lower())
         return [self._serialize_flower(flower, inventory_by_code, settings) for flower in flowers]
 
     def create_flower(self, payload: dict) -> dict:
@@ -841,16 +914,22 @@ class ShopRepository:
             return {"id": flower_id, "name": flower["name"], "deleted": True}
 
     def get_inventory(self) -> dict:
-        snapshot, _ = self._load_snapshot()
-        settings = snapshot["settings"]
+        settings = self._load_settings_fast()
+        inventory_records = self._load_collection_fast(FirestoreStore.INVENTORY_COLLECTION)
+        restock_records = self._load_collection_fast(FirestoreStore.RESTOCKS_COLLECTION)
+        snapshot = {
+            "inventory": inventory_records,
+            "restocks": restock_records,
+            "settings": settings,
+        }
         average_costs = self._average_costs_by_item(snapshot)
         items = [
             self._serialize_inventory_item(item, average_costs.get(item["code"]), settings["currency"])
-            for item in sorted(snapshot["inventory"], key=lambda item: item["code"])
+            for item in sorted(inventory_records, key=lambda item: item["code"])
         ]
         restocks = [
             self._serialize_restock(record, settings)
-            for record in sorted(snapshot["restocks"], key=lambda item: item["created_at"], reverse=True)
+            for record in sorted(restock_records, key=lambda item: item["created_at"], reverse=True)
         ]
         return {"items": items, "restocks": restocks}
 
@@ -965,8 +1044,7 @@ class ShopRepository:
             return self._serialize_restock(record, settings)
 
     def get_settings(self) -> dict:
-        snapshot, _ = self._load_snapshot()
-        return snapshot["settings"]
+        return self._load_settings_fast()
 
     def update_settings(self, payload: dict) -> dict:
         with self._lock:
@@ -984,12 +1062,21 @@ class ShopRepository:
 
     def get_dashboard(self) -> dict:
         self._ensure_scheduled_weekly_report()
-        snapshot, _ = self._load_snapshot()
-        settings = snapshot["settings"]
+        settings = self._load_settings_fast()
+        inventory = self._load_collection_fast(FirestoreStore.INVENTORY_COLLECTION)
+        maintenance_logs = self._load_collection_fast(FirestoreStore.MAINTENANCE_LOGS_COLLECTION)
+        maintenance_reports = self._load_collection_fast(FirestoreStore.MAINTENANCE_REPORTS_COLLECTION)
+        orders = self._load_orders_fast(settings)
+        snapshot = {
+            "inventory": inventory,
+            "maintenance_logs": maintenance_logs,
+            "maintenance_reports": maintenance_reports,
+            "orders": orders,
+            "settings": settings,
+        }
         timezone_name = settings["timezone"]
         today = datetime.now(ZoneInfo(timezone_name)).date()
 
-        orders = self._load_order_records(snapshot)
         today_orders = [order for order in orders if _parse_datetime(order["created_at"], timezone_name).date() == today]
         yesterday_orders = [
             order
@@ -1059,12 +1146,11 @@ class ShopRepository:
         }
 
     def get_analytics(self) -> dict:
-        snapshot, _ = self._load_snapshot()
-        settings = snapshot["settings"]
+        settings = self._load_settings_fast()
         timezone_name = settings["timezone"]
         today = datetime.now(ZoneInfo(timezone_name)).date()
 
-        orders = [order for order in self._load_order_records(snapshot) if order["status"] != "Cancelled"]
+        orders = [order for order in self._load_orders_fast(settings) if order["status"] != "Cancelled"]
         sales_series = self._sales_window(orders, timezone_name, end_day=today, days=7)
 
         sellers: dict[str, dict[str, Any]] = defaultdict(lambda: {"name": "", "revenue": 0.0, "unitsSold": 0})
@@ -1097,10 +1183,15 @@ class ShopRepository:
         }
 
     def _ensure_scheduled_weekly_report(self) -> None:
+        settings = self._load_settings_fast()
+        week_start, week_end = self._latest_completed_week(settings["timezone"])
+        existing_reports = self._load_collection_fast(FirestoreStore.MAINTENANCE_REPORTS_COLLECTION)
+        if self._find_report_for_week({"maintenance_reports": existing_reports}, week_start, week_end) is not None:
+            return
+
         with self._lock:
             snapshot, _ = self._load_snapshot()
             settings = snapshot["settings"]
-            week_start, week_end = self._latest_completed_week(settings["timezone"])
             if self._find_report_for_week(snapshot, week_start, week_end) is not None:
                 return
 
@@ -1701,6 +1792,22 @@ class ShopRepository:
 
     def _load_order_records(self, snapshot: dict) -> list[dict]:
         settings = snapshot["settings"]
+        snapshot_orders = snapshot.get("orders") or []
+
+        if snapshot_orders:
+            if all("line_items" in order for order in snapshot_orders):
+                return sorted(
+                    snapshot_orders,
+                    key=lambda order: _parse_datetime(order["created_at"], settings["timezone"]),
+                    reverse=True,
+                )
+
+            normalized_snapshot_orders = [self._normalize_snapshot_order(order) for order in snapshot_orders]
+            return sorted(
+                normalized_snapshot_orders,
+                key=lambda order: _parse_datetime(order["created_at"], settings["timezone"]),
+                reverse=True,
+            )
 
         if self._using_firestore():
             try:
@@ -1719,9 +1826,8 @@ class ShopRepository:
                     raise
                 self._activate_local_fallback(error)
 
-        snapshot_orders = [self._normalize_snapshot_order(order) for order in snapshot["orders"]]
         return sorted(
-            snapshot_orders,
+            [self._normalize_snapshot_order(order) for order in snapshot["orders"]],
             key=lambda order: _parse_datetime(order["created_at"], settings["timezone"]),
             reverse=True,
         )

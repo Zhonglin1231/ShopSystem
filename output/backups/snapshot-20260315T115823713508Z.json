@@ -1,94 +1,94 @@
 {
   "flowers": [
     {
-      "image": "https://images.unsplash.com/photo-1468327768560-75b778cbb551?auto=format&fit=crop&w=1200&q=80",
+      "color": "Lilac",
+      "id": "lavender",
+      "inventory_code": "L-022",
+      "unit": "bunch",
       "category": "Lavender",
       "season": "Summer-Autumn",
-      "color": "Lilac",
-      "inventory_code": "L-022",
-      "price": 7.5,
-      "unit": "bunch",
-      "name": "Lavender",
       "description": "Aromatic bundle used for texture, fragrance, and dried work.",
-      "id": "lavender"
+      "price": 7.5,
+      "image": "https://images.unsplash.com/photo-1468327768560-75b778cbb551?auto=format&fit=crop&w=1200&q=80",
+      "name": "Lavender"
     },
     {
-      "image": "https://images.unsplash.com/photo-1588457776180-4206b4909301?auto=format&fit=crop&w=1200&q=80",
+      "color": "Coral",
+      "id": "pink-peony",
+      "inventory_code": "P-017",
+      "unit": "stem",
       "category": "Peony",
       "season": "Spring-Summer",
-      "color": "Coral",
-      "inventory_code": "P-017",
-      "price": 8.5,
-      "unit": "stem",
-      "name": "Pink Peony",
       "description": "Lush seasonal bloom with layered petals and strong visual impact.",
-      "id": "pink-peony"
+      "price": 8.5,
+      "image": "https://images.unsplash.com/photo-1588457776180-4206b4909301?auto=format&fit=crop&w=1200&q=80",
+      "name": "Pink Peony"
     },
     {
-      "image": "https://images.unsplash.com/photo-1678902439117-ea4268c7661b?auto=format&fit=crop&w=1200&q=80",
+      "color": "Green",
+      "id": "silver-dollar-eucalyptus",
+      "inventory_code": "E-042",
+      "unit": "bunch",
       "category": "Eucalyptus",
       "season": "Year-round",
-      "color": "Green",
-      "inventory_code": "E-042",
-      "price": 12.0,
-      "unit": "bunch",
-      "name": "Silver Dollar Eucalyptus",
       "description": "Textural greenery with a fresh scent and rounded leaves.",
-      "id": "silver-dollar-eucalyptus"
+      "price": 12.0,
+      "image": "https://images.unsplash.com/photo-1678902439117-ea4268c7661b?auto=format&fit=crop&w=1200&q=80",
+      "name": "Silver Dollar Eucalyptus"
     },
     {
-      "image": "https://images.unsplash.com/photo-1621025210758-0a014e936aaf?auto=format&fit=crop&w=1200&q=80",
+      "color": "White",
+      "id": "white-tulip",
+      "inventory_code": "T-014",
+      "unit": "stem",
       "category": "Tulip",
       "season": "Spring",
-      "color": "White",
-      "inventory_code": "T-014",
-      "price": 3.0,
-      "unit": "stem",
-      "name": "White Tulip",
       "description": "Crisp white tulips for elegant bouquets and event work.",
-      "id": "white-tulip"
+      "price": 3.0,
+      "image": "https://images.unsplash.com/photo-1621025210758-0a014e936aaf?auto=format&fit=crop&w=1200&q=80",
+      "name": "White Tulip"
     }
   ],
   "inventory": [
     {
-      "category": "Foliage",
-      "linked_flower_id": "silver-dollar-eucalyptus",
-      "updated_at": "2026-03-15T15:40:04+08:00",
       "unit": "bunch",
       "par": 20,
-      "name": "Silver Dollar Eucalyptus",
-      "stock": 80,
-      "code": "E-042"
+      "category": "Foliage",
+      "linked_flower_id": "silver-dollar-eucalyptus",
+      "updated_at": "2026-03-15T16:51:05+08:00",
+      "code": "E-042",
+      "stock": 78,
+      "name": "Silver Dollar Eucalyptus"
     },
     {
-      "category": "Filler Flowers",
-      "linked_flower_id": "lavender",
-      "updated_at": "2026-03-15T15:43:04+08:00",
       "unit": "bunch",
       "par": 10,
-      "name": "Lavender",
-      "stock": 26,
-      "code": "L-022"
+      "category": "Filler Flowers",
+      "linked_flower_id": "lavender",
+      "updated_at": "2026-03-15T16:49:07+08:00",
+      "code": "L-022",
+      "stock": 0,
+      "name": "Lavender"
     },
     {
-      "category": "Fresh Flowers",
-      "linked_flower_id": "pink-peony",
-      "updated_at": "2026-03-10T13:00:00-04:00",
       "unit": "stem",
       "par": 15,
-      "name": "Pink Peony",
-      "stock": 18,
-      "code": "P-017"
+      "category": "Fresh Flowers",
+      "linked_flower_id": "pink-peony",
+      "updated_at": "2026-03-15T19:58:14+08:00",
+      "code": "P-017",
+      "stock": 15,
+      "name": "Pink Peony"
     },
     {
-      "category": "Fresh Flowers",
-      "linked_flower_id": "white-tulip",
-      "updated_at": "2026-03-10T10:00:00-04:00",
       "unit": "stem",
       "par": 35,
-      "name": "White Tulip",
-      "stock": 86,
-      "code": "T-014"
+      "category": "Fresh Flowers",
+      "updated_at": "2026-03-15T18:29:53+08:00",
+      "linked_flower_id": "white-tulip",
+      "code": "T-014",
+      "stock": 85,
+      "name": "White Tulip"
     }
   ],
   "orders": [
@@ -283,1258 +283,1258 @@
   ],
   "restocks": [
     {
-      "item_code": "R-001",
+      "id": "RS-1001",
       "created_at": "2026-03-05T09:00:00-05:00",
-      "unit_cost": 1.2,
-      "quantity": 100,
+      "item_code": "R-001",
       "item_name": "Dusty Rose",
-      "id": "RS-1001"
+      "unit_cost": 1.2,
+      "quantity": 100
     },
     {
-      "item_code": "V-102",
+      "id": "RS-1002",
       "created_at": "2026-03-07T13:00:00-05:00",
-      "unit_cost": 4.5,
-      "quantity": 20,
+      "item_code": "V-102",
       "item_name": "Glass Cylinder 8\"",
-      "id": "RS-1002"
+      "unit_cost": 4.5,
+      "quantity": 20
     },
     {
-      "item_code": "P-017",
+      "id": "RS-1003",
       "created_at": "2026-03-09T12:00:00-04:00",
-      "unit_cost": 4.4,
-      "quantity": 25,
+      "item_code": "P-017",
       "item_name": "Pink Peony",
-      "id": "RS-1003"
+      "unit_cost": 4.4,
+      "quantity": 25
     },
     {
-      "item_code": "B-010",
+      "id": "RS-1004",
       "created_at": "2026-03-10T14:01:06-04:00",
-      "unit_cost": 1.5,
-      "quantity": 3,
+      "item_code": "B-010",
       "item_name": "Baby's Breath",
-      "id": "RS-1004"
+      "unit_cost": 1.5,
+      "quantity": 3
     },
     {
-      "item_code": "B-010",
+      "id": "RS-1005",
       "created_at": "2026-03-10T14:01:30-04:00",
-      "unit_cost": 1.5,
-      "quantity": 3,
+      "item_code": "B-010",
       "item_name": "Baby's Breath",
-      "id": "RS-1005"
+      "unit_cost": 1.5,
+      "quantity": 3
     },
     {
-      "item_code": "B-010",
+      "id": "RS-1006",
       "created_at": "2026-03-10T14:01:46-04:00",
-      "unit_cost": 1.5,
-      "quantity": 3,
-      "item_name": "Baby's Breath",
-      "id": "RS-1006"
-    },
-    {
       "item_code": "B-010",
-      "created_at": "2026-03-10T14:02:12-04:00",
-      "unit_cost": 1.5,
-      "quantity": 3,
       "item_name": "Baby's Breath",
-      "id": "RS-1007"
+      "unit_cost": 1.5,
+      "quantity": 3
     },
     {
+      "id": "RS-1007",
+      "created_at": "2026-03-10T14:02:12-04:00",
+      "item_code": "B-010",
+      "item_name": "Baby's Breath",
+      "unit_cost": 1.5,
+      "quantity": 3
+    },
+    {
+      "id": "RS-1008",
       "unit_cost": 3.0,
+      "item_code": "R-029",
+      "item_name": "hiii",
       "created_at": "2026-03-10T23:42:23-04:00",
-      "item_code": "R-029",
-      "quantity": 10,
-      "item_name": "hiii",
-      "id": "RS-1008"
+      "quantity": 10
     },
     {
+      "id": "RS-1009",
       "unit_cost": 1.0,
+      "item_code": "R-029",
+      "item_name": "hiii",
       "created_at": "2026-03-10T23:43:12-04:00",
-      "item_code": "R-029",
-      "quantity": 100,
-      "item_name": "hiii",
-      "id": "RS-1009"
+      "quantity": 100
     },
     {
+      "id": "RS-1010",
       "unit_cost": 1.0,
-      "created_at": "2026-03-10T23:43:53-04:00",
       "item_code": "R-029",
-      "quantity": 100,
       "item_name": "hiii",
-      "id": "RS-1010"
+      "created_at": "2026-03-10T23:43:53-04:00",
+      "quantity": 100
     },
     {
+      "id": "RS-1011",
       "unit_cost": 3.0,
-      "created_at": "2026-03-15T15:43:04+08:00",
       "item_code": "L-022",
-      "quantity": 10,
       "item_name": "Lavender",
-      "id": "RS-1011"
+      "created_at": "2026-03-15T15:43:04+08:00",
+      "quantity": 10
     }
   ],
   "maintenance_logs": [
     {
+      "title": "Weekly maintenance report failed",
+      "id": "ML-1001",
+      "created_at": "2026-03-15T14:54:49+08:00",
       "severity": "critical",
+      "related_code": null,
+      "event_type": "report_generation_failed",
+      "related_name": null,
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
       "details": {
         "reportId": "MR-1001"
-      },
-      "created_at": "2026-03-15T14:54:49+08:00",
+      }
+    },
+    {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1002",
+      "created_at": "2026-03-15T14:57:01+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 18 to 19 (+1 bunch).",
+      "details": {
+        "delta": 1,
+        "before": 18,
+        "after": 19
+      }
+    },
+    {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1003",
+      "created_at": "2026-03-15T14:57:05+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 19 to 20 (+1 bunch).",
+      "details": {
+        "delta": 1,
+        "before": 19,
+        "after": 20
+      }
+    },
+    {
+      "title": "Weekly maintenance report failed",
+      "id": "ML-1004",
+      "created_at": "2026-03-15T14:57:10+08:00",
+      "severity": "critical",
+      "related_code": null,
       "event_type": "report_generation_failed",
       "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
       "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1001"
-    },
-    {
-      "severity": "warning",
-      "details": {
-        "after": 19,
-        "delta": 1,
-        "before": 18
-      },
-      "created_at": "2026-03-15T14:57:01+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 18 to 19 (+1 bunch).",
-      "id": "ML-1002"
-    },
-    {
-      "severity": "warning",
-      "details": {
-        "after": 20,
-        "delta": 1,
-        "before": 19
-      },
-      "created_at": "2026-03-15T14:57:05+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 19 to 20 (+1 bunch).",
-      "id": "ML-1003"
-    },
-    {
-      "severity": "critical",
       "details": {
         "reportId": "MR-1002"
-      },
-      "created_at": "2026-03-15T14:57:10+08:00",
+      }
+    },
+    {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1005",
+      "created_at": "2026-03-15T14:57:14+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 20 to 21 (+1 bunch).",
+      "details": {
+        "delta": 1,
+        "before": 20,
+        "after": 21
+      }
+    },
+    {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1006",
+      "created_at": "2026-03-15T14:57:18+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 21 to 22 (+1 bunch).",
+      "details": {
+        "delta": 1,
+        "before": 21,
+        "after": 22
+      }
+    },
+    {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1007",
+      "created_at": "2026-03-15T14:57:22+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 22 to 23 (+1 bunch).",
+      "details": {
+        "delta": 1,
+        "before": 22,
+        "after": 23
+      }
+    },
+    {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1008",
+      "created_at": "2026-03-15T14:57:27+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 23 to 24 (+1 bunch).",
+      "details": {
+        "delta": 1,
+        "before": 23,
+        "after": 24
+      }
+    },
+    {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1009",
+      "created_at": "2026-03-15T14:57:32+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 24 to 25 (+1 bunch).",
+      "details": {
+        "delta": 1,
+        "before": 24,
+        "after": 25
+      }
+    },
+    {
+      "title": "Weekly maintenance report failed",
+      "id": "ML-1010",
+      "created_at": "2026-03-15T14:57:36+08:00",
+      "severity": "critical",
+      "related_code": null,
       "event_type": "report_generation_failed",
       "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
       "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1004"
-    },
-    {
-      "severity": "warning",
-      "details": {
-        "after": 21,
-        "delta": 1,
-        "before": 20
-      },
-      "created_at": "2026-03-15T14:57:14+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 20 to 21 (+1 bunch).",
-      "id": "ML-1005"
-    },
-    {
-      "severity": "warning",
-      "details": {
-        "after": 22,
-        "delta": 1,
-        "before": 21
-      },
-      "created_at": "2026-03-15T14:57:18+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 21 to 22 (+1 bunch).",
-      "id": "ML-1006"
-    },
-    {
-      "severity": "warning",
-      "details": {
-        "after": 23,
-        "delta": 1,
-        "before": 22
-      },
-      "created_at": "2026-03-15T14:57:22+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 22 to 23 (+1 bunch).",
-      "id": "ML-1007"
-    },
-    {
-      "severity": "warning",
-      "details": {
-        "after": 24,
-        "delta": 1,
-        "before": 23
-      },
-      "created_at": "2026-03-15T14:57:27+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 23 to 24 (+1 bunch).",
-      "id": "ML-1008"
-    },
-    {
-      "severity": "warning",
-      "details": {
-        "after": 25,
-        "delta": 1,
-        "before": 24
-      },
-      "created_at": "2026-03-15T14:57:32+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 24 to 25 (+1 bunch).",
-      "id": "ML-1009"
-    },
-    {
-      "severity": "critical",
       "details": {
         "reportId": "MR-1003"
-      },
-      "created_at": "2026-03-15T14:57:36+08:00",
+      }
+    },
+    {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1011",
+      "created_at": "2026-03-15T14:57:41+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 25 to 26 (+1 bunch).",
+      "details": {
+        "delta": 1,
+        "before": 25,
+        "after": 26
+      }
+    },
+    {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1012",
+      "created_at": "2026-03-15T14:57:45+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 26 to 27 (+1 bunch).",
+      "details": {
+        "delta": 1,
+        "before": 26,
+        "after": 27
+      }
+    },
+    {
+      "title": "Weekly maintenance report failed",
+      "id": "ML-1013",
+      "created_at": "2026-03-15T14:57:50+08:00",
+      "severity": "critical",
+      "related_code": null,
       "event_type": "report_generation_failed",
       "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
       "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1010"
-    },
-    {
-      "severity": "warning",
-      "details": {
-        "after": 26,
-        "delta": 1,
-        "before": 25
-      },
-      "created_at": "2026-03-15T14:57:41+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 25 to 26 (+1 bunch).",
-      "id": "ML-1011"
-    },
-    {
-      "severity": "warning",
-      "details": {
-        "after": 27,
-        "delta": 1,
-        "before": 26
-      },
-      "created_at": "2026-03-15T14:57:45+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 26 to 27 (+1 bunch).",
-      "id": "ML-1012"
-    },
-    {
-      "severity": "critical",
       "details": {
         "reportId": "MR-1004"
-      },
-      "created_at": "2026-03-15T14:57:50+08:00",
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1013"
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "id": "ML-1014",
+      "created_at": "2026-03-15T14:57:55+08:00",
       "severity": "critical",
+      "related_code": null,
+      "event_type": "report_generation_failed",
+      "related_name": null,
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
       "details": {
         "reportId": "MR-1005"
-      },
-      "created_at": "2026-03-15T14:57:55+08:00",
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1014"
+      }
     },
     {
-      "severity": "warning",
-      "details": {
-        "after": 28,
-        "delta": 1,
-        "before": 27
-      },
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1015",
       "created_at": "2026-03-15T14:58:13+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
       "event_type": "inventory_correction",
       "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
       "description": "Stock changed from 27 to 28 (+1 bunch).",
-      "id": "ML-1015"
+      "details": {
+        "delta": 1,
+        "before": 27,
+        "after": 28
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "id": "ML-1016",
+      "created_at": "2026-03-15T14:58:18+08:00",
       "severity": "critical",
+      "related_code": null,
+      "event_type": "report_generation_failed",
+      "related_name": null,
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
       "details": {
         "reportId": "MR-1006"
-      },
-      "created_at": "2026-03-15T14:58:18+08:00",
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1016"
+      }
     },
     {
-      "severity": "warning",
-      "details": {
-        "after": 29,
-        "delta": 1,
-        "before": 28
-      },
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1017",
       "created_at": "2026-03-15T14:58:30+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
       "event_type": "inventory_correction",
       "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
       "description": "Stock changed from 28 to 29 (+1 bunch).",
-      "id": "ML-1017"
+      "details": {
+        "delta": 1,
+        "before": 28,
+        "after": 29
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "id": "ML-1018",
+      "created_at": "2026-03-15T14:58:35+08:00",
       "severity": "critical",
+      "related_code": null,
+      "event_type": "report_generation_failed",
+      "related_name": null,
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
       "details": {
         "reportId": "MR-1007"
-      },
-      "created_at": "2026-03-15T14:58:35+08:00",
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1018"
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "id": "ML-1019",
+      "created_at": "2026-03-15T14:59:00+08:00",
       "severity": "critical",
+      "related_code": null,
+      "event_type": "report_generation_failed",
+      "related_name": null,
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
       "details": {
         "reportId": "MR-1008"
-      },
-      "created_at": "2026-03-15T14:59:00+08:00",
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1019"
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "id": "ML-1020",
+      "created_at": "2026-03-15T14:59:05+08:00",
       "severity": "critical",
+      "related_code": null,
+      "event_type": "report_generation_failed",
+      "related_name": null,
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
       "details": {
         "reportId": "MR-1009"
-      },
-      "created_at": "2026-03-15T14:59:05+08:00",
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1020"
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "id": "ML-1021",
+      "created_at": "2026-03-15T14:59:22+08:00",
       "severity": "critical",
+      "related_code": null,
+      "event_type": "report_generation_failed",
+      "related_name": null,
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
       "details": {
         "reportId": "MR-1010"
-      },
-      "created_at": "2026-03-15T14:59:22+08:00",
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1021"
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
       "severity": "critical",
       "created_at": "2026-03-15T15:01:51+08:00",
+      "id": "ML-1022",
+      "event_type": "report_generation_failed",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "related_name": null,
       "details": {
         "reportId": "MR-1011"
-      },
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1022"
+      }
     },
     {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "related_code": "E-042",
       "severity": "warning",
       "created_at": "2026-03-15T15:02:30+08:00",
+      "id": "ML-1023",
+      "event_type": "inventory_correction",
+      "description": "Stock changed from 29 to 30 (+1 bunch).",
+      "related_name": "Silver Dollar Eucalyptus",
       "details": {
         "after": 30,
-        "delta": 1,
-        "before": 29
-      },
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 29 to 30 (+1 bunch).",
-      "id": "ML-1023"
+        "before": 29,
+        "delta": 1
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
       "severity": "critical",
       "created_at": "2026-03-15T15:02:37+08:00",
+      "id": "ML-1024",
+      "event_type": "report_generation_failed",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "related_name": null,
       "details": {
         "reportId": "MR-1012"
-      },
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1024"
+      }
     },
     {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "related_code": "E-042",
       "severity": "warning",
       "created_at": "2026-03-15T15:03:10+08:00",
+      "id": "ML-1025",
+      "event_type": "inventory_correction",
+      "description": "Stock changed from 30 to 31 (+1 bunch).",
+      "related_name": "Silver Dollar Eucalyptus",
       "details": {
         "after": 31,
-        "delta": 1,
-        "before": 30
-      },
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 30 to 31 (+1 bunch).",
-      "id": "ML-1025"
+        "before": 30,
+        "delta": 1
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
       "severity": "critical",
       "created_at": "2026-03-15T15:03:11+08:00",
+      "id": "ML-1026",
+      "event_type": "report_generation_failed",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "related_name": null,
       "details": {
         "reportId": "MR-1013"
-      },
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1026"
+      }
     },
     {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "related_code": "E-042",
       "severity": "warning",
       "created_at": "2026-03-15T15:03:19+08:00",
+      "id": "ML-1027",
+      "event_type": "inventory_correction",
+      "description": "Stock changed from 31 to 32 (+1 bunch).",
+      "related_name": "Silver Dollar Eucalyptus",
       "details": {
         "after": 32,
-        "delta": 1,
-        "before": 31
-      },
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 31 to 32 (+1 bunch).",
-      "id": "ML-1027"
+        "before": 31,
+        "delta": 1
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
       "severity": "critical",
       "created_at": "2026-03-15T15:03:20+08:00",
+      "id": "ML-1028",
+      "event_type": "report_generation_failed",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "related_name": null,
       "details": {
         "reportId": "MR-1014"
-      },
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1028"
+      }
     },
     {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "related_code": "E-042",
       "severity": "warning",
       "created_at": "2026-03-15T15:03:55+08:00",
+      "id": "ML-1029",
+      "event_type": "inventory_correction",
+      "description": "Stock changed from 32 to 33 (+1 bunch).",
+      "related_name": "Silver Dollar Eucalyptus",
       "details": {
         "after": 33,
-        "delta": 1,
-        "before": 32
-      },
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 32 to 33 (+1 bunch).",
-      "id": "ML-1029"
+        "before": 32,
+        "delta": 1
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
       "severity": "critical",
       "created_at": "2026-03-15T15:03:56+08:00",
+      "id": "ML-1030",
+      "event_type": "report_generation_failed",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "related_name": null,
       "details": {
         "reportId": "MR-1015"
-      },
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1030"
+      }
     },
     {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "related_code": "E-042",
       "severity": "warning",
       "created_at": "2026-03-15T15:04:00+08:00",
+      "id": "ML-1031",
+      "event_type": "inventory_correction",
+      "description": "Stock changed from 33 to 34 (+1 bunch).",
+      "related_name": "Silver Dollar Eucalyptus",
       "details": {
         "after": 34,
-        "delta": 1,
-        "before": 33
-      },
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 33 to 34 (+1 bunch).",
-      "id": "ML-1031"
+        "before": 33,
+        "delta": 1
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
       "severity": "critical",
       "created_at": "2026-03-15T15:04:02+08:00",
+      "id": "ML-1032",
+      "event_type": "report_generation_failed",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "related_name": null,
       "details": {
         "reportId": "MR-1016"
-      },
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1032"
+      }
     },
     {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "related_code": "E-042",
       "severity": "warning",
       "created_at": "2026-03-15T15:04:14+08:00",
+      "id": "ML-1033",
+      "event_type": "inventory_correction",
+      "description": "Stock changed from 34 to 35 (+1 bunch).",
+      "related_name": "Silver Dollar Eucalyptus",
       "details": {
         "after": 35,
-        "delta": 1,
-        "before": 34
-      },
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 34 to 35 (+1 bunch).",
-      "id": "ML-1033"
+        "before": 34,
+        "delta": 1
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
       "severity": "critical",
       "created_at": "2026-03-15T15:04:15+08:00",
+      "id": "ML-1034",
+      "event_type": "report_generation_failed",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "related_name": null,
       "details": {
         "reportId": "MR-1017"
-      },
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1034"
+      }
     },
     {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "related_code": "E-042",
       "severity": "warning",
       "created_at": "2026-03-15T15:04:26+08:00",
+      "id": "ML-1035",
+      "event_type": "inventory_correction",
+      "description": "Stock changed from 35 to 36 (+1 bunch).",
+      "related_name": "Silver Dollar Eucalyptus",
       "details": {
         "after": 36,
-        "delta": 1,
-        "before": 35
-      },
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 35 to 36 (+1 bunch).",
-      "id": "ML-1035"
+        "before": 35,
+        "delta": 1
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
       "severity": "critical",
       "created_at": "2026-03-15T15:04:28+08:00",
+      "id": "ML-1036",
+      "event_type": "report_generation_failed",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "related_name": null,
       "details": {
         "reportId": "MR-1018"
-      },
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1036"
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
       "severity": "critical",
       "created_at": "2026-03-15T15:05:16+08:00",
+      "id": "ML-1037",
+      "event_type": "report_generation_failed",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "related_name": null,
       "details": {
         "reportId": "MR-1019"
-      },
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1037"
+      }
     },
     {
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
       "severity": "critical",
       "created_at": "2026-03-15T15:05:17+08:00",
+      "id": "ML-1038",
+      "event_type": "report_generation_failed",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "related_name": null,
       "details": {
         "reportId": "MR-1020"
-      },
-      "event_type": "report_generation_failed",
-      "related_name": null,
-      "title": "Weekly maintenance report failed",
-      "related_code": null,
-      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
-      "id": "ML-1038"
+      }
     },
     {
+      "title": "Weekly maintenance report generated",
+      "id": "ML-1039",
       "severity": "info",
+      "created_at": "2026-03-15T15:14:10+08:00",
+      "related_code": null,
+      "event_type": "report_generated",
+      "description": "PDF generated for Mar 02 - 08, 2026.",
+      "related_name": null,
+      "details": {
+        "trigger": "scheduled",
+        "reportId": "MR-1021"
+      }
+    },
+    {
+      "title": "Weekly report delivery failed",
+      "id": "ML-1040",
+      "severity": "warning",
+      "created_at": "2026-03-15T15:14:10+08:00",
+      "related_code": null,
+      "event_type": "notification_failure",
+      "description": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
+      "related_name": null,
       "details": {
         "reportId": "MR-1021",
-        "trigger": "scheduled"
-      },
-      "created_at": "2026-03-15T15:14:10+08:00",
-      "event_type": "report_generated",
-      "related_name": null,
+        "recipient": "hello@wailangarden.com"
+      }
+    },
+    {
       "title": "Weekly maintenance report generated",
-      "related_code": null,
-      "description": "PDF generated for Mar 02 - 08, 2026.",
-      "id": "ML-1039"
-    },
-    {
-      "severity": "warning",
-      "details": {
-        "recipient": "hello@wailangarden.com",
-        "reportId": "MR-1021"
-      },
-      "created_at": "2026-03-15T15:14:10+08:00",
-      "event_type": "notification_failure",
-      "related_name": null,
-      "title": "Weekly report delivery failed",
-      "related_code": null,
-      "description": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
-      "id": "ML-1040"
-    },
-    {
+      "id": "ML-1041",
       "severity": "info",
+      "created_at": "2026-03-15T15:14:44+08:00",
+      "related_code": null,
+      "event_type": "report_generated",
+      "description": "PDF generated for Mar 02 - 08, 2026.",
+      "related_name": null,
+      "details": {
+        "trigger": "manual",
+        "reportId": "MR-1022"
+      }
+    },
+    {
+      "title": "Weekly report delivery failed",
+      "id": "ML-1042",
+      "severity": "warning",
+      "created_at": "2026-03-15T15:14:44+08:00",
+      "related_code": null,
+      "event_type": "notification_failure",
+      "description": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
+      "related_name": null,
       "details": {
         "reportId": "MR-1022",
-        "trigger": "manual"
-      },
-      "created_at": "2026-03-15T15:14:44+08:00",
-      "event_type": "report_generated",
-      "related_name": null,
-      "title": "Weekly maintenance report generated",
-      "related_code": null,
-      "description": "PDF generated for Mar 02 - 08, 2026.",
-      "id": "ML-1041"
+        "recipient": "hello@wailangarden.com"
+      }
     },
     {
-      "severity": "warning",
-      "details": {
-        "recipient": "hello@wailangarden.com",
-        "reportId": "MR-1022"
-      },
-      "created_at": "2026-03-15T15:14:44+08:00",
-      "event_type": "notification_failure",
-      "related_name": null,
-      "title": "Weekly report delivery failed",
-      "related_code": null,
-      "description": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
-      "id": "ML-1042"
-    },
-    {
+      "title": "Dashboard cache refreshed",
+      "id": "ML-1043",
       "severity": "info",
+      "created_at": "2026-03-15T15:17:37+08:00",
+      "related_code": null,
+      "event_type": "cache_refresh",
+      "description": "Dashboard data cache was refreshed from live storage.",
+      "related_name": null,
       "details": {
         "backend": "firestore"
-      },
-      "created_at": "2026-03-15T15:17:37+08:00",
-      "event_type": "cache_refresh",
-      "related_name": null,
-      "title": "Dashboard cache refreshed",
-      "related_code": null,
-      "description": "Dashboard data cache was refreshed from live storage.",
-      "id": "ML-1043"
+      }
     },
     {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1044",
       "severity": "warning",
+      "created_at": "2026-03-15T15:23:00+08:00",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "description": "Stock changed from 36 to 37 (+1 bunch).",
+      "related_name": "Silver Dollar Eucalyptus",
       "details": {
         "after": 37,
-        "delta": 1,
-        "before": 36
-      },
-      "created_at": "2026-03-15T15:23:00+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 36 to 37 (+1 bunch).",
-      "id": "ML-1044"
+        "before": 36,
+        "delta": 1
+      }
     },
     {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1045",
       "severity": "warning",
+      "created_at": "2026-03-15T15:23:26+08:00",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "description": "Stock changed from 37 to 38 (+1 bunch).",
+      "related_name": "Silver Dollar Eucalyptus",
       "details": {
         "after": 38,
-        "delta": 1,
-        "before": 37
-      },
-      "created_at": "2026-03-15T15:23:26+08:00",
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 37 to 38 (+1 bunch).",
-      "id": "ML-1045"
+        "before": 37,
+        "delta": 1
+      }
     },
     {
-      "severity": "warning",
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1046",
       "created_at": "2026-03-15T15:31:11+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 38 to 37 (-1 bunch).",
       "details": {
         "after": 37,
-        "delta": -1,
-        "before": 38
-      },
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 38 to 37 (-1 bunch).",
-      "id": "ML-1046"
+        "before": 38,
+        "delta": -1
+      }
     },
     {
-      "severity": "warning",
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1047",
       "created_at": "2026-03-15T15:31:25+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 37 to 36 (-1 bunch).",
       "details": {
         "after": 36,
-        "delta": -1,
-        "before": 37
-      },
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 37 to 36 (-1 bunch).",
-      "id": "ML-1047"
+        "before": 37,
+        "delta": -1
+      }
     },
     {
-      "severity": "warning",
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1048",
       "created_at": "2026-03-15T15:31:49+08:00",
+      "severity": "warning",
+      "related_code": "E-042",
+      "event_type": "inventory_correction",
+      "related_name": "Silver Dollar Eucalyptus",
+      "description": "Stock changed from 36 to 35 (-1 bunch).",
       "details": {
         "after": 35,
-        "delta": -1,
-        "before": 36
-      },
-      "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
-      "description": "Stock changed from 36 to 35 (-1 bunch).",
-      "id": "ML-1048"
+        "before": 36,
+        "delta": -1
+      }
     },
     {
+      "title": "Inventory corrected for Silver Dollar Eucalyptus",
+      "id": "ML-1049",
       "severity": "warning",
-      "details": {
-        "after": 80,
-        "delta": 45,
-        "before": 35
-      },
+      "related_code": "E-042",
       "created_at": "2026-03-15T15:40:04+08:00",
       "event_type": "inventory_correction",
-      "related_name": "Silver Dollar Eucalyptus",
-      "title": "Inventory corrected for Silver Dollar Eucalyptus",
-      "related_code": "E-042",
       "description": "Stock changed from 35 to 80 (+45 bunch).",
-      "id": "ML-1049"
+      "related_name": "Silver Dollar Eucalyptus",
+      "details": {
+        "after": 80,
+        "before": 35,
+        "delta": 45
+      }
     },
     {
+      "title": "Weekly maintenance report generated",
+      "id": "ML-1050",
       "severity": "info",
-      "details": {
-        "reportId": "MR-1023",
-        "trigger": "manual"
-      },
+      "related_code": null,
       "created_at": "2026-03-15T16:04:00+08:00",
       "event_type": "report_generated",
-      "related_name": null,
-      "title": "Weekly maintenance report generated",
-      "related_code": null,
       "description": "PDF generated for Mar 02 - 08, 2026.",
-      "id": "ML-1050"
+      "related_name": null,
+      "details": {
+        "trigger": "manual",
+        "reportId": "MR-1023"
+      }
     },
     {
+      "title": "Weekly report delivery failed",
+      "id": "ML-1051",
       "severity": "warning",
-      "details": {
-        "recipient": "hello@wailangarden.com",
-        "reportId": "MR-1023"
-      },
+      "related_code": null,
       "created_at": "2026-03-15T16:04:00+08:00",
       "event_type": "notification_failure",
-      "related_name": null,
-      "title": "Weekly report delivery failed",
-      "related_code": null,
       "description": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
-      "id": "ML-1051"
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1023",
+        "recipient": "hello@wailangarden.com"
+      }
     }
   ],
   "maintenance_reports": [
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T14:54:49+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 1,
       "id": "MR-1001",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1001.pdf",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "file_path": "",
-      "notification_status": "failed",
       "pending_orders": 2,
+      "notification_failures": 0,
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1001.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 1
     },
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T14:57:09+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 1,
       "id": "MR-1002",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1002.pdf",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "file_path": "",
-      "notification_status": "failed",
       "pending_orders": 2,
+      "notification_failures": 0,
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1002.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 1
     },
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T14:57:36+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
       "id": "MR-1003",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1003.pdf",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "file_path": "",
-      "notification_status": "failed",
       "pending_orders": 2,
+      "notification_failures": 0,
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1003.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T14:57:49+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
       "id": "MR-1004",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1004.pdf",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "file_path": "",
-      "notification_status": "failed",
       "pending_orders": 2,
+      "notification_failures": 0,
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1004.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T14:57:55+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
       "id": "MR-1005",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1005.pdf",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "file_path": "",
-      "notification_status": "failed",
       "pending_orders": 2,
+      "notification_failures": 0,
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1005.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T14:58:18+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
       "id": "MR-1006",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1006.pdf",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "file_path": "",
-      "notification_status": "failed",
       "pending_orders": 2,
+      "notification_failures": 0,
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1006.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T14:58:35+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
       "id": "MR-1007",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1007.pdf",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "file_path": "",
-      "notification_status": "failed",
       "pending_orders": 2,
+      "notification_failures": 0,
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1007.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T14:59:00+08:00",
-      "trigger": "manual",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
       "id": "MR-1008",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1008.pdf",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "file_path": "",
-      "notification_status": "failed",
       "pending_orders": 2,
+      "notification_failures": 0,
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1008.pdf"
+      "trigger": "manual",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T14:59:05+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
       "id": "MR-1009",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1009.pdf",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "file_path": "",
-      "notification_status": "failed",
       "pending_orders": 2,
+      "notification_failures": 0,
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1009.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T14:59:22+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
       "id": "MR-1010",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1010.pdf",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "file_path": "",
-      "notification_status": "failed",
       "pending_orders": 2,
+      "notification_failures": 0,
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1010.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1011.pdf",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T15:01:51+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "low_stock_items": 0,
-      "notification_failures": 0,
-      "week_end": "2026-03-08",
       "id": "MR-1011",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
-      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "notification_status": "failed",
+      "file_path": "",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "inventory_corrections": 0,
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1011.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1012.pdf",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T15:02:37+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "low_stock_items": 0,
-      "notification_failures": 0,
-      "week_end": "2026-03-08",
       "id": "MR-1012",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
-      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "notification_status": "failed",
+      "file_path": "",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "inventory_corrections": 0,
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1012.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1013.pdf",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T15:03:11+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "low_stock_items": 0,
-      "notification_failures": 0,
-      "week_end": "2026-03-08",
       "id": "MR-1013",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
-      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "notification_status": "failed",
+      "file_path": "",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "inventory_corrections": 0,
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1013.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1014.pdf",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T15:03:20+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "low_stock_items": 0,
-      "notification_failures": 0,
-      "week_end": "2026-03-08",
       "id": "MR-1014",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
-      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "notification_status": "failed",
+      "file_path": "",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "inventory_corrections": 0,
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1014.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1015.pdf",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T15:03:56+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "low_stock_items": 0,
-      "notification_failures": 0,
-      "week_end": "2026-03-08",
       "id": "MR-1015",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
-      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "notification_status": "failed",
+      "file_path": "",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "inventory_corrections": 0,
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1015.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1016.pdf",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T15:04:02+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "low_stock_items": 0,
-      "notification_failures": 0,
-      "week_end": "2026-03-08",
       "id": "MR-1016",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
-      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "notification_status": "failed",
+      "file_path": "",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "inventory_corrections": 0,
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1016.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1017.pdf",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T15:04:15+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "low_stock_items": 0,
-      "notification_failures": 0,
-      "week_end": "2026-03-08",
       "id": "MR-1017",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
-      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "notification_status": "failed",
+      "file_path": "",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "inventory_corrections": 0,
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1017.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1018.pdf",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T15:04:28+08:00",
-      "trigger": "scheduled",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "low_stock_items": 0,
-      "notification_failures": 0,
-      "week_end": "2026-03-08",
       "id": "MR-1018",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
-      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
       "notification_status": "failed",
+      "file_path": "",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "inventory_corrections": 0,
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1018.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1019.pdf",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T15:05:16+08:00",
-      "trigger": "manual",
-      "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "low_stock_items": 0,
-      "notification_failures": 0,
-      "week_end": "2026-03-08",
       "id": "MR-1019",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
-      "file_path": "",
-      "notification_status": "failed",
-      "pending_orders": 2,
-      "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1019.pdf"
-    },
-    {
-      "week_orders": 2,
-      "created_at": "2026-03-15T15:05:17+08:00",
-      "trigger": "scheduled",
       "delivery_message": "PDF generation failed: No module named 'reportlab'",
-      "recipient": "hello@wailangarden.com",
-      "low_stock_items": 0,
-      "notification_failures": 0,
-      "week_end": "2026-03-08",
-      "id": "MR-1020",
-      "status": "generation_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "notification_status": "failed",
       "file_path": "",
-      "notification_status": "failed",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "inventory_corrections": 0,
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1020.pdf"
+      "trigger": "manual",
+      "low_stock_items": 0
     },
     {
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1020.pdf",
+      "week_label": "Mar 02 - 08, 2026",
+      "created_at": "2026-03-15T15:05:17+08:00",
+      "id": "MR-1020",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_status": "failed",
+      "file_path": "",
+      "notification_failures": 0,
+      "pending_orders": 2,
+      "inventory_corrections": 0,
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
       "week_orders": 2,
-      "created_at": "2026-03-15T15:14:10+08:00",
+      "week_end": "2026-03-08",
+      "week_start": "2026-03-02",
       "trigger": "scheduled",
-      "recipient": "hello@wailangarden.com",
+      "low_stock_items": 0
+    },
+    {
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "created_at": "2026-03-15T15:14:10+08:00",
       "delivery_message": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
       "id": "MR-1021",
-      "status": "delivery_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1021.pdf",
       "file_path": "output/pdf/maintenance-report-2026-03-02-2026-03-08-mr-1021.pdf",
-      "notification_status": "failed",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "status": "delivery_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1021.pdf"
+      "trigger": "scheduled",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
+      "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
       "created_at": "2026-03-15T15:14:44+08:00",
-      "trigger": "manual",
-      "recipient": "hello@wailangarden.com",
       "delivery_message": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
       "id": "MR-1022",
-      "status": "delivery_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1022.pdf",
       "file_path": "output/pdf/maintenance-report-2026-03-02-2026-03-08-mr-1022.pdf",
-      "notification_status": "failed",
+      "notification_failures": 0,
       "pending_orders": 2,
+      "status": "delivery_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1022.pdf"
+      "trigger": "manual",
+      "low_stock_items": 0
     },
     {
-      "week_orders": 2,
-      "created_at": "2026-03-15T16:04:00+08:00",
-      "trigger": "manual",
-      "recipient": "hello@wailangarden.com",
-      "delivery_message": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
-      "week_end": "2026-03-08",
-      "notification_failures": 0,
-      "low_stock_items": 0,
-      "id": "MR-1023",
-      "status": "delivery_failed",
-      "inventory_corrections": 0,
-      "week_label": "Mar 02 - 08, 2026",
-      "file_path": "output/pdf/maintenance-report-2026-03-02-2026-03-08-mr-1023.pdf",
       "notification_status": "failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "created_at": "2026-03-15T16:04:00+08:00",
+      "id": "MR-1023",
+      "delivery_message": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1023.pdf",
+      "file_path": "output/pdf/maintenance-report-2026-03-02-2026-03-08-mr-1023.pdf",
+      "notification_failures": 0,
       "pending_orders": 1,
+      "status": "delivery_failed",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "week_orders": 2,
+      "week_end": "2026-03-08",
       "week_start": "2026-03-02",
-      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1023.pdf"
+      "trigger": "manual",
+      "low_stock_items": 0
     }
   ],
   "settings": {
-    "contactEmail": "hello@wailangarden.com",
-    "deliveryRadius": 19,
-    "storeName": "Wai Lan Garden",
-    "maintenanceEmail": "hello@wailangarden.com",
     "currency": "HKD",
-    "timezone": "Asia/Hong_Kong"
+    "storeName": "Wai Lan Garden",
+    "contactEmail": "hello@wailangarden.com",
+    "timezone": "Asia/Hong_Kong",
+    "deliveryRadius": 19,
+    "maintenanceEmail": "hello@wailangarden.com"
   }
 }
