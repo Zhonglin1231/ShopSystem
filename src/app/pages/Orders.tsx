@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OrderDetailsModal } from "../components/OrderDetailsModal";
 import { useShopData } from "../lib/shop-data";
 
@@ -24,11 +24,15 @@ function statusStyles(statusClass: string) {
 }
 
 export function Orders() {
-  const { orders, loading, error, updateOrderStatus } = useShopData();
+  const { orders, loading, error, updateOrderStatus, offlineStatus, clearNewOrderAlerts } = useShopData();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [sortOrder, setSortOrder] = useState("Newest");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+
+  useEffect(() => {
+    clearNewOrderAlerts();
+  }, []);
 
   const filteredOrders = orders
     .filter((order) => {
@@ -111,7 +115,7 @@ export function Orders() {
               textTransform: "uppercase",
             }}
           >
-            {["All", "Preparing", "Ready", "Delivered", "Cancelled"].map((option) => (
+            {["All", "Queued", "Preparing", "Ready", "Delivered", "Cancelled"].map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -141,7 +145,23 @@ export function Orders() {
         {loading && orders.length === 0 ? (
           <div style={{ padding: "var(--s-4)", color: "var(--c-text-secondary)" }}>Loading orders...</div>
         ) : (
-          <table className="w-full" style={{ borderCollapse: "collapse", fontSize: "0.9rem" }}>
+          <>
+            {offlineStatus.queueCount > 0 && (
+              <div
+                className="border"
+                style={{
+                  marginBottom: "var(--s-4)",
+                  padding: "var(--s-3)",
+                  borderColor: "#F6D9A7",
+                  backgroundColor: "#FFF8E1",
+                  color: "#8A5A00",
+                }}
+              >
+                {offlineStatus.queueCount} queued offline order{offlineStatus.queueCount === 1 ? "" : "s"} pending sync.
+              </div>
+            )}
+
+            <table className="w-full" style={{ borderCollapse: "collapse", fontSize: "0.9rem" }}>
             <thead>
               <tr>
                 {["Order ID", "Date", "Customer", "Items", "Total", "Status", "Actions"].map((header) => (
@@ -189,7 +209,12 @@ export function Orders() {
                           fontFamily: "var(--f-serif)",
                         }}
                       >
-                        {order.displayId}
+                        <div>{order.displayId}</div>
+                        {order.offlineMeta?.localOnly && (
+                          <div style={{ marginTop: "4px", fontSize: "0.72rem", color: "var(--c-text-secondary)" }}>
+                            {order.offlineMeta.syncStatus === "failed" ? "Sync failed" : "Offline queue"}
+                          </div>
+                        )}
                       </td>
                       <td
                         style={{
@@ -277,7 +302,8 @@ export function Orders() {
                 })
               )}
             </tbody>
-          </table>
+            </table>
+          </>
         )}
       </div>
 

@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import asyncio
+import json
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi.encoders import jsonable_encoder
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import get_config
@@ -15,13 +18,14 @@ from .schemas import (
     CreateRestockRequest,
     UpdateInventoryParRequest,
     UpdateInventoryRequest,
+    UpdateInventoryStockRequest,
     UpdateOrderStatusRequest,
     UpdateSettingsRequest,
 )
 
 config = get_config()
 store, backend_name = create_store(config)
-repository = ShopRepository(store, backend_name)
+repository = ShopRepository(store, backend_name, config)
 repository.initialize()
 
 DIST_DIR = Path(__file__).resolve().parent.parent / "dist"
@@ -72,6 +76,42 @@ def create_order(payload: CreateOrderRequest) -> dict:
         _handle_repository_error(error)
 
 
+@app.get("/api/orders/stream")
+async def stream_orders(request: Request) -> StreamingResponse:
+    async def wrapped_stream():
+        events, unsubscribe = repository.subscribe_order_events()
+        try:
+            ready_payload = {
+                "type": "ready",
+                "listener": repository.order_event_listener_supported(),
+                "storage": repository.backend_name,
+            }
+            yield f"event: ready\ndata: {json.dumps(jsonable_encoder(ready_payload))}\n\n"
+
+            while True:
+                if await request.is_disconnected():
+                    break
+
+                event = await asyncio.to_thread(repository.next_order_event, events)
+                if event is None:
+                    yield ": keep-alive\n\n"
+                    continue
+
+                yield f"event: {event['type']}\ndata: {json.dumps(jsonable_encoder(event))}\n\n"
+        finally:
+            unsubscribe()
+
+    return StreamingResponse(
+        wrapped_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 @app.patch("/api/orders/{order_id}")
 def update_order_status(order_id: str, payload: UpdateOrderStatusRequest) -> dict:
     try:
@@ -120,6 +160,14 @@ def adjust_inventory(item_code: str, payload: UpdateInventoryRequest) -> dict:
         _handle_repository_error(error)
 
 
+@app.patch("/api/inventory/{item_code}/stock")
+def update_inventory_stock(item_code: str, payload: UpdateInventoryStockRequest) -> dict:
+    try:
+        return repository.update_inventory_stock(item_code, payload.stock)
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
 @app.patch("/api/inventory/{item_code}/par")
 def update_inventory_par(item_code: str, payload: UpdateInventoryParRequest) -> dict:
     try:
@@ -148,6 +196,31 @@ def analytics() -> dict:
 def settings() -> dict:
     try:
         return repository.get_settings()
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.post("/api/maintenance/cache/refresh")
+def refresh_cache() -> dict:
+    try:
+        return repository.refresh_cache()
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.post("/api/maintenance/reports/generate")
+def generate_weekly_report() -> dict:
+    try:
+        return repository.generate_weekly_report(force=True)
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.get("/api/maintenance/reports/{report_id}/download")
+def download_weekly_report(report_id: str) -> FileResponse:
+    try:
+        report_file = repository.get_weekly_report_file(report_id)
+        return FileResponse(report_file, media_type="application/pdf", filename=report_file.name)
     except RepositoryError as error:
         _handle_repository_error(error)
 

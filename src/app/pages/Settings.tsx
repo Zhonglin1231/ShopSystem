@@ -122,6 +122,25 @@ export function Settings() {
           />
         </div>
 
+        <div style={{ marginBottom: "var(--s-4)" }}>
+          <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
+            Maintenance Report Email
+          </label>
+          <input
+            type="email"
+            value={formState.maintenanceEmail}
+            onChange={(event) => updateField("maintenanceEmail", event.target.value)}
+            className="w-full border transition-all"
+            style={{
+              padding: "var(--s-2) var(--s-3)",
+              borderColor: "var(--c-border)",
+              fontFamily: "var(--f-sans)",
+              fontSize: "0.95rem",
+              transition: "var(--t-fast)",
+            }}
+          />
+        </div>
+
         <div
           className="grid"
           style={{

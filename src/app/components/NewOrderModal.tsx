@@ -16,7 +16,7 @@ interface NewOrderModalProps {
 }
 
 export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
-  const { flowers, createOrder, settings } = useShopData();
+  const { flowers, createOrder, settings, offlineStatus } = useShopData();
   const availableFlowers = flowers.filter((flower) => flower.stock > 0);
   const defaultFlowerId = availableFlowers[0]?.id ?? "";
 
@@ -171,6 +171,21 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
         </div>
 
         <div className="overflow-y-auto flex-1" style={{ padding: "var(--s-5)" }}>
+          {!offlineStatus.isOnline && (
+            <div
+              className="border"
+              style={{
+                marginBottom: "var(--s-4)",
+                padding: "var(--s-3)",
+                borderColor: "#F6D9A7",
+                backgroundColor: "#FFF8E1",
+                color: "#8A5A00",
+              }}
+            >
+              Offline mode is active. New orders will be queued locally and synced when the network returns.
+            </div>
+          )}
+
           {availableFlowers.length === 0 && (
             <div
               className="border"
@@ -566,7 +581,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
 
               setSaving(true);
               try {
-                await createOrder({
+                const createdOrder = await createOrder({
                   customerName: customerName.trim(),
                   phone: phone.trim(),
                   deliveryDate,
@@ -578,7 +593,11 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                     quantity: item.qty,
                   })),
                 });
-                toast.success(`Order placed for ${customerName.trim()}.`);
+                toast.success(
+                  createdOrder.offlineMeta?.localOnly
+                    ? `Order queued locally for ${customerName.trim()}.`
+                    : `Order placed for ${customerName.trim()}.`,
+                );
                 resetForm();
                 onClose();
               } catch (error) {
@@ -601,7 +620,9 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
               opacity: saving ? 0.7 : 1,
             }}
           >
-            {saving ? "Saving..." : `Place Order - ${formatCurrency(total, settings.currency)}`}
+            {saving
+              ? "Saving..."
+              : `${offlineStatus.isOnline ? "Place Order" : "Queue Order"} - ${formatCurrency(total, settings.currency)}`}
           </button>
         </div>
       </div>

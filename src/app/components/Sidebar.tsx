@@ -7,12 +7,13 @@ const navItems = [
   { path: "/flowers", label: "Flowers" },
   { path: "/inventory", label: "Inventory" },
   { path: "/analytics", label: "Analytics" },
+  { path: "/maintenance", label: "Maintenance" },
   { path: "/settings", label: "Settings" },
 ];
 
 export function Sidebar() {
   const location = useLocation();
-  const { settings, storageBackend } = useShopData();
+  const { settings, storageBackend, newOrderAlertCount, clearNewOrderAlerts } = useShopData();
   const nameParts = settings.storeName.split(/\s+/).filter(Boolean);
 
   const isActive = (path: string) => {
@@ -64,6 +65,11 @@ export function Sidebar() {
             key={item.path}
             to={item.path}
             className={`flex items-center relative transition-all ${isActive(item.path) ? "active" : ""}`}
+            onClick={() => {
+              if (item.path === "/orders") {
+                clearNewOrderAlerts();
+              }
+            }}
             style={{
               padding: "var(--s-3)",
               color: "var(--c-text-primary)",
@@ -73,15 +79,36 @@ export function Sidebar() {
               textDecoration: "none",
               transition: "var(--t-fast)",
               backgroundColor: isActive(item.path) ? "rgba(255,255,255,0.4)" : "transparent",
+              justifyContent: "space-between",
             }}
           >
-            {isActive(item.path) && (
+            <span className="flex items-center" style={{ gap: "var(--s-2)" }}>
+              {isActive(item.path) && (
+                <span
+                  className="absolute left-0 top-0 bottom-0 w-[3px]"
+                  style={{ backgroundColor: "var(--c-accent-black)" }}
+                />
+              )}
+              <span>{item.label}</span>
+            </span>
+            {item.path === "/orders" && newOrderAlertCount > 0 && (
               <span
-                className="absolute left-0 top-0 bottom-0 w-[3px]"
-                style={{ backgroundColor: "var(--c-accent-black)" }}
-              />
+                style={{
+                  minWidth: "22px",
+                  height: "22px",
+                  padding: "0 6px",
+                  borderRadius: "999px",
+                  backgroundColor: "#C53030",
+                  color: "#FFFFFF",
+                  fontSize: "0.72rem",
+                  lineHeight: "22px",
+                  textAlign: "center",
+                  fontFamily: "var(--f-sans)",
+                }}
+              >
+                {newOrderAlertCount > 99 ? "99+" : newOrderAlertCount}
+              </span>
             )}
-            {item.label}
           </Link>
         ))}
       </nav>

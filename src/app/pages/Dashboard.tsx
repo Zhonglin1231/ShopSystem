@@ -64,7 +64,7 @@ export function Dashboard() {
       <div
         className="grid mb-[var(--s-5)]"
         style={{
-          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
           gap: "var(--s-4)",
         }}
       >

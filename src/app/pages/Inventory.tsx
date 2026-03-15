@@ -12,13 +12,17 @@ function escapeCsvCell(value: string | number) {
 }
 
 export function Inventory() {
-  const { inventory, restocks, adjustInventory, updateInventoryParLevel, createRestock, loading, error } = useShopData();
+  const { inventory, restocks, saveInventoryDrafts, createRestock, loading, error } = useShopData();
   const [activeTab, setActiveTab] = useState<"stock" | "history">("stock");
   const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
+  const [stockDrafts, setStockDrafts] = useState<Record<string, string>>({});
   const [parDrafts, setParDrafts] = useState<Record<string, string>>({});
-  const [savingParCode, setSavingParCode] = useState<string | null>(null);
+  const [savingAll, setSavingAll] = useState(false);
 
   useEffect(() => {
+    setStockDrafts(
+      Object.fromEntries(inventory.map((item) => [item.code, String(item.stock)])),
+    );
     setParDrafts(
       Object.fromEntries(inventory.map((item) => [item.code, String(item.par)])),
     );
@@ -39,27 +43,52 @@ export function Inventory() {
     URL.revokeObjectURL(url);
   };
 
-  const saveParLevel = async (itemCode: string, currentPar: number) => {
-    const rawValue = parDrafts[itemCode] ?? String(currentPar);
-    const nextPar = Number(rawValue);
+  const hasDraftChanges = inventory.some((item) => {
+    const stockDraft = Number(stockDrafts[item.code] ?? item.stock);
+    const parDraft = Number(parDrafts[item.code] ?? item.par);
+    return stockDraft !== item.stock || parDraft !== item.par;
+  });
 
-    if (!Number.isInteger(nextPar) || nextPar < 0) {
-      toast.error("Par level must be a whole number greater than or equal to 0.");
+  const saveDrafts = async () => {
+    const changes: Array<{ itemCode: string; stock: number; parLevel: number }> = [];
+
+    for (const item of inventory) {
+      const rawStock = stockDrafts[item.code] ?? String(item.stock);
+      const rawPar = parDrafts[item.code] ?? String(item.par);
+      const nextStock = Number(rawStock);
+      const nextPar = Number(rawPar);
+
+      if (!Number.isInteger(nextStock) || nextStock < 0) {
+        toast.error(`Current stock for ${item.code} must be a whole number greater than or equal to 0.`);
+        return;
+      }
+
+      if (!Number.isInteger(nextPar) || nextPar < 0) {
+        toast.error(`Par level for ${item.code} must be a whole number greater than or equal to 0.`);
+        return;
+      }
+
+      if (nextStock !== item.stock || nextPar !== item.par) {
+        changes.push({
+          itemCode: item.code,
+          stock: nextStock,
+          parLevel: nextPar,
+        });
+      }
+    }
+
+    if (changes.length === 0) {
       return;
     }
 
-    if (nextPar === currentPar) {
-      return;
-    }
-
-    setSavingParCode(itemCode);
+    setSavingAll(true);
     try {
-      await updateInventoryParLevel(itemCode, nextPar);
-      toast.success(`Updated par level for ${itemCode}.`);
+      await saveInventoryDrafts(changes);
+      toast.success(`Saved ${changes.length} inventory change${changes.length === 1 ? "" : "s"}.`);
     } catch (saveError) {
-      toast.error(saveError instanceof Error ? saveError.message : "Unable to update par level.");
+      toast.error(saveError instanceof Error ? saveError.message : "Unable to save inventory changes.");
     } finally {
-      setSavingParCode(null);
+      setSavingAll(false);
     }
   };
 
@@ -131,6 +160,25 @@ export function Inventory() {
             </button>
           </div>
           <div className="flex gap-3">
+            <button
+              onClick={() => void saveDrafts()}
+              disabled={!hasDraftChanges || savingAll}
+              style={{
+                padding: "0 var(--s-3)",
+                height: "32px",
+                backgroundColor: "var(--c-accent-black)",
+                color: "white",
+                border: "none",
+                fontFamily: "var(--f-sans)",
+                fontSize: "0.7rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                cursor: !hasDraftChanges || savingAll ? "not-allowed" : "pointer",
+                opacity: !hasDraftChanges || savingAll ? 0.6 : 1,
+              }}
+            >
+              {savingAll ? "Saving..." : hasDraftChanges ? "Save Changes" : "Saved"}
+            </button>
             <button
               onClick={() => setIsRestockModalOpen(true)}
               style={{
@@ -232,7 +280,34 @@ export function Inventory() {
                       color: "var(--c-text-primary)",
                     }}
                   >
-                    {item.stock}
+                    <div className="flex items-center" style={{ gap: "8px" }}>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={stockDrafts[item.code] ?? String(item.stock)}
+                        onChange={(event) =>
+                          setStockDrafts((currentDrafts) => ({
+                            ...currentDrafts,
+                            [item.code]: event.target.value,
+                          }))
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            void saveDrafts();
+                          }
+                        }}
+                        style={{
+                          width: "72px",
+                          padding: "6px 8px",
+                          border: "1px solid var(--c-border)",
+                          backgroundColor: "#FDFBFB",
+                          color: "var(--c-text-primary)",
+                          outline: "none",
+                        }}
+                      />
+                    </div>
                   </td>
                   <td
                     style={{
@@ -256,7 +331,7 @@ export function Inventory() {
                         onKeyDown={(event) => {
                           if (event.key === "Enter") {
                             event.preventDefault();
-                            void saveParLevel(item.code, item.par);
+                            void saveDrafts();
                           }
                         }}
                         style={{
@@ -268,29 +343,6 @@ export function Inventory() {
                           outline: "none",
                         }}
                       />
-                      <button
-                        onClick={() => void saveParLevel(item.code, item.par)}
-                        disabled={savingParCode === item.code || Number(parDrafts[item.code] ?? item.par) === item.par}
-                        className="border"
-                        style={{
-                          padding: "0 10px",
-                          height: "28px",
-                          backgroundColor: "transparent",
-                          borderColor: "var(--c-border)",
-                          color: "var(--c-text-primary)",
-                          fontFamily: "var(--f-sans)",
-                          fontSize: "0.72rem",
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          cursor: savingParCode === item.code ? "wait" : "pointer",
-                          opacity:
-                            savingParCode === item.code || Number(parDrafts[item.code] ?? item.par) === item.par
-                              ? 0.5
-                              : 1,
-                        }}
-                      >
-                        {savingParCode === item.code ? "Saving" : "Save"}
-                      </button>
                     </div>
                   </td>
                   <td
@@ -330,14 +382,15 @@ export function Inventory() {
                   >
                     <div className="flex" style={{ gap: "4px" }}>
                       <button
-                        onClick={async () => {
-                          try {
-                            await adjustInventory(item.code, -1);
-                            toast.success(`Updated ${item.name} stock.`);
-                          } catch (error) {
-                            toast.error(error instanceof Error ? error.message : "Unable to update stock.");
-                          }
-                        }}
+                        onClick={() =>
+                          setStockDrafts((currentDrafts) => {
+                            const currentStock = Number(currentDrafts[item.code] ?? item.stock);
+                            return {
+                              ...currentDrafts,
+                              [item.code]: String(Math.max(0, currentStock - 1)),
+                            };
+                          })
+                        }
                         className="border"
                         style={{
                           width: "28px",
@@ -356,14 +409,15 @@ export function Inventory() {
                         -
                       </button>
                       <button
-                        onClick={async () => {
-                          try {
-                            await adjustInventory(item.code, 1);
-                            toast.success(`Updated ${item.name} stock.`);
-                          } catch (error) {
-                            toast.error(error instanceof Error ? error.message : "Unable to update stock.");
-                          }
-                        }}
+                        onClick={() =>
+                          setStockDrafts((currentDrafts) => {
+                            const currentStock = Number(currentDrafts[item.code] ?? item.stock);
+                            return {
+                              ...currentDrafts,
+                              [item.code]: String(currentStock + 1),
+                            };
+                          })
+                        }
                         className="border"
                         style={{
                           width: "28px",

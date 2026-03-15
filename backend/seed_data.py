@@ -355,6 +355,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
     settings = {
         "storeName": "Wai Lan Garden",
         "contactEmail": "hello@wailangarden.com",
+        "maintenanceEmail": "hello@wailangarden.com",
         "currency": "USD",
         "timezone": timezone_name,
         "deliveryRadius": 15,
@@ -365,5 +366,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
         "inventory": deepcopy(inventory),
         "orders": deepcopy(orders),
         "restocks": deepcopy(restocks),
+        "maintenance_logs": [],
+        "maintenance_reports": [],
         "settings": deepcopy(settings),
     }

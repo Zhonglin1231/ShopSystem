@@ -5,6 +5,76 @@ export interface DashboardKpi {
   isUp: boolean;
 }
 
+export interface MaintenanceSummary {
+  inventoryCorrectionsThisWeek: number;
+  notificationFailuresThisWeek: number;
+  openLowStockItems: number;
+  pendingOrders: number;
+  lastCacheRefreshAt: string | null;
+  lastCacheRefreshLabel: string;
+}
+
+export interface MaintenanceLog {
+  id: string;
+  createdAt: string;
+  dateLabel: string;
+  eventType: string;
+  eventLabel: string;
+  severity: "info" | "warning" | "critical";
+  title: string;
+  description: string;
+  relatedCode?: string | null;
+  relatedName?: string | null;
+}
+
+export interface WeeklyMaintenanceReport {
+  id: string;
+  createdAt: string;
+  createdAtLabel: string;
+  weekStart: string;
+  weekEnd: string;
+  weekLabel: string;
+  status: string;
+  notificationStatus: string;
+  deliveryMessage: string;
+  recipient: string;
+  inventoryCorrections: number;
+  notificationFailures: number;
+  weekOrders: number;
+  pendingOrders: number;
+  lowStockItems: number;
+  downloadUrl: string | null;
+}
+
+export interface CacheRefreshResult {
+  status: string;
+  storage: string;
+  refreshedAt: string;
+  message: string;
+}
+
+export interface HealthServiceStatus {
+  status: string;
+  label: string;
+  details: string;
+}
+
+export interface BackupHealthStatus extends HealthServiceStatus {
+  lastBackupAt: string | null;
+  directory: string;
+  fileCount: number;
+}
+
+export interface SystemHealth {
+  status: string;
+  storage: string;
+  checkedAt: string;
+  checkedAtLabel: string;
+  firebase: HealthServiceStatus;
+  notifications: HealthServiceStatus;
+  backups: BackupHealthStatus;
+}
+
 export interface OrderLineItem {
   flowerId: string;
   name: string;
@@ -37,6 +107,22 @@ export interface Order {
   status: string;
   statusClass: string;
   lineItems: OrderLineItem[];
+  offlineMeta?: {
+    localOnly: boolean;
+    syncStatus: "queued" | "syncing" | "failed";
+    syncError?: string | null;
+  };
+}
+
+export interface OrderCreatedEvent {
+  type: "order_created";
+  order: Order;
+}
+
+export interface OrderStreamReadyEvent {
+  type: "ready";
+  listener: boolean;
+  storage: string;
 }
 
 export interface Flower {
@@ -92,6 +178,9 @@ export interface DashboardData {
     label: string;
     amount: number;
   }>;
+  maintenanceSummary: MaintenanceSummary;
+  maintenanceLogs: MaintenanceLog[];
+  latestWeeklyReport: WeeklyMaintenanceReport | null;
 }
 
 export interface AnalyticsData {
@@ -118,6 +207,7 @@ export interface AnalyticsData {
 export interface StoreSettings {
   storeName: string;
   contactEmail: string;
+  maintenanceEmail: string;
   currency: string;
   timezone: string;
   deliveryRadius: number;
@@ -180,11 +270,23 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export function getHealth() {
-  return request<{ status: string; storage: string }>("/health");
+  return request<SystemHealth>("/health");
 }
 
 export function getDashboard() {
   return request<DashboardData>("/dashboard");
+}
+
+export function refreshMaintenanceCache() {
+  return request<CacheRefreshResult>("/maintenance/cache/refresh", {
+    method: "POST",
+  });
+}
+
+export function generateWeeklyMaintenanceReport() {
+  return request<WeeklyMaintenanceReport>("/maintenance/reports/generate", {
+    method: "POST",
+  });
 }
 
 export function getOrders() {
@@ -233,6 +335,13 @@ export function adjustInventory(itemCode: string, delta: number) {
   });
 }
 
+export function updateInventoryStock(itemCode: string, stock: number) {
+  return request<InventoryItem>(`/inventory/${encodeURIComponent(itemCode)}/stock`, {
+    method: "PATCH",
+    body: JSON.stringify({ stock }),
+  });
+}
+
 export function updateInventoryParLevel(itemCode: string, parLevel: number) {
   return request<InventoryItem>(`/inventory/${encodeURIComponent(itemCode)}/par`, {
     method: "PATCH",
@@ -260,4 +369,12 @@ export function updateSettings(payload: StoreSettings) {
     method: "PUT",
     body: JSON.stringify(payload),
   });
+}
+
+export function openOrderEvents() {
+  if (typeof window === "undefined" || typeof EventSource === "undefined") {
+    return null;
+  }
+
+  return new EventSource(`${API_BASE}/orders/stream`);
 }

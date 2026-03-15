@@ -86,6 +86,8 @@ def sanitize_snapshot(snapshot: dict) -> dict:
         "inventory": list(snapshot.get("inventory", [])),
         "orders": list(snapshot.get("orders", [])),
         "restocks": list(snapshot.get("restocks", [])),
+        "maintenance_logs": list(snapshot.get("maintenance_logs", [])),
+        "maintenance_reports": list(snapshot.get("maintenance_reports", [])),
         "settings": dict(snapshot.get("settings", {})),
     }
 

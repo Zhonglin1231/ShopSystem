@@ -35,6 +35,10 @@ class UpdateInventoryRequest(BaseModel):
     delta: int
 
 
+class UpdateInventoryStockRequest(BaseModel):
+    stock: int = Field(ge=0)
+
+
 class UpdateInventoryParRequest(BaseModel):
     parLevel: int = Field(ge=0)
 
@@ -48,6 +52,7 @@ class CreateRestockRequest(BaseModel):
 class UpdateSettingsRequest(BaseModel):
     storeName: str = Field(min_length=1)
     contactEmail: str = Field(min_length=1)
+    maintenanceEmail: str = ""
     currency: str = Field(min_length=1)
     timezone: str = Field(min_length=1)
     deliveryRadius: int = Field(ge=0)

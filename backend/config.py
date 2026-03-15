@@ -10,8 +10,23 @@ from pathlib import Path
 class AppConfig:
     project_root: Path
     local_store_path: Path
+    maintenance_report_dir: Path
+    backup_dir: Path
     firebase_credentials_path: Path | None
     allowed_origins: list[str]
+    smtp_host: str | None
+    smtp_port: int
+    smtp_username: str | None
+    smtp_password: str | None
+    smtp_sender: str | None
+    smtp_use_tls: bool
+
+
+def _env_flag(name: str, default: bool) -> bool:
+    raw_value = os.getenv(name)
+    if raw_value is None:
+        return default
+    return raw_value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 @lru_cache(maxsize=1)
@@ -33,6 +48,14 @@ def get_config() -> AppConfig:
     return AppConfig(
         project_root=project_root,
         local_store_path=project_root / "backend" / "data" / "store.json",
+        maintenance_report_dir=project_root / "output" / "pdf",
+        backup_dir=project_root / "output" / "backups",
         firebase_credentials_path=credentials_path if credentials_path.exists() else None,
         allowed_origins=allowed_origins,
+        smtp_host=os.getenv("SHOPSYSTEM_SMTP_HOST"),
+        smtp_port=int(os.getenv("SHOPSYSTEM_SMTP_PORT", "587")),
+        smtp_username=os.getenv("SHOPSYSTEM_SMTP_USERNAME"),
+        smtp_password=os.getenv("SHOPSYSTEM_SMTP_PASSWORD"),
+        smtp_sender=os.getenv("SHOPSYSTEM_SMTP_SENDER"),
+        smtp_use_tls=_env_flag("SHOPSYSTEM_SMTP_USE_TLS", True),
     )

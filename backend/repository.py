@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import json
 import re
+import smtplib
 from collections import defaultdict
 from datetime import datetime, time, timedelta, timezone
+from email.message import EmailMessage
 from pathlib import Path
+from queue import Empty, Queue
 from threading import Lock, Thread
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -19,6 +22,13 @@ except ImportError:  # pragma: no cover - optional dependency
     firebase_admin = None
     credentials = None
     firestore = None
+
+try:
+    from google.api_core.exceptions import GoogleAPICallError, ResourceExhausted, ServiceUnavailable
+except ImportError:  # pragma: no cover - optional dependency
+    GoogleAPICallError = Exception
+    ResourceExhausted = Exception
+    ServiceUnavailable = Exception
 
 
 class RepositoryError(Exception):
@@ -61,6 +71,8 @@ class FirestoreStore(SnapshotStore):
     FLOWERS_COLLECTION = "flowers"
     INVENTORY_COLLECTION = "inventory"
     RESTOCKS_COLLECTION = "restocks"
+    MAINTENANCE_LOGS_COLLECTION = "maintenance_logs"
+    MAINTENANCE_REPORTS_COLLECTION = "maintenance_reports"
     SETTINGS_COLLECTION = "settings"
     SETTINGS_DOCUMENT = "store"
     ORDERS_COLLECTION = "orders"
@@ -91,6 +103,8 @@ class FirestoreStore(SnapshotStore):
         flowers = self._load_collection(self.FLOWERS_COLLECTION)
         inventory = self._load_collection(self.INVENTORY_COLLECTION)
         restocks = self._load_collection(self.RESTOCKS_COLLECTION)
+        maintenance_logs = self._load_collection(self.MAINTENANCE_LOGS_COLLECTION)
+        maintenance_reports = self._load_collection(self.MAINTENANCE_REPORTS_COLLECTION)
         settings = self._load_settings()
 
         snapshot = {
@@ -98,6 +112,8 @@ class FirestoreStore(SnapshotStore):
             "inventory": inventory,
             "orders": [],
             "restocks": restocks,
+            "maintenance_logs": maintenance_logs,
+            "maintenance_reports": maintenance_reports,
             "settings": settings,
         }
 
@@ -124,6 +140,16 @@ class FirestoreStore(SnapshotStore):
         self._sync_collection(
             self.RESTOCKS_COLLECTION,
             snapshot.get("restocks", []),
+            lambda record: record["id"],
+        )
+        self._sync_collection(
+            self.MAINTENANCE_LOGS_COLLECTION,
+            snapshot.get("maintenance_logs", []),
+            lambda record: record["id"],
+        )
+        self._sync_collection(
+            self.MAINTENANCE_REPORTS_COLLECTION,
+            snapshot.get("maintenance_reports", []),
             lambda record: record["id"],
         )
         self.client.collection(self.SETTINGS_COLLECTION).document(self.SETTINGS_DOCUMENT).set(
@@ -346,20 +372,215 @@ def _source_order_id_from_order(order: dict) -> str:
     return order.get("source_order_id") or order.get("display_id") or order["id"]
 
 
+def _start_of_week(day) -> Any:
+    return day - timedelta(days=day.weekday())
+
+
+def _week_range_label(start_day, end_day) -> str:
+    if start_day.year != end_day.year:
+        return f"{start_day.strftime('%b %d, %Y')} - {end_day.strftime('%b %d, %Y')}"
+    if start_day.month != end_day.month:
+        return f"{start_day.strftime('%b %d')} - {end_day.strftime('%b %d, %Y')}"
+    return f"{start_day.strftime('%b %d')} - {end_day.strftime('%d, %Y')}"
+
+
 class ShopRepository:
-    def __init__(self, store: SnapshotStore, backend_name: str):
+    def __init__(self, store: SnapshotStore, backend_name: str, config: AppConfig):
         self.store = store
         self.backend_name = backend_name
+        self.config = config
+        self.local_store = LocalJsonStore(config.local_store_path)
         self._lock = Lock()
+        self._firestore_enabled = isinstance(store, FirestoreStore)
+        self._firestore_failure_message: str | None = None
 
     def initialize(self) -> None:
         with self._lock:
-            snapshot, changed = self._ensure_snapshot(self.store.load_snapshot())
+            snapshot, changed = self._load_snapshot()
             if changed:
-                self.store.save_snapshot(snapshot)
+                self._persist_snapshot(snapshot)
+
+    def _using_firestore(self) -> bool:
+        return isinstance(self.store, FirestoreStore) and self._firestore_enabled
+
+    def _should_fallback_to_local(self, error: Exception) -> bool:
+        if isinstance(error, (ResourceExhausted, ServiceUnavailable)):
+            return True
+        if isinstance(error, GoogleAPICallError):
+            return "quota exceeded" in str(error).lower()
+        return "quota exceeded" in str(error).lower()
+
+    def _activate_local_fallback(self, error: Exception) -> None:
+        self._firestore_enabled = False
+        self.backend_name = "local-json"
+        self._firestore_failure_message = str(error)
+
+    def _cache_local_snapshot(self, snapshot: dict) -> None:
+        self.local_store.save_snapshot(snapshot)
 
     def get_health(self) -> dict:
-        return {"status": "ok", "storage": self.backend_name}
+        snapshot, _ = self._load_snapshot()
+        settings = snapshot["settings"]
+        checked_at = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
+        latest_report = max(
+            snapshot.get("maintenance_reports", []),
+            key=lambda report: report.get("created_at", ""),
+            default=None,
+        )
+        latest_backup = self._latest_backup_snapshot()
+
+        firebase_status = "ok" if self._using_firestore() else "degraded"
+        firebase_label = "Connected" if self._using_firestore() else "Fallback mode"
+        firebase_details = "Firestore is connected and serving live shop data."
+        if not self._using_firestore():
+            firebase_details = "Firebase is unavailable. The app is currently serving data from the local JSON snapshot."
+            if self._firestore_failure_message:
+                firebase_details = (
+                    "Firebase is unavailable due to quota or connectivity issues. "
+                    f"Fallback mode active: {self._firestore_failure_message}"
+                )
+
+        notification_status = "disabled"
+        notification_label = "Not configured"
+        notification_details = "SMTP delivery is not configured. Maintenance reports stay downloadable only."
+        if self.config.smtp_host and self.config.smtp_sender:
+            notification_status = "ok"
+            notification_label = "Configured"
+            notification_details = "SMTP delivery is configured for maintenance notifications."
+            if latest_report and latest_report.get("notification_status") == "failed":
+                notification_status = "warning"
+                notification_label = "Attention needed"
+                notification_details = latest_report.get("delivery_message") or "Latest notification delivery failed."
+
+        backup_status = "ok" if latest_backup is not None else "warning"
+        backup_label = (
+            _format_datetime_label(latest_backup["created_at"], settings["timezone"]) if latest_backup is not None else "Never"
+        )
+
+        overall_status = "ok"
+        if firebase_status == "degraded" or backup_status == "warning":
+            overall_status = "degraded"
+        elif notification_status in {"warning", "disabled"}:
+            overall_status = "warning"
+
+        return {
+            "status": overall_status,
+            "storage": self.backend_name,
+            "checkedAt": checked_at,
+            "checkedAtLabel": _format_datetime_label(checked_at, settings["timezone"]),
+            "firebase": {
+                "status": firebase_status,
+                "label": firebase_label,
+                "details": firebase_details,
+            },
+            "notifications": {
+                "status": notification_status,
+                "label": notification_label,
+                "details": notification_details,
+            },
+            "backups": {
+                "status": backup_status,
+                "label": backup_label,
+                "details": "Rolling local snapshot backups are stored on disk for emergency recovery.",
+                "lastBackupAt": latest_backup["created_at"] if latest_backup is not None else None,
+                "directory": str(self.config.backup_dir.relative_to(self.config.project_root)),
+                "fileCount": self._backup_file_count(),
+            },
+        }
+
+    def refresh_cache(self) -> dict:
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            settings = snapshot["settings"]
+            refreshed_at = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
+            self._append_maintenance_log(
+                snapshot,
+                settings,
+                event_type="cache_refresh",
+                severity="info",
+                title="Dashboard cache refreshed",
+                description="Dashboard data cache was refreshed from live storage.",
+                details={"backend": self.backend_name},
+            )
+            self._persist_snapshot(snapshot)
+
+        return {
+            "status": "refreshed",
+            "storage": self.backend_name,
+            "refreshedAt": refreshed_at,
+            "message": "Dashboard cache refreshed successfully.",
+        }
+
+    def generate_weekly_report(self, force: bool = False) -> dict:
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            settings = snapshot["settings"]
+            week_start, week_end = self._latest_completed_week(settings["timezone"])
+
+            if not force:
+                existing = self._find_report_for_week(snapshot, week_start, week_end)
+                if existing is not None:
+                    return self._serialize_weekly_report(existing, settings)
+
+            report = self._generate_weekly_report_locked(snapshot, week_start, week_end, trigger="manual")
+            self._persist_snapshot(snapshot)
+            return self._serialize_weekly_report(report, settings)
+
+    def get_weekly_report_file(self, report_id: str) -> Path:
+        snapshot, _ = self._load_snapshot()
+        report = next((entry for entry in snapshot["maintenance_reports"] if entry["id"] == report_id), None)
+        if report is None:
+            raise ValidationError("Weekly report not found.")
+
+        relative_path = report.get("file_path")
+        if not relative_path:
+            raise ValidationError("The selected weekly report has no PDF file.")
+
+        file_path = self.config.project_root / relative_path
+        if not file_path.exists() or not file_path.is_file():
+            raise ValidationError("Weekly report PDF is missing from disk.")
+        return file_path
+
+    def order_event_listener_supported(self) -> bool:
+        return self._using_firestore()
+
+    def subscribe_order_events(self) -> tuple[Queue[dict], Any]:
+        events: Queue[dict] = Queue()
+
+        if not self._using_firestore():
+            return events, lambda: None
+
+        settings = self.get_settings()
+        initialized = False
+
+        def handle_snapshot(collection_snapshot, changes, read_time) -> None:
+            nonlocal initialized
+
+            if not initialized:
+                initialized = True
+                return
+
+            for change in changes:
+                if getattr(change.type, "name", str(change.type)) != "ADDED":
+                    continue
+
+                document = change.document
+                order = self._normalize_firestore_order(document.id, document.to_dict() or {}, settings)
+                events.put(
+                    {
+                        "type": "order_created",
+                        "order": self._serialize_order(order, settings),
+                    }
+                )
+
+        watch = self.store.client.collection(self.store.ORDERS_COLLECTION).on_snapshot(handle_snapshot)
+        return events, watch.unsubscribe
+
+    def next_order_event(self, events: Queue[dict], timeout: float = 15.0) -> dict | None:
+        try:
+            return events.get(timeout=timeout)
+        except Empty:
+            return None
 
     def list_orders(self) -> list[dict]:
         snapshot, _ = self._load_snapshot()
@@ -422,7 +643,7 @@ class ShopRepository:
                 "line_items": line_items,
             }
 
-            if isinstance(self.store, FirestoreStore):
+            if self._using_firestore():
                 firestore_payload = {
                     "customerName": order["customer_name"],
                     "customerPhone": order["phone"],
@@ -456,13 +677,18 @@ class ShopRepository:
                         ],
                     },
                 }
-                doc_ref = self.store.client.collection(self.store.ORDERS_COLLECTION).document()
-                doc_ref.set(firestore_payload, timeout=2)
-                self.store.save_snapshot(snapshot)
-                return self._serialize_order(self._normalize_firestore_order(doc_ref.id, firestore_payload, settings), settings)
+                try:
+                    doc_ref = self.store.client.collection(self.store.ORDERS_COLLECTION).document()
+                    doc_ref.set(firestore_payload, timeout=2)
+                    self._persist_snapshot(snapshot)
+                    return self._serialize_order(self._normalize_firestore_order(doc_ref.id, firestore_payload, settings), settings)
+                except Exception as error:
+                    if not self._should_fallback_to_local(error):
+                        raise
+                    self._activate_local_fallback(error)
 
             snapshot["orders"].append(order)
-            self.store.save_snapshot(snapshot)
+            self._persist_snapshot(snapshot)
             return self._serialize_order(order, settings)
 
     def update_order_status(self, order_id: str, status: str) -> dict:
@@ -474,33 +700,38 @@ class ShopRepository:
             snapshot, _ = self._load_snapshot()
             settings = snapshot["settings"]
 
-            if isinstance(self.store, FirestoreStore):
-                doc_ref = self.store.client.collection(self.store.ORDERS_COLLECTION).document(order_id)
-                doc = doc_ref.get(timeout=2)
-                if doc.exists:
-                    firestore_data = doc.to_dict() or {}
-                    order = self._normalize_firestore_order(doc.id, firestore_data, settings)
-                    previous_status = order["status"]
+            if self._using_firestore():
+                try:
+                    doc_ref = self.store.client.collection(self.store.ORDERS_COLLECTION).document(order_id)
+                    doc = doc_ref.get(timeout=2)
+                    if doc.exists:
+                        firestore_data = doc.to_dict() or {}
+                        order = self._normalize_firestore_order(doc.id, firestore_data, settings)
+                        previous_status = order["status"]
 
-                    if previous_status == "Delivered" and status != "Delivered":
-                        raise ValidationError("Delivered orders cannot move backwards.")
+                        if previous_status == "Delivered" and status != "Delivered":
+                            raise ValidationError("Delivered orders cannot move backwards.")
 
-                    if status == "Cancelled" and previous_status not in {"Cancelled", "Delivered"}:
-                        inventory_by_code = {item["code"]: item for item in snapshot["inventory"]}
-                        flowers = {flower["id"]: flower for flower in snapshot["flowers"]}
-                        for line_item in order["line_items"]:
-                            flower = flowers.get(line_item["flower_id"])
-                            if not flower:
-                                continue
-                            inventory_item = inventory_by_code.get(flower["inventory_code"])
-                            if inventory_item:
-                                inventory_item["stock"] += line_item["qty"]
-                                inventory_item["updated_at"] = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
-                        self.store.save_snapshot(snapshot)
+                        if status == "Cancelled" and previous_status not in {"Cancelled", "Delivered"}:
+                            inventory_by_code = {item["code"]: item for item in snapshot["inventory"]}
+                            flowers = {flower["id"]: flower for flower in snapshot["flowers"]}
+                            for line_item in order["line_items"]:
+                                flower = flowers.get(line_item["flower_id"])
+                                if not flower:
+                                    continue
+                                inventory_item = inventory_by_code.get(flower["inventory_code"])
+                                if inventory_item:
+                                    inventory_item["stock"] += line_item["qty"]
+                                    inventory_item["updated_at"] = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
+                            self._persist_snapshot(snapshot)
 
-                    firestore_data["status"] = _firestore_status_from_shop(status)
-                    doc_ref.set({"status": firestore_data["status"]}, merge=True, timeout=2)
-                    return self._serialize_order(self._normalize_firestore_order(doc.id, firestore_data, settings), settings)
+                        firestore_data["status"] = _firestore_status_from_shop(status)
+                        doc_ref.set({"status": firestore_data["status"]}, merge=True, timeout=2)
+                        return self._serialize_order(self._normalize_firestore_order(doc.id, firestore_data, settings), settings)
+                except Exception as error:
+                    if not self._should_fallback_to_local(error):
+                        raise
+                    self._activate_local_fallback(error)
 
             order = next((item for item in snapshot["orders"] if item["id"] == order_id), None)
             if order is None:
@@ -523,7 +754,7 @@ class ShopRepository:
                         inventory_item["updated_at"] = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
 
             order["status"] = status
-            self.store.save_snapshot(snapshot)
+            self._persist_snapshot(snapshot)
             return self._serialize_order(order, settings)
 
     def list_flowers(self) -> list[dict]:
@@ -576,7 +807,7 @@ class ShopRepository:
 
             snapshot["flowers"].append(flower)
             snapshot["inventory"].append(inventory_item)
-            self.store.save_snapshot(snapshot)
+            self._persist_snapshot(snapshot)
             inventory_by_code = {item["code"]: item for item in snapshot["inventory"]}
             return self._serialize_flower(flower, inventory_by_code, settings)
 
@@ -606,7 +837,7 @@ class ShopRepository:
             snapshot["inventory"] = [
                 entry for entry in snapshot["inventory"] if entry.get("linked_flower_id") != flower_id
             ]
-            self.store.save_snapshot(snapshot)
+            self._persist_snapshot(snapshot)
             return {"id": flower_id, "name": flower["name"], "deleted": True}
 
     def get_inventory(self) -> dict:
@@ -631,12 +862,67 @@ class ShopRepository:
             if item is None:
                 raise ValidationError("Inventory item not found.")
 
+            previous_stock = int(item["stock"])
             item["stock"] = max(0, int(item["stock"]) + delta)
             item["updated_at"] = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
-            if isinstance(self.store, FirestoreStore):
-                self.store.save_inventory_item(item)
-            else:
-                self.store.save_snapshot(snapshot)
+            if delta != 0:
+                self._append_maintenance_log(
+                    snapshot,
+                    settings,
+                    event_type="inventory_correction",
+                    severity="warning",
+                    title=f"Inventory corrected for {item['name']}",
+                    description=(
+                        f"Stock changed from {previous_stock} to {item['stock']} "
+                        f"({delta:+d} {item.get('unit', 'units')})."
+                    ),
+                    related_code=item["code"],
+                    related_name=item["name"],
+                    details={
+                        "before": previous_stock,
+                        "after": int(item["stock"]),
+                        "delta": int(delta),
+                    },
+                )
+            self._persist_snapshot(snapshot)
+            average_cost = self._average_costs_by_item(snapshot).get(item["code"])
+            return self._serialize_inventory_item(item, average_cost, settings["currency"])
+
+    def update_inventory_stock(self, item_code: str, stock: int) -> dict:
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            settings = snapshot["settings"]
+            item = next((entry for entry in snapshot["inventory"] if entry["code"] == item_code), None)
+            if item is None:
+                raise ValidationError("Inventory item not found.")
+
+            previous_stock = int(item["stock"])
+            next_stock = int(stock)
+            item["stock"] = next_stock
+            item["updated_at"] = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
+
+            if next_stock != previous_stock:
+                delta = next_stock - previous_stock
+                self._append_maintenance_log(
+                    snapshot,
+                    settings,
+                    event_type="inventory_correction",
+                    severity="warning",
+                    title=f"Inventory corrected for {item['name']}",
+                    description=(
+                        f"Stock changed from {previous_stock} to {next_stock} "
+                        f"({delta:+d} {item.get('unit', 'units')})."
+                    ),
+                    related_code=item["code"],
+                    related_name=item["name"],
+                    details={
+                        "before": previous_stock,
+                        "after": next_stock,
+                        "delta": delta,
+                    },
+                )
+
+            self._persist_snapshot(snapshot)
             average_cost = self._average_costs_by_item(snapshot).get(item["code"])
             return self._serialize_inventory_item(item, average_cost, settings["currency"])
 
@@ -650,10 +936,7 @@ class ShopRepository:
 
             item["par"] = int(par_level)
             item["updated_at"] = datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat()
-            if isinstance(self.store, FirestoreStore):
-                self.store.save_inventory_item(item)
-            else:
-                self.store.save_snapshot(snapshot)
+            self._persist_inventory_item(snapshot, item)
             average_cost = self._average_costs_by_item(snapshot).get(item["code"])
             return self._serialize_inventory_item(item, average_cost, settings["currency"])
 
@@ -676,11 +959,8 @@ class ShopRepository:
                 "unit_cost": float(payload["unitCost"]),
             }
 
-            if isinstance(self.store, FirestoreStore):
-                self.store.save_restock_update(item, record)
-            else:
-                snapshot["restocks"].append(record)
-                self.store.save_snapshot(snapshot)
+            snapshot["restocks"].append(record)
+            self._persist_restock_update(snapshot, item, record)
 
             return self._serialize_restock(record, settings)
 
@@ -694,14 +974,16 @@ class ShopRepository:
             snapshot["settings"] = {
                 "storeName": payload["storeName"].strip(),
                 "contactEmail": payload["contactEmail"].strip(),
+                "maintenanceEmail": payload.get("maintenanceEmail", "").strip(),
                 "currency": payload["currency"].strip().upper(),
                 "timezone": payload["timezone"].strip(),
                 "deliveryRadius": int(payload["deliveryRadius"]),
             }
-            self.store.save_snapshot(snapshot)
+            self._persist_snapshot(snapshot)
             return snapshot["settings"]
 
     def get_dashboard(self) -> dict:
+        self._ensure_scheduled_weekly_report()
         snapshot, _ = self._load_snapshot()
         settings = snapshot["settings"]
         timezone_name = settings["timezone"]
@@ -771,6 +1053,9 @@ class ShopRepository:
             ],
             "recentOrders": recent_orders,
             "weeklySales": current_window,
+            "maintenanceSummary": self._build_maintenance_summary(snapshot, settings),
+            "maintenanceLogs": self._recent_maintenance_logs(snapshot, settings),
+            "latestWeeklyReport": self._serialize_weekly_report(self._latest_report(snapshot), settings),
         }
 
     def get_analytics(self) -> dict:
@@ -811,8 +1096,557 @@ class ShopRepository:
             },
         }
 
+    def _ensure_scheduled_weekly_report(self) -> None:
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            settings = snapshot["settings"]
+            week_start, week_end = self._latest_completed_week(settings["timezone"])
+            if self._find_report_for_week(snapshot, week_start, week_end) is not None:
+                return
+
+            self._generate_weekly_report_locked(snapshot, week_start, week_end, trigger="scheduled")
+            self._persist_snapshot(snapshot)
+
+    def _latest_completed_week(self, timezone_name: str):
+        today = datetime.now(ZoneInfo(timezone_name)).date()
+        current_week_start = _start_of_week(today)
+        previous_week_end = current_week_start - timedelta(days=1)
+        previous_week_start = previous_week_end - timedelta(days=6)
+        return previous_week_start, previous_week_end
+
+    def _find_report_for_week(self, snapshot: dict, week_start, week_end) -> dict | None:
+        matching_reports = [
+            report
+            for report in snapshot["maintenance_reports"]
+            if report.get("week_start") == week_start.isoformat()
+            and report.get("week_end") == week_end.isoformat()
+            and report.get("file_path")
+        ]
+        if not matching_reports:
+            return None
+
+        return max(matching_reports, key=lambda report: report.get("created_at", ""))
+
+    def _latest_report(self, snapshot: dict) -> dict | None:
+        reports = snapshot.get("maintenance_reports") or []
+        if not reports:
+            return None
+        return max(reports, key=lambda report: report.get("created_at", ""))
+
+    def _generate_weekly_report_locked(self, snapshot: dict, week_start, week_end, trigger: str) -> dict:
+        settings = snapshot["settings"]
+        timezone_name = settings["timezone"]
+        created_at = datetime.now(ZoneInfo(timezone_name)).replace(microsecond=0).isoformat()
+        report_id = _next_numeric_identifier([entry["id"] for entry in snapshot["maintenance_reports"]], "MR-", 1000)
+        week_label = _week_range_label(week_start, week_end)
+        week_logs = self._maintenance_logs_in_range(snapshot, settings, week_start, week_end)
+        correction_logs = [log for log in week_logs if log.get("event_type") == "inventory_correction"]
+        notification_failures = [log for log in week_logs if log.get("event_type") == "notification_failure"]
+        orders = self._load_order_records(snapshot)
+        week_orders = [
+            order
+            for order in orders
+            if week_start <= _parse_datetime(order["created_at"], timezone_name).date() <= week_end
+        ]
+        pending_orders = [order for order in orders if order["status"] not in {"Delivered", "Cancelled"}]
+        low_stock_items = [
+            item
+            for item in snapshot["inventory"]
+            if _inventory_status(int(item["stock"]), int(item["par"]))[0] != "OK"
+        ]
+        report_file = self.config.maintenance_report_dir / (
+            f"maintenance-report-{week_start.isoformat()}-{week_end.isoformat()}-{report_id.lower()}.pdf"
+        )
+        report_relative_path = report_file.relative_to(self.config.project_root).as_posix()
+        report = {
+            "id": report_id,
+            "created_at": created_at,
+            "week_start": week_start.isoformat(),
+            "week_end": week_end.isoformat(),
+            "week_label": week_label,
+            "trigger": trigger,
+            "file_name": report_file.name,
+            "file_path": report_relative_path,
+            "status": "ready",
+            "notification_status": "pending",
+            "delivery_message": "PDF generated.",
+            "recipient": (settings.get("maintenanceEmail") or settings.get("contactEmail") or "").strip(),
+            "inventory_corrections": len(correction_logs),
+            "notification_failures": len(notification_failures),
+            "week_orders": len(week_orders),
+            "pending_orders": len(pending_orders),
+            "low_stock_items": len(low_stock_items),
+        }
+
+        try:
+            self._render_weekly_report_pdf(
+                report_file,
+                settings,
+                report,
+                correction_logs,
+                notification_failures,
+                low_stock_items,
+                pending_orders,
+                week_orders,
+            )
+        except Exception as error:
+            report["status"] = "generation_failed"
+            report["notification_status"] = "failed"
+            report["delivery_message"] = f"PDF generation failed: {error}"
+            report["file_path"] = ""
+            snapshot["maintenance_reports"].append(report)
+            self._append_maintenance_log(
+                snapshot,
+                settings,
+                event_type="report_generation_failed",
+                severity="critical",
+                title="Weekly maintenance report failed",
+                description=f"Unable to build PDF for {week_label}: {error}",
+                details={"reportId": report_id},
+            )
+            return report
+
+        snapshot["maintenance_reports"].append(report)
+        self._append_maintenance_log(
+            snapshot,
+            settings,
+            event_type="report_generated",
+            severity="info",
+            title="Weekly maintenance report generated",
+            description=f"PDF generated for {week_label}.",
+            details={"reportId": report_id, "trigger": trigger},
+        )
+
+        sent, message = self._send_weekly_report_email(
+            report["recipient"],
+            report_file,
+            week_label,
+            report,
+            settings,
+        )
+        report["notification_status"] = "sent" if sent else "failed"
+        report["delivery_message"] = message
+        if not sent:
+            report["status"] = "delivery_failed"
+            self._append_maintenance_log(
+                snapshot,
+                settings,
+                event_type="notification_failure",
+                severity="warning",
+                title="Weekly report delivery failed",
+                description=message,
+                details={"reportId": report_id, "recipient": report["recipient"]},
+            )
+        else:
+            self._append_maintenance_log(
+                snapshot,
+                settings,
+                event_type="report_sent",
+                severity="info",
+                title="Weekly report delivered",
+                description=message,
+                details={"reportId": report_id, "recipient": report["recipient"]},
+            )
+
+        return report
+
+    def _render_weekly_report_pdf(
+        self,
+        report_file: Path,
+        settings: dict,
+        report: dict,
+        correction_logs: list[dict],
+        notification_failures: list[dict],
+        low_stock_items: list[dict],
+        pending_orders: list[dict],
+        week_orders: list[dict],
+    ) -> None:
+        try:
+            from reportlab.lib import colors
+            from reportlab.lib.pagesizes import A4
+            from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+            from reportlab.lib.units import mm
+            from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+        except ModuleNotFoundError as error:
+            if error.name == "reportlab":
+                raise RepositoryError(
+                    "Weekly report PDF dependency is missing. Run 'pip install -r requirements.txt' in the project venv."
+                ) from error
+            raise
+
+        report_file.parent.mkdir(parents=True, exist_ok=True)
+        doc = SimpleDocTemplate(
+            str(report_file),
+            pagesize=A4,
+            leftMargin=16 * mm,
+            rightMargin=16 * mm,
+            topMargin=18 * mm,
+            bottomMargin=18 * mm,
+        )
+        styles = getSampleStyleSheet()
+        title_style = styles["Heading1"]
+        title_style.fontName = "Helvetica-Bold"
+        title_style.fontSize = 18
+        title_style.leading = 22
+        subtitle_style = ParagraphStyle(
+            "MaintenanceSubtitle",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=10,
+            leading=14,
+            textColor=colors.HexColor("#4A5568"),
+        )
+        section_style = ParagraphStyle(
+            "MaintenanceSection",
+            parent=styles["Heading2"],
+            fontName="Helvetica-Bold",
+            fontSize=11,
+            leading=14,
+            textColor=colors.HexColor("#1A202C"),
+            spaceBefore=8,
+            spaceAfter=6,
+        )
+        body_style = ParagraphStyle(
+            "MaintenanceBody",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=9,
+            leading=12,
+            textColor=colors.HexColor("#1A202C"),
+        )
+
+        def paragraph_cell(value: Any) -> Paragraph:
+            return Paragraph(str(value).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"), body_style)
+
+        story = [
+            Paragraph("Weekly Maintenance Report", title_style),
+            Spacer(1, 4 * mm),
+            Paragraph(
+                (
+                    f"{settings['storeName']}<br/>{report['week_label']}<br/>"
+                    f"Generated {_parse_datetime(report['created_at'], settings['timezone']).strftime('%b %d, %Y %H:%M')}"
+                ),
+                subtitle_style,
+            ),
+            Spacer(1, 8 * mm),
+        ]
+
+        summary_rows = [
+            ["Metric", "Value"],
+            [paragraph_cell("Inventory corrections"), paragraph_cell(report["inventory_corrections"])],
+            [paragraph_cell("Notification failures"), paragraph_cell(report["notification_failures"])],
+            [paragraph_cell("Orders created"), paragraph_cell(report["week_orders"])],
+            [paragraph_cell("Pending orders"), paragraph_cell(report["pending_orders"])],
+            [paragraph_cell("Low stock items"), paragraph_cell(report["low_stock_items"])],
+            [paragraph_cell("Delivery status"), paragraph_cell(report["delivery_message"])],
+        ]
+        summary_table = Table(summary_rows, colWidths=[52 * mm, 120 * mm])
+        summary_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1F2937")),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#D9E2EC")),
+                    ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor("#F8FAFC")),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("PADDING", (0, 0), (-1, -1), 6),
+                ]
+            )
+        )
+        story.extend([Paragraph("Summary", section_style), summary_table, Spacer(1, 6 * mm)])
+
+        low_stock_rows = [["Item", "Stock", "Par", "Status"]]
+        for item in sorted(low_stock_items, key=lambda entry: (int(entry["stock"]), int(entry["par"])))[:6]:
+            status, _ = _inventory_status(int(item["stock"]), int(item["par"]))
+            low_stock_rows.append(
+                [
+                    paragraph_cell(item["name"]),
+                    paragraph_cell(item["stock"]),
+                    paragraph_cell(item["par"]),
+                    paragraph_cell(status),
+                ]
+            )
+        if len(low_stock_rows) == 1:
+            low_stock_rows.append(
+                [
+                    paragraph_cell("No critical items"),
+                    paragraph_cell("-"),
+                    paragraph_cell("-"),
+                    paragraph_cell("Healthy"),
+                ]
+            )
+        low_stock_table = Table(low_stock_rows, colWidths=[90 * mm, 20 * mm, 20 * mm, 42 * mm])
+        low_stock_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#E2E8F0")),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#CBD5E0")),
+                    ("PADDING", (0, 0), (-1, -1), 5),
+                ]
+            )
+        )
+        story.extend([Paragraph("Low Stock Watchlist", section_style), low_stock_table, Spacer(1, 6 * mm)])
+
+        event_rows = [["When", "Event", "Details"]]
+        for log in (correction_logs + notification_failures)[:8]:
+            event_rows.append(
+                [
+                    paragraph_cell(_format_datetime_label(log["created_at"], settings["timezone"])),
+                    paragraph_cell(log["title"]),
+                    paragraph_cell(log["description"]),
+                ]
+            )
+        if len(event_rows) == 1:
+            event_rows.append(
+                [
+                    paragraph_cell("-"),
+                    paragraph_cell("No maintenance exceptions logged"),
+                    paragraph_cell("System remained stable this week."),
+                ]
+            )
+        events_table = Table(event_rows, colWidths=[35 * mm, 52 * mm, 85 * mm])
+        events_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#E2E8F0")),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#CBD5E0")),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("PADDING", (0, 0), (-1, -1), 5),
+                ]
+            )
+        )
+        story.extend([Paragraph("Exceptions Logged", section_style), events_table, Spacer(1, 6 * mm)])
+
+        pending_rows = [["Order", "Customer", "Status"]]
+        for order in pending_orders[:6]:
+            pending_rows.append(
+                [
+                    paragraph_cell(order.get("display_id") or order["id"]),
+                    paragraph_cell(order["customer_name"]),
+                    paragraph_cell(order["status"]),
+                ]
+            )
+        if len(pending_rows) == 1:
+            pending_rows.append([paragraph_cell("-"), paragraph_cell("No pending orders"), paragraph_cell("Clear")])
+        pending_table = Table(pending_rows, colWidths=[30 * mm, 95 * mm, 47 * mm])
+        pending_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#E2E8F0")),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#CBD5E0")),
+                    ("PADDING", (0, 0), (-1, -1), 5),
+                ]
+            )
+        )
+        story.extend([Paragraph("Pending Orders", section_style), pending_table])
+
+        doc.build(story)
+
+    def _send_weekly_report_email(
+        self,
+        recipient: str,
+        report_file: Path,
+        week_label: str,
+        report: dict,
+        settings: dict,
+    ) -> tuple[bool, str]:
+        if not recipient:
+            return False, "No maintenance recipient email is configured. PDF was saved locally."
+        if not self.config.smtp_host or not self.config.smtp_sender:
+            return False, f"SMTP delivery is not configured. PDF is ready for {recipient} to download."
+
+        message = EmailMessage()
+        message["Subject"] = f"{settings['storeName']} maintenance report - {week_label}"
+        message["From"] = self.config.smtp_sender
+        message["To"] = recipient
+        message.set_content(
+            "\n".join(
+                [
+                    f"Weekly maintenance report for {settings['storeName']}",
+                    f"Week: {week_label}",
+                    f"Inventory corrections: {report['inventory_corrections']}",
+                    f"Notification failures: {report['notification_failures']}",
+                    f"Pending orders: {report['pending_orders']}",
+                ]
+            )
+        )
+        with report_file.open("rb") as handle:
+            message.add_attachment(handle.read(), maintype="application", subtype="pdf", filename=report_file.name)
+
+        try:
+            with smtplib.SMTP(self.config.smtp_host, self.config.smtp_port, timeout=10) as server:
+                server.ehlo()
+                if self.config.smtp_use_tls:
+                    server.starttls()
+                    server.ehlo()
+                if self.config.smtp_username and self.config.smtp_password:
+                    server.login(self.config.smtp_username, self.config.smtp_password)
+                server.send_message(message)
+        except Exception as error:
+            return False, f"Email delivery to {recipient} failed: {error}"
+
+        return True, f"Weekly report emailed to {recipient}."
+
+    def _append_maintenance_log(
+        self,
+        snapshot: dict,
+        settings: dict,
+        *,
+        event_type: str,
+        severity: str,
+        title: str,
+        description: str,
+        related_code: str | None = None,
+        related_name: str | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> dict:
+        entry = {
+            "id": _next_numeric_identifier([log["id"] for log in snapshot["maintenance_logs"]], "ML-", 1000),
+            "created_at": datetime.now(ZoneInfo(settings["timezone"])).replace(microsecond=0).isoformat(),
+            "event_type": event_type,
+            "severity": severity,
+            "title": title,
+            "description": description,
+            "related_code": related_code,
+            "related_name": related_name,
+            "details": details or {},
+        }
+        snapshot["maintenance_logs"].append(entry)
+        return entry
+
+    def _maintenance_logs_in_range(self, snapshot: dict, settings: dict, week_start, week_end) -> list[dict]:
+        timezone_name = settings["timezone"]
+        return [
+            log
+            for log in snapshot.get("maintenance_logs", [])
+            if week_start <= _parse_datetime(log["created_at"], timezone_name).date() <= week_end
+        ]
+
+    def _build_maintenance_summary(self, snapshot: dict, settings: dict) -> dict:
+        timezone_name = settings["timezone"]
+        today = datetime.now(ZoneInfo(timezone_name)).date()
+        week_start = _start_of_week(today)
+        week_logs = self._maintenance_logs_in_range(snapshot, settings, week_start, today)
+        orders = self._load_order_records(snapshot)
+        last_cache_refresh = next(
+            (
+                log
+                for log in sorted(snapshot.get("maintenance_logs", []), key=lambda entry: entry["created_at"], reverse=True)
+                if log.get("event_type") == "cache_refresh"
+            ),
+            None,
+        )
+
+        return {
+            "inventoryCorrectionsThisWeek": sum(1 for log in week_logs if log.get("event_type") == "inventory_correction"),
+            "notificationFailuresThisWeek": sum(1 for log in week_logs if log.get("event_type") == "notification_failure"),
+            "openLowStockItems": sum(
+                1
+                for item in snapshot["inventory"]
+                if _inventory_status(int(item["stock"]), int(item["par"]))[0] != "OK"
+            ),
+            "pendingOrders": sum(1 for order in orders if order["status"] not in {"Delivered", "Cancelled"}),
+            "lastCacheRefreshAt": last_cache_refresh["created_at"] if last_cache_refresh else None,
+            "lastCacheRefreshLabel": (
+                _format_datetime_label(last_cache_refresh["created_at"], timezone_name) if last_cache_refresh else "Not yet"
+            ),
+        }
+
+    def _recent_maintenance_logs(self, snapshot: dict, settings: dict) -> list[dict]:
+        relevant_types = {
+            "inventory_correction",
+            "notification_failure",
+            "cache_refresh",
+            "report_generation_failed",
+        }
+        logs = [
+            log
+            for log in sorted(snapshot.get("maintenance_logs", []), key=lambda entry: entry["created_at"], reverse=True)
+            if log.get("event_type") in relevant_types
+        ][:8]
+        return [self._serialize_maintenance_log(log, settings) for log in logs]
+
+    def _persist_snapshot(self, snapshot: dict) -> None:
+        if self._using_firestore():
+            try:
+                self.store.save_snapshot(snapshot)
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+        self._cache_local_snapshot(snapshot)
+        self._write_backup_snapshot(snapshot)
+
+    def _persist_inventory_item(self, snapshot: dict, item: dict) -> None:
+        if self._using_firestore():
+            try:
+                self.store.save_inventory_item(item)
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+        self._cache_local_snapshot(snapshot)
+        if not self._using_firestore():
+            self.local_store.save_snapshot(snapshot)
+        self._write_backup_snapshot(snapshot)
+
+    def _persist_restock_update(self, snapshot: dict, item: dict, record: dict) -> None:
+        if self._using_firestore():
+            try:
+                self.store.save_restock_update(item, record)
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+        self._cache_local_snapshot(snapshot)
+        if not self._using_firestore():
+            self.local_store.save_snapshot(snapshot)
+        self._write_backup_snapshot(snapshot)
+
+    def _write_backup_snapshot(self, snapshot: dict) -> None:
+        self.config.backup_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        backup_file = self.config.backup_dir / f"snapshot-{timestamp}.json"
+        with backup_file.open("w", encoding="utf-8") as handle:
+            json.dump(snapshot, handle, indent=2, ensure_ascii=True)
+
+        backup_files = sorted(self.config.backup_dir.glob("snapshot-*.json"))
+        for old_file in backup_files[:-20]:
+            old_file.unlink(missing_ok=True)
+
+    def _latest_backup_snapshot(self) -> dict[str, str] | None:
+        backup_files = sorted(self.config.backup_dir.glob("snapshot-*.json"))
+        if not backup_files:
+            return None
+
+        latest = backup_files[-1]
+        created_at = datetime.fromtimestamp(latest.stat().st_mtime, tz=timezone.utc)
+        return {
+            "created_at": created_at.astimezone(timezone.utc).replace(microsecond=0).isoformat(),
+            "path": str(latest),
+        }
+
+    def _backup_file_count(self) -> int:
+        if not self.config.backup_dir.exists():
+            return 0
+        return sum(1 for _ in self.config.backup_dir.glob("snapshot-*.json"))
+
     def _load_snapshot(self) -> tuple[dict, bool]:
-        snapshot = self.store.load_snapshot()
+        if self._using_firestore():
+            try:
+                snapshot = self.store.load_snapshot()
+                self._cache_local_snapshot(snapshot)
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+                snapshot = self.local_store.load_snapshot()
+        else:
+            snapshot = self.local_store.load_snapshot()
         return self._ensure_snapshot(snapshot)
 
     def _ensure_snapshot(self, snapshot: dict) -> tuple[dict, bool]:
@@ -826,11 +1660,16 @@ class ShopRepository:
             "inventory": snapshot.get("inventory") or [],
             "orders": snapshot.get("orders") or [],
             "restocks": snapshot.get("restocks") or [],
+            "maintenance_logs": snapshot.get("maintenance_logs") or [],
+            "maintenance_reports": snapshot.get("maintenance_reports") or [],
             "settings": snapshot.get("settings") or {},
         }
 
         for key, default_value in seeded.items():
-            if not normalized[key]:
+            if key not in snapshot or snapshot.get(key) is None:
+                normalized[key] = default_value
+                changed = True
+            elif not normalized[key] and default_value:
                 normalized[key] = default_value
                 changed = True
 
@@ -863,15 +1702,22 @@ class ShopRepository:
     def _load_order_records(self, snapshot: dict) -> list[dict]:
         settings = snapshot["settings"]
 
-        if isinstance(self.store, FirestoreStore):
-            docs = list(self.store.client.collection(self.store.ORDERS_COLLECTION).stream())
-            if docs:
-                orders = [self._normalize_firestore_order(doc.id, doc.to_dict() or {}, settings) for doc in docs]
-                return sorted(
-                    orders,
-                    key=lambda order: _parse_datetime(order["created_at"], settings["timezone"]),
-                    reverse=True,
-                )
+        if self._using_firestore():
+            try:
+                docs = list(self.store.client.collection(self.store.ORDERS_COLLECTION).stream())
+                if docs:
+                    orders = [self._normalize_firestore_order(doc.id, doc.to_dict() or {}, settings) for doc in docs]
+                    snapshot["orders"] = orders
+                    self._cache_local_snapshot(snapshot)
+                    return sorted(
+                        orders,
+                        key=lambda order: _parse_datetime(order["created_at"], settings["timezone"]),
+                        reverse=True,
+                    )
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
 
         snapshot_orders = [self._normalize_snapshot_order(order) for order in snapshot["orders"]]
         return sorted(
@@ -1058,4 +1904,54 @@ class ShopRepository:
             "unitCostDisplay": _format_currency(float(record["unit_cost"]), settings["currency"]),
             "totalCost": total_cost,
             "totalCostDisplay": _format_currency(total_cost, settings["currency"]),
+        }
+
+    def _serialize_maintenance_log(self, record: dict, settings: dict) -> dict:
+        event_labels = {
+            "inventory_correction": "Inventory correction",
+            "notification_failure": "Notification failure",
+            "cache_refresh": "Cache refresh",
+            "report_generation_failed": "Report generation failed",
+            "report_generated": "Report generated",
+            "report_sent": "Report delivered",
+        }
+        return {
+            "id": record["id"],
+            "createdAt": record["created_at"],
+            "dateLabel": _format_datetime_label(record["created_at"], settings["timezone"]),
+            "eventType": record["event_type"],
+            "eventLabel": event_labels.get(record["event_type"], record["event_type"].replace("_", " ").title()),
+            "severity": record.get("severity", "info"),
+            "title": record["title"],
+            "description": record["description"],
+            "relatedCode": record.get("related_code"),
+            "relatedName": record.get("related_name"),
+        }
+
+    def _serialize_weekly_report(self, report: dict | None, settings: dict) -> dict | None:
+        if report is None:
+            return None
+
+        return {
+            "id": report["id"],
+            "createdAt": report["created_at"],
+            "createdAtLabel": _format_datetime_label(report["created_at"], settings["timezone"]),
+            "weekStart": report["week_start"],
+            "weekEnd": report["week_end"],
+            "weekLabel": report.get("week_label") or _week_range_label(
+                datetime.fromisoformat(report["week_start"]).date(),
+                datetime.fromisoformat(report["week_end"]).date(),
+            ),
+            "status": report.get("status", "ready"),
+            "notificationStatus": report.get("notification_status", "pending"),
+            "deliveryMessage": report.get("delivery_message", ""),
+            "recipient": report.get("recipient", ""),
+            "inventoryCorrections": int(report.get("inventory_corrections", 0)),
+            "notificationFailures": int(report.get("notification_failures", 0)),
+            "weekOrders": int(report.get("week_orders", 0)),
+            "pendingOrders": int(report.get("pending_orders", 0)),
+            "lowStockItems": int(report.get("low_stock_items", 0)),
+            "downloadUrl": (
+                f"/api/maintenance/reports/{report['id']}/download" if report.get("file_path") else None
+            ),
         }

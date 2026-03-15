@@ -47,6 +47,16 @@ if [ ! -x "$SCRIPT_DIR/.venv/bin/python3" ]; then
   exit 1
 fi
 
+if ! "$SCRIPT_DIR/.venv/bin/python3" -c "import fastapi, uvicorn, reportlab" >/dev/null 2>&1; then
+  echo "Missing backend Python dependencies in .venv"
+  echo "Activate the virtual environment and reinstall requirements:"
+  echo "  source .venv/bin/activate"
+  echo "  pip install -r requirements.txt"
+  echo
+  read -r -p "Press Enter to close..."
+  exit 1
+fi
+
 cd "$SCRIPT_DIR" || exit 1
 
 echo "Building frontend bundle ..."

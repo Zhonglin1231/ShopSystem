@@ -49,6 +49,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
     order.status === "Delivered" ? 3 : order.status === "Ready" ? 2 : order.status === "Preparing" ? 1 : 0;
   const badgeStyle = statusStyles(order.statusClass);
   const nextStatus = order.status === "Preparing" ? "Ready" : order.status === "Ready" ? "Delivered" : null;
+  const isOfflineQueuedOrder = order.offlineMeta?.localOnly;
 
   const handleStatusChange = async (status: string) => {
     if (!onUpdateStatus) {
@@ -159,6 +160,22 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
         </div>
 
         <div className="overflow-y-auto flex-1" style={{ padding: "var(--s-5)" }}>
+          {isOfflineQueuedOrder && (
+            <div
+              className="border"
+              style={{
+                marginBottom: "var(--s-4)",
+                padding: "var(--s-3)",
+                borderColor: "#F6D9A7",
+                backgroundColor: "#FFF8E1",
+                color: "#8A5A00",
+              }}
+            >
+              This order is stored locally and will sync automatically once the network returns.
+              {order.offlineMeta?.syncError ? ` Latest sync error: ${order.offlineMeta.syncError}` : ""}
+            </div>
+          )}
+
           {order.status === "Cancelled" && (
             <div
               className="border"
@@ -499,7 +516,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
             Close
           </button>
           <div className="flex" style={{ gap: "var(--s-2)" }}>
-            {order.status !== "Delivered" && order.status !== "Cancelled" && (
+            {!isOfflineQueuedOrder && order.status !== "Delivered" && order.status !== "Cancelled" && (
               <>
                 <button
                   disabled={saving}
