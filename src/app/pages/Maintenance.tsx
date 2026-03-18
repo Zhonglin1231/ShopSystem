@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { getAllOrders } from "../lib/api";
 import { exportTodayOrdersExcel, getTodayOrders, printTodayOrdersPdf } from "../lib/maintenance-export";
 import { useShopData } from "../lib/shop-data";
 
@@ -508,9 +509,10 @@ export function Maintenance() {
 
             <div className="flex gap-3">
               <button
-                onClick={() => {
+                onClick={async () => {
                   try {
-                    printTodayOrdersPdf(orders, settings);
+                    const allOrders = await getAllOrders();
+                    printTodayOrdersPdf(allOrders, settings);
                     toast.success("Print dialog opened. Choose 'Save as PDF' for the emergency export.");
                   } catch (exportError) {
                     toast.error(exportError instanceof Error ? exportError.message : "Unable to prepare the PDF export.");
@@ -532,9 +534,10 @@ export function Maintenance() {
                 Export PDF
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   try {
-                    exportTodayOrdersExcel(orders, settings);
+                    const allOrders = await getAllOrders();
+                    exportTodayOrdersExcel(allOrders, settings);
                     toast.success("Today's orders exported for Excel.");
                   } catch (exportError) {
                     toast.error(exportError instanceof Error ? exportError.message : "Unable to export today's orders.");

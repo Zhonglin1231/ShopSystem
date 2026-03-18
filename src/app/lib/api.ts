@@ -119,6 +119,14 @@ export interface OrderCreatedEvent {
   order: Order;
 }
 
+export interface OrdersPage {
+  items: Order[];
+  page: number;
+  pageSize: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
 export interface OrderStreamReadyEvent {
   type: "ready";
   listener: boolean;
@@ -289,8 +297,14 @@ export function generateWeeklyMaintenanceReport() {
   });
 }
 
-export function getOrders() {
-  return request<Order[]>("/orders");
+export function getOrders(page = 1, pageSize = 10, search = "") {
+  return request<OrdersPage>(
+    `/orders?page=${encodeURIComponent(String(page))}&page_size=${encodeURIComponent(String(pageSize))}&search=${encodeURIComponent(search)}`,
+  );
+}
+
+export function getAllOrders() {
+  return request<Order[]>("/orders/all");
 }
 
 export function createOrder(payload: CreateOrderInput) {

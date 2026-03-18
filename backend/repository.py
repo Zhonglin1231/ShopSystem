@@ -4,7 +4,7 @@ import json
 import re
 import smtplib
 from collections import defaultdict
-from datetime import datetime, time, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from email.message import EmailMessage
 from pathlib import Path
 from queue import Empty, Queue
@@ -64,7 +64,7 @@ class LocalJsonStore(SnapshotStore):
 
     def save_snapshot(self, snapshot: dict) -> None:
         with self.path.open("w", encoding="utf-8") as handle:
-            json.dump(snapshot, handle, indent=2, ensure_ascii=True)
+            json.dump(snapshot, handle, indent=2, ensure_ascii=True, default=_json_default)
 
 
 class FirestoreStore(SnapshotStore):
@@ -276,6 +276,14 @@ def _currency_symbol(currency: str) -> str:
 def _format_currency(amount: float, currency: str) -> str:
     symbol = _currency_symbol(currency)
     return f"{symbol}{amount:,.2f}"
+
+
+def _json_default(value: Any) -> Any:
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
+    raise TypeError(f"Object of type {value.__class__.__name__} is not JSON serializable")
 
 
 def _parse_datetime(value: str, timezone_name: str) -> datetime:
@@ -659,6 +667,102 @@ class ShopRepository:
         settings = self._load_settings_fast()
         orders = self._load_orders_fast(settings)
         return [self._serialize_order(order, settings) for order in orders]
+
+    def list_orders_page(self, page: int = 1, page_size: int = 10, search: str = "") -> dict:
+        page = max(1, int(page))
+        page_size = max(1, min(int(page_size), 100))
+        settings = self._load_settings_fast()
+        search_term = search.strip().lower()
+
+        if search_term:
+            return self._search_orders_page(page, page_size, search_term, settings)
+
+        if self._using_firestore():
+            try:
+                query = (
+                    self.store.client.collection(self.store.ORDERS_COLLECTION)
+                    .order_by("createdAt", direction=firestore.Query.DESCENDING)
+                    .offset((page - 1) * page_size)
+                    .limit(page_size + 1)
+                )
+                docs = list(query.stream())
+                has_next_page = len(docs) > page_size
+                visible_docs = docs[:page_size]
+                orders = [self._normalize_firestore_order(doc.id, doc.to_dict() or {}, settings) for doc in visible_docs]
+                return {
+                    "items": [self._serialize_order(order, settings) for order in orders],
+                    "page": page,
+                    "pageSize": page_size,
+                    "hasNextPage": has_next_page,
+                    "hasPreviousPage": page > 1,
+                }
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+
+        orders = self._load_orders_fast(settings)
+        start_index = (page - 1) * page_size
+        end_index = start_index + page_size
+        page_items = orders[start_index:end_index]
+        return {
+            "items": [self._serialize_order(order, settings) for order in page_items],
+            "page": page,
+            "pageSize": page_size,
+            "hasNextPage": end_index < len(orders),
+            "hasPreviousPage": page > 1,
+        }
+
+    def _search_orders_page(self, page: int, page_size: int, search_term: str, settings: dict) -> dict:
+        required_matches = (page - 1) * page_size + page_size + 1
+
+        if self._using_firestore():
+            try:
+                exact_order_id = self._normalize_search_order_id(search_term)
+                if exact_order_id and page == 1:
+                    docs = list(
+                        self.store.client.collection(self.store.ORDERS_COLLECTION)
+                        .where("sourceOrderId", "==", exact_order_id)
+                        .limit(page_size + 1)
+                        .stream()
+                    )
+                    if docs:
+                        matches = [self._normalize_firestore_order(doc.id, doc.to_dict() or {}, settings) for doc in docs]
+                        return self._paginate_filtered_orders(matches, page, page_size, settings)
+
+                query = self.store.client.collection(self.store.ORDERS_COLLECTION).order_by(
+                    "createdAt",
+                    direction=firestore.Query.DESCENDING,
+                )
+                matches: list[dict] = []
+                for doc in query.stream():
+                    order = self._normalize_firestore_order(doc.id, doc.to_dict() or {}, settings)
+                    if not self._order_matches_search(order, search_term):
+                        continue
+                    matches.append(order)
+                    if len(matches) >= required_matches:
+                        break
+
+                return self._paginate_filtered_orders(matches, page, page_size, settings)
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+
+        orders = [order for order in self._load_orders_fast(settings) if self._order_matches_search(order, search_term)]
+        return self._paginate_filtered_orders(orders, page, page_size, settings)
+
+    def _paginate_filtered_orders(self, orders: list[dict], page: int, page_size: int, settings: dict) -> dict:
+        start_index = (page - 1) * page_size
+        end_index = start_index + page_size
+        page_items = orders[start_index:end_index]
+        return {
+            "items": [self._serialize_order(order, settings) for order in page_items],
+            "page": page,
+            "pageSize": page_size,
+            "hasNextPage": len(orders) > end_index,
+            "hasPreviousPage": page > 1,
+        }
 
     def create_order(self, payload: dict) -> dict:
         with self._lock:
@@ -1072,6 +1176,7 @@ class ShopRepository:
             "maintenance_logs": maintenance_logs,
             "maintenance_reports": maintenance_reports,
             "orders": orders,
+            "_orders_source": "live",
             "settings": settings,
         }
         timezone_name = settings["timezone"]
@@ -1703,7 +1808,7 @@ class ShopRepository:
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
         backup_file = self.config.backup_dir / f"snapshot-{timestamp}.json"
         with backup_file.open("w", encoding="utf-8") as handle:
-            json.dump(snapshot, handle, indent=2, ensure_ascii=True)
+            json.dump(snapshot, handle, indent=2, ensure_ascii=True, default=_json_default)
 
         backup_files = sorted(self.config.backup_dir.glob("snapshot-*.json"))
         for old_file in backup_files[:-20]:
@@ -1793,8 +1898,9 @@ class ShopRepository:
     def _load_order_records(self, snapshot: dict) -> list[dict]:
         settings = snapshot["settings"]
         snapshot_orders = snapshot.get("orders") or []
+        orders_are_live = snapshot.get("_orders_source") == "live"
 
-        if snapshot_orders:
+        if snapshot_orders and (orders_are_live or not self._using_firestore()):
             if all("line_items" in order for order in snapshot_orders):
                 return sorted(
                     snapshot_orders,
@@ -1831,6 +1937,28 @@ class ShopRepository:
             key=lambda order: _parse_datetime(order["created_at"], settings["timezone"]),
             reverse=True,
         )
+
+    def _order_matches_search(self, order: dict, search_term: str) -> bool:
+        haystacks = [
+            str(order.get("id") or "").lower(),
+            str(order.get("display_id") or "").lower(),
+            str(order.get("source_order_id") or "").lower(),
+            str(order.get("customer_name") or "").lower(),
+        ]
+        return any(search_term in haystack for haystack in haystacks)
+
+    def _normalize_search_order_id(self, search_term: str) -> str | None:
+        candidate = search_term.strip()
+        if not candidate:
+            return None
+
+        if candidate.startswith("#"):
+            candidate = candidate[1:]
+
+        if not candidate.isdigit():
+            return None
+
+        return f"#{candidate}"
 
     def _normalize_snapshot_order(self, order: dict) -> dict:
         return {

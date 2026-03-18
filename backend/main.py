@@ -4,6 +4,7 @@ import asyncio
 import json
 from pathlib import Path
 
+from fastapi import Query
 from fastapi.encoders import jsonable_encoder
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -61,7 +62,19 @@ def dashboard() -> dict:
 
 
 @app.get("/api/orders")
-def list_orders() -> list[dict]:
+def list_orders(
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, ge=1, le=100),
+    search: str = Query(default=""),
+) -> dict:
+    try:
+        return repository.list_orders_page(page=page, page_size=page_size, search=search)
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.get("/api/orders/all")
+def list_all_orders() -> list[dict]:
     try:
         return repository.list_orders()
     except RepositoryError as error:

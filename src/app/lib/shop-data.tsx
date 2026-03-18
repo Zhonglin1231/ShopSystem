@@ -31,6 +31,7 @@ import {
   openOrderEvents,
   Order,
   OrderCreatedEvent,
+  OrdersPage,
   refreshMaintenanceCache as refreshMaintenanceCacheRequest,
   RestockRecord,
   StoreSettings,
@@ -72,6 +73,7 @@ interface OfflineStatus {
 interface ShopDataContextValue {
   dashboard: DashboardData;
   orders: Order[];
+  ordersPage: OrdersPage;
   flowers: Flower[];
   inventory: InventoryItem[];
   restocks: RestockRecord[];
@@ -101,6 +103,7 @@ interface ShopDataContextValue {
 }
 
 const OFFLINE_STATE_KEY = "shopsystem.offline-state";
+const DEFAULT_ORDERS_PAGE_SIZE = 10;
 
 const defaultSettings: StoreSettings = {
   storeName: "Wai Lan Garden",
@@ -125,6 +128,14 @@ const emptyDashboard: DashboardData = {
   },
   maintenanceLogs: [],
   latestWeeklyReport: null,
+};
+
+const emptyOrdersPage: OrdersPage = {
+  items: [],
+  page: 1,
+  pageSize: DEFAULT_ORDERS_PAGE_SIZE,
+  hasNextPage: false,
+  hasPreviousPage: false,
 };
 
 const emptyAnalytics: AnalyticsData = {
@@ -663,6 +674,7 @@ function validateOfflineOrderPayload(payload: CreateOrderInput, flowers: Flower[
 export function ShopDataProvider({ children }: { children: ReactNode }) {
   const [baseDashboard, setBaseDashboard] = useState<DashboardData>(emptyDashboard);
   const [baseOrders, setBaseOrders] = useState<Order[]>([]);
+  const [baseOrdersPage, setBaseOrdersPage] = useState<OrdersPage>(emptyOrdersPage);
   const [baseFlowers, setBaseFlowers] = useState<Flower[]>([]);
   const [baseInventory, setBaseInventory] = useState<InventoryItem[]>([]);
   const [restocks, setRestocks] = useState<RestockRecord[]>([]);
@@ -727,11 +739,11 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
 
     try {
       setError(null);
-      const [health, nextDashboard, nextOrders, nextFlowers, nextInventory, nextAnalytics, nextSettings] =
+      const [health, nextDashboard, nextOrdersPage, nextFlowers, nextInventory, nextAnalytics, nextSettings] =
         await Promise.all([
           getHealth(),
           getDashboard(),
-          getOrders(),
+          getOrders(1, DEFAULT_ORDERS_PAGE_SIZE),
           getFlowers(),
           getInventory(),
           getAnalytics(),
@@ -741,9 +753,10 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
       setSystemHealth(health);
       setStorageBackend(health.storage);
       setBaseDashboard(nextDashboard);
-      baseOrdersRef.current = nextOrders;
+      baseOrdersRef.current = nextOrdersPage.items;
       hasOrderBaselineRef.current = true;
-      setBaseOrders(nextOrders);
+      setBaseOrders(nextOrdersPage.items);
+      setBaseOrdersPage(nextOrdersPage);
       setBaseFlowers(nextFlowers);
       setBaseInventory(nextInventory.items);
       setRestocks(nextInventory.restocks);
@@ -777,10 +790,11 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
     orderRefreshInFlightRef.current = true;
 
     try {
-      const nextOrders = await getOrders();
-      baseOrdersRef.current = nextOrders;
+      const nextOrdersPage = await getOrders(1, baseOrdersPage.pageSize || DEFAULT_ORDERS_PAGE_SIZE);
+      baseOrdersRef.current = nextOrdersPage.items;
       hasOrderBaselineRef.current = true;
-      setBaseOrders(nextOrders);
+      setBaseOrders(nextOrdersPage.items);
+      setBaseOrdersPage(nextOrdersPage);
     } catch {
       // Keep listener resync failures silent while EventSource reconnects.
     } finally {
@@ -797,12 +811,22 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
 
     const nextOrders = mergeIncomingOrder(baseOrdersRef.current, nextOrder);
     const nextFlowers = updateFlowersWithIncomingOrder(baseFlowersRef.current, nextOrder);
+    const nextPageSize = baseOrdersPage.pageSize || DEFAULT_ORDERS_PAGE_SIZE;
+    const pageItems = nextOrders.slice(0, nextPageSize);
 
-    baseOrdersRef.current = nextOrders;
+    baseOrdersRef.current = pageItems;
     baseFlowersRef.current = nextFlowers;
     hasOrderBaselineRef.current = true;
 
-    setBaseOrders(nextOrders);
+    setBaseOrders(pageItems);
+    setBaseOrdersPage((current) => ({
+      ...current,
+      items: pageItems,
+      page: 1,
+      pageSize: current.pageSize || nextPageSize,
+      hasNextPage: current.hasNextPage || nextOrders.length > nextPageSize,
+      hasPreviousPage: false,
+    }));
     setBaseDashboard((current) => updateDashboardWithIncomingOrder(current, nextOrder, settingsRef.current));
     setBaseFlowers(nextFlowers);
     setBaseInventory((current) => updateInventoryWithIncomingOrder(current, nextFlowers, nextOrder));
@@ -1068,6 +1092,10 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
       value={{
         dashboard,
         orders,
+        ordersPage: {
+          ...baseOrdersPage,
+          items: orders,
+        },
         flowers,
         inventory,
         restocks,

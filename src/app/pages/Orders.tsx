@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { OrderDetailsModal } from "../components/OrderDetailsModal";
+import { getOrders, Order, OrdersPage as OrdersPageData } from "../lib/api";
 import { useShopData } from "../lib/shop-data";
+
+const ORDERS_PAGE_SIZE = 10;
 
 function statusStyles(statusClass: string) {
   if (statusClass === "success") {
@@ -24,26 +27,83 @@ function statusStyles(statusClass: string) {
 }
 
 export function Orders() {
-  const { orders, loading, error, updateOrderStatus, offlineStatus, clearNewOrderAlerts } = useShopData();
+  const { orders, ordersPage, loading, error, updateOrderStatus, offlineStatus, clearNewOrderAlerts } = useShopData();
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [sortOrder, setSortOrder] = useState("Newest");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageData, setPageData] = useState<Order[]>(orders);
+  const [pageMeta, setPageMeta] = useState<OrdersPageData>(ordersPage);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [pageError, setPageError] = useState<string | null>(null);
 
   useEffect(() => {
     clearNewOrderAlerts();
   }, []);
 
-  const filteredOrders = orders
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [search]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    if (page === 1 && debouncedSearch.length === 0) {
+      setPageData(orders);
+      setPageMeta(ordersPage);
+      setPageError(null);
+      setPageLoading(false);
+    }
+  }, [orders, ordersPage, page, debouncedSearch]);
+
+  useEffect(() => {
+    if (page === 1 && debouncedSearch.length === 0) {
+      return;
+    }
+
+    let cancelled = false;
+    setPageLoading(true);
+    setPageError(null);
+
+    void getOrders(page, ORDERS_PAGE_SIZE, debouncedSearch)
+      .then((response) => {
+        if (cancelled) {
+          return;
+        }
+        setPageData(response.items);
+        setPageMeta(response);
+      })
+      .catch((requestError) => {
+        if (cancelled) {
+          return;
+        }
+        setPageError(requestError instanceof Error ? requestError.message : "Unable to load this page of orders.");
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setPageLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [page, debouncedSearch]);
+
+  const filteredOrders = pageData
     .filter((order) => {
-      const query = search.trim().toLowerCase();
-        const matchesQuery =
-        query.length === 0 ||
-        order.id.toLowerCase().includes(query) ||
-        order.displayId.toLowerCase().includes(query) ||
-        order.customerName.toLowerCase().includes(query);
       const matchesStatus = statusFilter === "All" || order.status === statusFilter;
-      return matchesQuery && matchesStatus;
+      return matchesStatus;
     })
     .sort((left, right) => {
       const leftTime = new Date(left.createdAt).getTime();
@@ -51,7 +111,7 @@ export function Orders() {
       return sortOrder === "Newest" ? rightTime - leftTime : leftTime - rightTime;
     });
 
-  const selectedOrder = orders.find((order) => order.id === selectedOrderId) ?? null;
+  const selectedOrder = pageData.find((order) => order.id === selectedOrderId) ?? null;
 
   return (
     <>
@@ -63,7 +123,7 @@ export function Orders() {
           padding: "var(--s-4)",
         }}
       >
-        {error && (
+        {(error || pageError) && (
           <div
             className="border"
             style={{
@@ -74,7 +134,7 @@ export function Orders() {
               color: "#A94442",
             }}
           >
-            {error}
+            {pageError ?? error}
           </div>
         )}
 
@@ -142,7 +202,7 @@ export function Orders() {
           </select>
         </div>
 
-        {loading && orders.length === 0 ? (
+        {(loading || pageLoading) && pageData.length === 0 ? (
           <div style={{ padding: "var(--s-4)", color: "var(--c-text-secondary)" }}>Loading orders...</div>
         ) : (
           <>
@@ -303,6 +363,63 @@ export function Orders() {
               )}
             </tbody>
             </table>
+
+            <div
+              className="flex items-center justify-between border-t"
+              style={{
+                marginTop: "var(--s-4)",
+                paddingTop: "var(--s-4)",
+                borderColor: "var(--c-border)",
+              }}
+            >
+              <div style={{ color: "var(--c-text-secondary)", fontSize: "0.8rem" }}>
+                Page {pageMeta.page}
+              </div>
+              <div className="flex items-center" style={{ gap: "var(--s-2)" }}>
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                  disabled={!pageMeta.hasPreviousPage || pageLoading}
+                  className="border"
+                  style={{
+                    padding: "0 var(--s-3)",
+                    height: "32px",
+                    backgroundColor: "transparent",
+                    borderColor: "var(--c-border)",
+                    color: "var(--c-text-primary)",
+                    opacity: !pageMeta.hasPreviousPage || pageLoading ? 0.5 : 1,
+                    cursor: !pageMeta.hasPreviousPage || pageLoading ? "not-allowed" : "pointer",
+                    fontFamily: "var(--f-sans)",
+                    fontSize: "0.7rem",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Prev
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => current + 1)}
+                  disabled={!pageMeta.hasNextPage || pageLoading}
+                  className="border"
+                  style={{
+                    padding: "0 var(--s-3)",
+                    height: "32px",
+                    backgroundColor: "transparent",
+                    borderColor: "var(--c-border)",
+                    color: "var(--c-text-primary)",
+                    opacity: !pageMeta.hasNextPage || pageLoading ? 0.5 : 1,
+                    cursor: !pageMeta.hasNextPage || pageLoading ? "not-allowed" : "pointer",
+                    fontFamily: "var(--f-sans)",
+                    fontSize: "0.7rem",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           </>
         )}
       </div>
@@ -311,7 +428,15 @@ export function Orders() {
         isOpen={selectedOrder !== null}
         order={selectedOrder}
         onClose={() => setSelectedOrderId(null)}
-        onUpdateStatus={(status) => (selectedOrder ? updateOrderStatus(selectedOrder.id, status) : Promise.reject(new Error("No order selected.")))}
+        onUpdateStatus={async (status) => {
+          if (!selectedOrder) {
+            return Promise.reject(new Error("No order selected."));
+          }
+
+          const updatedOrder = await updateOrderStatus(selectedOrder.id, status);
+          setPageData((current) => current.map((order) => (order.id === updatedOrder.id ? updatedOrder : order)));
+          return updatedOrder;
+        }}
       />
     </>
   );
