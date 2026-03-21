@@ -3,6 +3,7 @@ import { Root } from "./components/Root";
 import { Dashboard } from "./pages/Dashboard";
 import { Orders } from "./pages/Orders";
 import { Flowers } from "./pages/Flowers";
+import { Bouquets } from "./pages/Bouquets";
 import { Inventory } from "./pages/Inventory";
 import { Analytics } from "./pages/Analytics";
 import { Maintenance } from "./pages/Maintenance";
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
       { index: true, Component: Dashboard },
       { path: "orders", Component: Orders },
       { path: "flowers", Component: Flowers },
+      { path: "bouquets", Component: Bouquets },
       { path: "inventory", Component: Inventory },
       { path: "analytics", Component: Analytics },
       { path: "maintenance", Component: Maintenance },

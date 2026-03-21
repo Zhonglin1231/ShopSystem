@@ -31,6 +31,17 @@ class CreateFlowerRequest(BaseModel):
     image: str | None = None
 
 
+class BouquetComponentInput(BaseModel):
+    flowerId: str = Field(min_length=1)
+    quantity: int = Field(gt=0)
+
+
+class CreateBouquetRequest(BaseModel):
+    name: str = Field(min_length=1)
+    components: list[BouquetComponentInput] = Field(min_length=1)
+    image: str | None = None
+
+
 class UpdateInventoryRequest(BaseModel):
     delta: int
 

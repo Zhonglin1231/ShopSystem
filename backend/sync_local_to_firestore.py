@@ -30,13 +30,8 @@ def build_firestore_order(order: dict) -> dict:
         {
             "flowerId": item["flower_id"],
             "flowerName": item["name"],
-            "flowerEmoji": "🌸",
             "flowerPrice": item["unit_price"],
             "quantity": item["qty"],
-            "positionX": 0,
-            "positionY": 0,
-            "rotation": 0,
-            "scale": 1.0,
             "unit": item.get("unit", "stem"),
         }
         for item in order.get("line_items", [])

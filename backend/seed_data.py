@@ -19,6 +19,8 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
     timezone = ZoneInfo(timezone_name)
     now = datetime.now(timezone).replace(second=0, microsecond=0)
 
+    bouquets = []
+
     flowers = [
         {
             "id": "dusty-rose",
@@ -362,6 +364,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
     }
 
     return {
+        "bouquets": deepcopy(bouquets),
         "flowers": deepcopy(flowers),
         "inventory": deepcopy(inventory),
         "orders": deepcopy(orders),

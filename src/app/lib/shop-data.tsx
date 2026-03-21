@@ -9,18 +9,23 @@ import {
 import {
   adjustInventory as adjustInventoryRequest,
   AnalyticsData,
+  Bouquet,
   CacheRefreshResult,
+  createBouquet as createBouquetRequest,
   createFlower as createFlowerRequest,
+  CreateBouquetInput,
   CreateFlowerInput,
   createOrder as createOrderRequest,
   CreateOrderInput,
   createRestock as createRestockRequest,
   CreateRestockInput,
   DashboardData,
+  deleteBouquet as deleteBouquetRequest,
   deleteFlower as deleteFlowerRequest,
   Flower,
   generateWeeklyMaintenanceReport as generateWeeklyMaintenanceReportRequest,
   getAnalytics,
+  getBouquets,
   getDashboard,
   getFlowers,
   getHealth,
@@ -74,6 +79,7 @@ interface ShopDataContextValue {
   dashboard: DashboardData;
   orders: Order[];
   ordersPage: OrdersPage;
+  bouquets: Bouquet[];
   flowers: Flower[];
   inventory: InventoryItem[];
   restocks: RestockRecord[];
@@ -92,6 +98,8 @@ interface ShopDataContextValue {
   generateWeeklyMaintenanceReport: () => Promise<WeeklyMaintenanceReport>;
   createOrder: (payload: CreateOrderInput) => Promise<Order>;
   updateOrderStatus: (orderId: string, status: string) => Promise<Order>;
+  createBouquet: (payload: CreateBouquetInput) => Promise<Bouquet>;
+  deleteBouquet: (bouquetId: string) => Promise<{ id: string; name: string; deleted: boolean }>;
   createFlower: (payload: CreateFlowerInput) => Promise<Flower>;
   deleteFlower: (flowerId: string) => Promise<{ id: string; name: string; deleted: boolean }>;
   adjustInventory: (itemCode: string, delta: number) => Promise<InventoryItem>;
@@ -675,6 +683,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
   const [baseDashboard, setBaseDashboard] = useState<DashboardData>(emptyDashboard);
   const [baseOrders, setBaseOrders] = useState<Order[]>([]);
   const [baseOrdersPage, setBaseOrdersPage] = useState<OrdersPage>(emptyOrdersPage);
+  const [baseBouquets, setBaseBouquets] = useState<Bouquet[]>([]);
   const [baseFlowers, setBaseFlowers] = useState<Flower[]>([]);
   const [baseInventory, setBaseInventory] = useState<InventoryItem[]>([]);
   const [restocks, setRestocks] = useState<RestockRecord[]>([]);
@@ -739,11 +748,12 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
 
     try {
       setError(null);
-      const [health, nextDashboard, nextOrdersPage, nextFlowers, nextInventory, nextAnalytics, nextSettings] =
+      const [health, nextDashboard, nextOrdersPage, nextBouquets, nextFlowers, nextInventory, nextAnalytics, nextSettings] =
         await Promise.all([
           getHealth(),
           getDashboard(),
           getOrders(1, DEFAULT_ORDERS_PAGE_SIZE),
+          getBouquets(),
           getFlowers(),
           getInventory(),
           getAnalytics(),
@@ -757,6 +767,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
       hasOrderBaselineRef.current = true;
       setBaseOrders(nextOrdersPage.items);
       setBaseOrdersPage(nextOrdersPage);
+      setBaseBouquets(nextBouquets);
       setBaseFlowers(nextFlowers);
       setBaseInventory(nextInventory.items);
       setRestocks(nextInventory.restocks);
@@ -1096,6 +1107,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
           ...baseOrdersPage,
           items: orders,
         },
+        bouquets: baseBouquets,
         flowers,
         inventory,
         restocks,
@@ -1139,6 +1151,8 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
 
           return runMutation(() => updateOrderStatusRequest(orderId, status));
         },
+        createBouquet: (payload) => runMutation(() => createBouquetRequest(payload)),
+        deleteBouquet: (bouquetId) => runMutation(() => deleteBouquetRequest(bouquetId)),
         createFlower: (payload) => runMutation(() => createFlowerRequest(payload)),
         deleteFlower: (flowerId) => runMutation(() => deleteFlowerRequest(flowerId)),
         adjustInventory: (itemCode, delta) =>

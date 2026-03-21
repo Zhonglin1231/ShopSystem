@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from .config import get_config
 from .repository import RepositoryError, ShopRepository, ValidationError, create_store
 from .schemas import (
+    CreateBouquetRequest,
     CreateFlowerRequest,
     CreateOrderRequest,
     CreateRestockRequest,
@@ -153,6 +154,30 @@ def create_flower(payload: CreateFlowerRequest) -> dict:
 def delete_flower(flower_id: str) -> dict:
     try:
         return repository.delete_flower(flower_id)
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.get("/api/bouquets")
+def list_bouquets() -> list[dict]:
+    try:
+        return repository.list_bouquets()
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.post("/api/bouquets")
+def create_bouquet(payload: CreateBouquetRequest) -> dict:
+    try:
+        return repository.create_bouquet(payload.model_dump())
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.delete("/api/bouquets/{bouquet_id}")
+def delete_bouquet(bouquet_id: str) -> dict:
+    try:
+        return repository.delete_bouquet(bouquet_id)
     except RepositoryError as error:
         _handle_repository_error(error)
 

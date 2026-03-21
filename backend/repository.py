@@ -68,6 +68,7 @@ class LocalJsonStore(SnapshotStore):
 
 
 class FirestoreStore(SnapshotStore):
+    BOUQUETS_COLLECTION = "bouquets"
     FLOWERS_COLLECTION = "flowers"
     INVENTORY_COLLECTION = "inventory"
     RESTOCKS_COLLECTION = "restocks"
@@ -100,6 +101,7 @@ class FirestoreStore(SnapshotStore):
         self.client = firestore.client(existing_app)
 
     def load_snapshot(self) -> dict:
+        bouquets = self._load_collection(self.BOUQUETS_COLLECTION)
         flowers = self._load_collection(self.FLOWERS_COLLECTION)
         inventory = self._load_collection(self.INVENTORY_COLLECTION)
         restocks = self._load_collection(self.RESTOCKS_COLLECTION)
@@ -108,6 +110,7 @@ class FirestoreStore(SnapshotStore):
         settings = self._load_settings()
 
         snapshot = {
+            "bouquets": bouquets,
             "flowers": flowers,
             "inventory": inventory,
             "orders": [],
@@ -118,7 +121,7 @@ class FirestoreStore(SnapshotStore):
         }
 
         legacy_snapshot = self._load_legacy_snapshot()
-        for key in ("flowers", "inventory", "orders", "restocks"):
+        for key in ("bouquets", "flowers", "inventory", "orders", "restocks"):
             if not snapshot[key] and legacy_snapshot.get(key):
                 snapshot[key] = legacy_snapshot[key]
         if not snapshot["settings"] and legacy_snapshot.get("settings"):
@@ -127,6 +130,11 @@ class FirestoreStore(SnapshotStore):
         return snapshot
 
     def save_snapshot(self, snapshot: dict) -> None:
+        self._sync_collection(
+            self.BOUQUETS_COLLECTION,
+            snapshot.get("bouquets", []),
+            lambda bouquet: bouquet["id"],
+        )
         self._sync_collection(
             self.FLOWERS_COLLECTION,
             snapshot.get("flowers", []),
@@ -440,6 +448,8 @@ class ShopRepository:
         return normalized_snapshot["settings"]
 
     def _collection_key_for_name(self, collection_name: str) -> str:
+        if collection_name == FirestoreStore.BOUQUETS_COLLECTION:
+            return "bouquets"
         if collection_name == FirestoreStore.FLOWERS_COLLECTION:
             return "flowers"
         if collection_name == FirestoreStore.INVENTORY_COLLECTION:
@@ -841,13 +851,8 @@ class ShopRepository:
                             {
                                 "flowerId": item["flower_id"],
                                 "flowerName": item["name"],
-                                "flowerEmoji": "🌸",
                                 "flowerPrice": item["unit_price"],
                                 "quantity": item["qty"],
-                                "positionX": 0,
-                                "positionY": 0,
-                                "rotation": 0,
-                                "scale": 1.0,
                             }
                             for item in line_items
                         ],
@@ -941,6 +946,56 @@ class ShopRepository:
         flowers = sorted(flowers, key=lambda flower: flower["name"].lower())
         return [self._serialize_flower(flower, inventory_by_code, settings) for flower in flowers]
 
+    def list_bouquets(self) -> list[dict]:
+        bouquets = self._load_collection_fast(FirestoreStore.BOUQUETS_COLLECTION)
+        flowers = self._load_collection_fast(FirestoreStore.FLOWERS_COLLECTION)
+        flowers_by_id = {flower["id"]: flower for flower in flowers}
+        bouquets = sorted(bouquets, key=lambda bouquet: bouquet["name"].lower())
+        return [self._serialize_bouquet(bouquet, flowers_by_id) for bouquet in bouquets]
+
+    def create_bouquet(self, payload: dict) -> dict:
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            flowers_by_id = {flower["id"]: flower for flower in snapshot["flowers"]}
+
+            if not payload.get("components"):
+                raise ValidationError("A bouquet must include at least one flower.")
+
+            existing_ids = {bouquet["id"] for bouquet in snapshot["bouquets"]}
+            bouquet_id = _slugify(payload["name"])
+            if bouquet_id in existing_ids:
+                suffix = 2
+                while f"{bouquet_id}-{suffix}" in existing_ids:
+                    suffix += 1
+                bouquet_id = f"{bouquet_id}-{suffix}"
+
+            quantities_by_flower: dict[str, int] = defaultdict(int)
+            for component in payload["components"]:
+                flower_id = str(component.get("flowerId", "")).strip()
+                quantity = int(component.get("quantity", 0))
+                if not flower_id or quantity <= 0:
+                    raise ValidationError("Each bouquet item must include a flower and quantity.")
+                if flower_id not in flowers_by_id:
+                    raise ValidationError("Some flowers are no longer available.")
+                quantities_by_flower[flower_id] += quantity
+
+            bouquet = {
+                "id": bouquet_id,
+                "name": payload["name"].strip(),
+                "image": payload.get("image") or DEFAULT_FLOWER_IMAGE,
+                "components": [
+                    {
+                        "flower_id": flower_id,
+                        "quantity": quantity,
+                    }
+                    for flower_id, quantity in quantities_by_flower.items()
+                ],
+            }
+
+            snapshot["bouquets"].append(bouquet)
+            self._persist_snapshot(snapshot)
+            return self._serialize_bouquet(bouquet, flowers_by_id)
+
     def create_flower(self, payload: dict) -> dict:
         with self._lock:
             snapshot, _ = self._load_snapshot()
@@ -1010,12 +1065,39 @@ class ShopRepository:
                     f"Cannot delete {flower['name']} because it is used in active order {active_order['display_id']}."
                 )
 
+            linked_bouquet = next(
+                (
+                    bouquet
+                    for bouquet in snapshot["bouquets"]
+                    if any(
+                        (component.get("flower_id") or component.get("flowerId")) == flower_id
+                        for component in bouquet.get("components", [])
+                    )
+                ),
+                None,
+            )
+            if linked_bouquet is not None:
+                raise ValidationError(
+                    f"Cannot delete {flower['name']} because it is used in bouquet {linked_bouquet['name']}."
+                )
+
             snapshot["flowers"] = [entry for entry in snapshot["flowers"] if entry["id"] != flower_id]
             snapshot["inventory"] = [
                 entry for entry in snapshot["inventory"] if entry.get("linked_flower_id") != flower_id
             ]
             self._persist_snapshot(snapshot)
             return {"id": flower_id, "name": flower["name"], "deleted": True}
+
+    def delete_bouquet(self, bouquet_id: str) -> dict:
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            bouquet = next((entry for entry in snapshot["bouquets"] if entry["id"] == bouquet_id), None)
+            if bouquet is None:
+                raise ValidationError("Bouquet not found.")
+
+            snapshot["bouquets"] = [entry for entry in snapshot["bouquets"] if entry["id"] != bouquet_id]
+            self._persist_snapshot(snapshot)
+            return {"id": bouquet_id, "name": bouquet["name"], "deleted": True}
 
     def get_inventory(self) -> dict:
         settings = self._load_settings_fast()
@@ -1852,6 +1934,7 @@ class ShopRepository:
         seeded = build_seed_snapshot(timezone_name)
 
         normalized = {
+            "bouquets": snapshot.get("bouquets") or [],
             "flowers": snapshot.get("flowers") or [],
             "inventory": snapshot.get("inventory") or [],
             "orders": snapshot.get("orders") or [],
@@ -2088,6 +2171,43 @@ class ShopRepository:
             "statusClass": status_class,
             "inventoryCode": flower["inventory_code"],
             "parLevel": par,
+        }
+
+    def _serialize_bouquet(self, bouquet: dict, flowers_by_id: dict[str, dict]) -> dict:
+        components = []
+        component_summary_parts = []
+        total_quantity = 0
+
+        for component in bouquet.get("components", []):
+            flower_id = component.get("flower_id") or component.get("flowerId")
+            quantity = int(component.get("quantity", 0))
+            if not flower_id or quantity <= 0:
+                continue
+
+            flower = flowers_by_id.get(flower_id)
+            if not flower:
+                continue
+
+            total_quantity += quantity
+            component_summary_parts.append(f"{flower['name']} x {quantity}")
+            components.append(
+                {
+                    "flowerId": flower_id,
+                    "flowerName": flower["name"],
+                    "quantity": quantity,
+                    "unit": flower.get("unit", "stem"),
+                    "image": flower.get("image") or DEFAULT_FLOWER_IMAGE,
+                }
+            )
+
+        return {
+            "id": bouquet["id"],
+            "name": bouquet["name"],
+            "image": bouquet.get("image") or DEFAULT_FLOWER_IMAGE,
+            "components": components,
+            "varietyCount": len(components),
+            "totalQuantity": total_quantity,
+            "componentSummary": ", ".join(component_summary_parts),
         }
 
     def _average_costs_by_item(self, snapshot: dict) -> dict[str, float]:

@@ -151,6 +151,24 @@ export interface Flower {
   parLevel: number;
 }
 
+export interface BouquetComponent {
+  flowerId: string;
+  flowerName: string;
+  quantity: number;
+  unit: string;
+  image: string;
+}
+
+export interface Bouquet {
+  id: string;
+  name: string;
+  image: string;
+  components: BouquetComponent[];
+  varietyCount: number;
+  totalQuantity: number;
+  componentSummary: string;
+}
+
 export interface InventoryItem {
   code: string;
   name: string;
@@ -252,6 +270,15 @@ export interface CreateFlowerInput {
   image?: string | null;
 }
 
+export interface CreateBouquetInput {
+  name: string;
+  components: Array<{
+    flowerId: string;
+    quantity: number;
+  }>;
+  image?: string | null;
+}
+
 export interface CreateRestockInput {
   itemCode: string;
   quantity: number;
@@ -334,6 +361,23 @@ export function createFlower(payload: CreateFlowerInput) {
 
 export function deleteFlower(flowerId: string) {
   return request<{ id: string; name: string; deleted: boolean }>(`/flowers/${encodeURIComponent(flowerId)}`, {
+    method: "DELETE",
+  });
+}
+
+export function getBouquets() {
+  return request<Bouquet[]>("/bouquets");
+}
+
+export function createBouquet(payload: CreateBouquetInput) {
+  return request<Bouquet>("/bouquets", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteBouquet(bouquetId: string) {
+  return request<{ id: string; name: string; deleted: boolean }>(`/bouquets/${encodeURIComponent(bouquetId)}`, {
     method: "DELETE",
   });
 }
