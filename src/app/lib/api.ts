@@ -169,6 +169,14 @@ export interface Bouquet {
   componentSummary: string;
 }
 
+export interface Wrapping {
+  id: string;
+  name: string;
+  price: number;
+  priceDisplay: string;
+  image: string;
+}
+
 export interface InventoryItem {
   code: string;
   name: string;
@@ -290,6 +298,12 @@ export interface CreateRestockInput {
   unitCost: number;
 }
 
+export interface CreateWrappingInput {
+  name: string;
+  price: number;
+  image?: string | null;
+}
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -383,6 +397,23 @@ export function createBouquet(payload: CreateBouquetInput) {
 
 export function deleteBouquet(bouquetId: string) {
   return request<{ id: string; name: string; deleted: boolean }>(`/bouquets/${encodeURIComponent(bouquetId)}`, {
+    method: "DELETE",
+  });
+}
+
+export function getWrappings() {
+  return request<Wrapping[]>("/wrappings");
+}
+
+export function createWrapping(payload: CreateWrappingInput) {
+  return request<Wrapping>("/wrappings", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteWrapping(wrappingId: string) {
+  return request<{ id: string; name: string; deleted: boolean }>(`/wrappings/${encodeURIComponent(wrappingId)}`, {
     method: "DELETE",
   });
 }

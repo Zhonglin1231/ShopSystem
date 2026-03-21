@@ -18,6 +18,7 @@ from .schemas import (
     CreateFlowerRequest,
     CreateOrderRequest,
     CreateRestockRequest,
+    CreateWrappingRequest,
     UpdateAiPreviewApiRequest,
     UpdateInventoryParRequest,
     UpdateInventoryRequest,
@@ -179,6 +180,30 @@ def create_bouquet(payload: CreateBouquetRequest) -> dict:
 def delete_bouquet(bouquet_id: str) -> dict:
     try:
         return repository.delete_bouquet(bouquet_id)
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.get("/api/wrappings")
+def list_wrappings() -> list[dict]:
+    try:
+        return repository.list_wrappings()
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.post("/api/wrappings")
+def create_wrapping(payload: CreateWrappingRequest) -> dict:
+    try:
+        return repository.create_wrapping(payload.model_dump())
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.delete("/api/wrappings/{wrapping_id}")
+def delete_wrapping(wrapping_id: str) -> dict:
+    try:
+        return repository.delete_wrapping(wrapping_id)
     except RepositoryError as error:
         _handle_repository_error(error)
 

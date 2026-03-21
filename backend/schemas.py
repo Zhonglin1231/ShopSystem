@@ -42,6 +42,12 @@ class CreateBouquetRequest(BaseModel):
     image: str | None = None
 
 
+class CreateWrappingRequest(BaseModel):
+    name: str = Field(min_length=1)
+    price: float = Field(ge=0)
+    image: str | None = None
+
+
 class UpdateInventoryRequest(BaseModel):
     delta: int
 

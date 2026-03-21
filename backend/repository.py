@@ -70,6 +70,7 @@ class LocalJsonStore(SnapshotStore):
 class FirestoreStore(SnapshotStore):
     BOUQUETS_COLLECTION = "bouquets"
     FLOWERS_COLLECTION = "flowers"
+    WRAPPINGS_COLLECTION = "wrapping_options"
     INVENTORY_COLLECTION = "inventory"
     RESTOCKS_COLLECTION = "restocks"
     MAINTENANCE_LOGS_COLLECTION = "maintenance_logs"
@@ -104,6 +105,7 @@ class FirestoreStore(SnapshotStore):
     def load_snapshot(self) -> dict:
         bouquets = self._load_collection(self.BOUQUETS_COLLECTION)
         flowers = self._load_collection(self.FLOWERS_COLLECTION)
+        wrappings = self._load_collection(self.WRAPPINGS_COLLECTION)
         inventory = self._load_collection(self.INVENTORY_COLLECTION)
         restocks = self._load_collection(self.RESTOCKS_COLLECTION)
         maintenance_logs = self._load_collection(self.MAINTENANCE_LOGS_COLLECTION)
@@ -113,6 +115,7 @@ class FirestoreStore(SnapshotStore):
         snapshot = {
             "bouquets": bouquets,
             "flowers": flowers,
+            "wrappings": wrappings,
             "inventory": inventory,
             "orders": [],
             "restocks": restocks,
@@ -122,7 +125,7 @@ class FirestoreStore(SnapshotStore):
         }
 
         legacy_snapshot = self._load_legacy_snapshot()
-        for key in ("bouquets", "flowers", "inventory", "orders", "restocks"):
+        for key in ("bouquets", "flowers", "wrappings", "inventory", "orders", "restocks"):
             if not snapshot[key] and legacy_snapshot.get(key):
                 snapshot[key] = legacy_snapshot[key]
         if not snapshot["settings"] and legacy_snapshot.get("settings"):
@@ -140,6 +143,11 @@ class FirestoreStore(SnapshotStore):
             self.FLOWERS_COLLECTION,
             snapshot.get("flowers", []),
             lambda flower: flower["id"],
+        )
+        self._sync_collection(
+            self.WRAPPINGS_COLLECTION,
+            snapshot.get("wrappings", []),
+            lambda wrapping: wrapping["id"],
         )
         self._sync_collection(
             self.INVENTORY_COLLECTION,
@@ -460,6 +468,8 @@ class ShopRepository:
             return "bouquets"
         if collection_name == FirestoreStore.FLOWERS_COLLECTION:
             return "flowers"
+        if collection_name == FirestoreStore.WRAPPINGS_COLLECTION:
+            return "wrappings"
         if collection_name == FirestoreStore.INVENTORY_COLLECTION:
             return "inventory"
         if collection_name == FirestoreStore.RESTOCKS_COLLECTION:
@@ -961,6 +971,12 @@ class ShopRepository:
         bouquets = sorted(bouquets, key=lambda bouquet: bouquet["name"].lower())
         return [self._serialize_bouquet(bouquet, flowers_by_id) for bouquet in bouquets]
 
+    def list_wrappings(self) -> list[dict]:
+        settings = self._load_settings_fast()
+        wrappings = self._load_collection_fast(FirestoreStore.WRAPPINGS_COLLECTION)
+        wrappings = sorted(wrappings, key=lambda wrapping: str(wrapping.get("name", "")).lower())
+        return [self._serialize_wrapping(wrapping, settings) for wrapping in wrappings]
+
     def create_bouquet(self, payload: dict) -> dict:
         with self._lock:
             snapshot, _ = self._load_snapshot()
@@ -1051,6 +1067,30 @@ class ShopRepository:
             inventory_by_code = {item["code"]: item for item in snapshot["inventory"]}
             return self._serialize_flower(flower, inventory_by_code, settings)
 
+    def create_wrapping(self, payload: dict) -> dict:
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            settings = snapshot["settings"]
+
+            existing_ids = {wrapping["id"] for wrapping in snapshot.get("wrappings", [])}
+            wrapping_id = _slugify(payload["name"])
+            if wrapping_id in existing_ids:
+                suffix = 2
+                while f"{wrapping_id}-{suffix}" in existing_ids:
+                    suffix += 1
+                wrapping_id = f"{wrapping_id}-{suffix}"
+
+            wrapping = {
+                "id": wrapping_id,
+                "name": payload["name"].strip(),
+                "price": float(payload.get("price", 0)),
+                "imageURL": payload.get("image") or DEFAULT_FLOWER_IMAGE,
+            }
+
+            snapshot.setdefault("wrappings", []).append(wrapping)
+            self._persist_snapshot(snapshot)
+            return self._serialize_wrapping(wrapping, settings)
+
     def delete_flower(self, flower_id: str) -> dict:
         with self._lock:
             snapshot, _ = self._load_snapshot()
@@ -1106,6 +1146,17 @@ class ShopRepository:
             snapshot["bouquets"] = [entry for entry in snapshot["bouquets"] if entry["id"] != bouquet_id]
             self._persist_snapshot(snapshot)
             return {"id": bouquet_id, "name": bouquet["name"], "deleted": True}
+
+    def delete_wrapping(self, wrapping_id: str) -> dict:
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            wrapping = next((entry for entry in snapshot.get("wrappings", []) if entry["id"] == wrapping_id), None)
+            if wrapping is None:
+                raise ValidationError("Wrapping not found.")
+
+            snapshot["wrappings"] = [entry for entry in snapshot.get("wrappings", []) if entry["id"] != wrapping_id]
+            self._persist_snapshot(snapshot)
+            return {"id": wrapping_id, "name": wrapping.get("name", wrapping_id), "deleted": True}
 
     def get_inventory(self) -> dict:
         settings = self._load_settings_fast()
@@ -1993,6 +2044,7 @@ class ShopRepository:
         normalized = {
             "bouquets": snapshot.get("bouquets") or [],
             "flowers": snapshot.get("flowers") or [],
+            "wrappings": snapshot.get("wrappings") or [],
             "inventory": snapshot.get("inventory") or [],
             "orders": snapshot.get("orders") or [],
             "restocks": snapshot.get("restocks") or [],
@@ -2265,6 +2317,16 @@ class ShopRepository:
             "varietyCount": len(components),
             "totalQuantity": total_quantity,
             "componentSummary": ", ".join(component_summary_parts),
+        }
+
+    def _serialize_wrapping(self, wrapping: dict, settings: dict) -> dict:
+        price = float(wrapping.get("price", 0))
+        return {
+            "id": wrapping.get("id", ""),
+            "name": wrapping.get("name", ""),
+            "price": round(price, 2),
+            "priceDisplay": _format_currency(price, settings["currency"]),
+            "image": wrapping.get("imageURL") or wrapping.get("image") or DEFAULT_FLOWER_IMAGE,
         }
 
     def _average_costs_by_item(self, snapshot: dict) -> dict[str, float]:

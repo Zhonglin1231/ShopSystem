@@ -13,8 +13,10 @@ import {
   CacheRefreshResult,
   createBouquet as createBouquetRequest,
   createFlower as createFlowerRequest,
+  createWrapping as createWrappingRequest,
   CreateBouquetInput,
   CreateFlowerInput,
+  CreateWrappingInput,
   createOrder as createOrderRequest,
   CreateOrderInput,
   createRestock as createRestockRequest,
@@ -22,6 +24,7 @@ import {
   DashboardData,
   deleteBouquet as deleteBouquetRequest,
   deleteFlower as deleteFlowerRequest,
+  deleteWrapping as deleteWrappingRequest,
   Flower,
   generateWeeklyMaintenanceReport as generateWeeklyMaintenanceReportRequest,
   getAnalytics,
@@ -32,6 +35,7 @@ import {
   getInventory,
   getOrders,
   getSettings,
+  getWrappings,
   InventoryItem,
   openOrderEvents,
   Order,
@@ -45,6 +49,7 @@ import {
   updateInventoryParLevel as updateInventoryParLevelRequest,
   updateOrderStatus as updateOrderStatusRequest,
   updateSettings as updateSettingsRequest,
+  Wrapping,
   WeeklyMaintenanceReport,
 } from "./api";
 
@@ -81,6 +86,7 @@ interface ShopDataContextValue {
   ordersPage: OrdersPage;
   bouquets: Bouquet[];
   flowers: Flower[];
+  wrappings: Wrapping[];
   inventory: InventoryItem[];
   restocks: RestockRecord[];
   analytics: AnalyticsData;
@@ -102,6 +108,8 @@ interface ShopDataContextValue {
   deleteBouquet: (bouquetId: string) => Promise<{ id: string; name: string; deleted: boolean }>;
   createFlower: (payload: CreateFlowerInput) => Promise<Flower>;
   deleteFlower: (flowerId: string) => Promise<{ id: string; name: string; deleted: boolean }>;
+  createWrapping: (payload: CreateWrappingInput) => Promise<Wrapping>;
+  deleteWrapping: (wrappingId: string) => Promise<{ id: string; name: string; deleted: boolean }>;
   adjustInventory: (itemCode: string, delta: number) => Promise<InventoryItem>;
   updateInventoryStock: (itemCode: string, stock: number) => Promise<InventoryItem>;
   updateInventoryParLevel: (itemCode: string, parLevel: number) => Promise<InventoryItem>;
@@ -685,6 +693,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
   const [baseOrdersPage, setBaseOrdersPage] = useState<OrdersPage>(emptyOrdersPage);
   const [baseBouquets, setBaseBouquets] = useState<Bouquet[]>([]);
   const [baseFlowers, setBaseFlowers] = useState<Flower[]>([]);
+  const [baseWrappings, setBaseWrappings] = useState<Wrapping[]>([]);
   const [baseInventory, setBaseInventory] = useState<InventoryItem[]>([]);
   const [restocks, setRestocks] = useState<RestockRecord[]>([]);
   const [analytics, setAnalytics] = useState<AnalyticsData>(emptyAnalytics);
@@ -748,13 +757,24 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
 
     try {
       setError(null);
-      const [health, nextDashboard, nextOrdersPage, nextBouquets, nextFlowers, nextInventory, nextAnalytics, nextSettings] =
+      const [
+        health,
+        nextDashboard,
+        nextOrdersPage,
+        nextBouquets,
+        nextFlowers,
+        nextWrappings,
+        nextInventory,
+        nextAnalytics,
+        nextSettings,
+      ] =
         await Promise.all([
           getHealth(),
           getDashboard(),
           getOrders(1, DEFAULT_ORDERS_PAGE_SIZE),
           getBouquets(),
           getFlowers(),
+          getWrappings(),
           getInventory(),
           getAnalytics(),
           getSettings(),
@@ -769,6 +789,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
       setBaseOrdersPage(nextOrdersPage);
       setBaseBouquets(nextBouquets);
       setBaseFlowers(nextFlowers);
+      setBaseWrappings(nextWrappings);
       setBaseInventory(nextInventory.items);
       setRestocks(nextInventory.restocks);
       setAnalytics(nextAnalytics);
@@ -1109,6 +1130,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
         },
         bouquets: baseBouquets,
         flowers,
+        wrappings: baseWrappings,
         inventory,
         restocks,
         analytics,
@@ -1155,6 +1177,8 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
         deleteBouquet: (bouquetId) => runMutation(() => deleteBouquetRequest(bouquetId)),
         createFlower: (payload) => runMutation(() => createFlowerRequest(payload)),
         deleteFlower: (flowerId) => runMutation(() => deleteFlowerRequest(flowerId)),
+        createWrapping: (payload) => runMutation(() => createWrappingRequest(payload)),
+        deleteWrapping: (wrappingId) => runMutation(() => deleteWrappingRequest(wrappingId)),
         adjustInventory: (itemCode, delta) =>
           runMutation(() => adjustInventoryRequest(itemCode, delta), (nextItem) => {
             setBaseInventory((currentInventory) =>
