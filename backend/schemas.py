@@ -69,5 +69,10 @@ class UpdateSettingsRequest(BaseModel):
     deliveryRadius: int = Field(ge=0)
 
 
+class UpdateAiPreviewApiRequest(BaseModel):
+    apiKey: str = ""
+    modelName: str = ""
+
+
 class UpdateOrderStatusRequest(BaseModel):
     status: str = Field(min_length=1)

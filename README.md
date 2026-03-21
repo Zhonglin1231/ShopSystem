@@ -81,7 +81,10 @@ npm run dev:frontend
 ```bash
 export SHOPSYSTEM_FIREBASE_CREDENTIALS="/absolute/path/to/your-service-account.json"
 export SHOPSYSTEM_ALLOWED_ORIGINS="http://localhost:5173,http://127.0.0.1:5173"
+export SHOPSYSTEM_REQUIRE_FIRESTORE="true"
 ```
+
+- `SHOPSYSTEM_REQUIRE_FIRESTORE=true` 时，后端必须连接 Firestore；连接失败会直接报错，不再静默回退到 `local-json`。
 
 ## 后端结构
 

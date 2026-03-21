@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { StoreSettings } from "../lib/api";
+import { getAiPreviewSettings, StoreSettings, updateAiPreviewSettings } from "../lib/api";
 import { useShopData } from "../lib/shop-data";
 
 const timezoneOptions = [
@@ -11,13 +11,45 @@ const timezoneOptions = [
 ];
 
 export function Settings() {
-  const { settings, saveSettings, loading, error } = useShopData();
+  const { settings, saveSettings, loading, error, storageBackend } = useShopData();
   const [formState, setFormState] = useState<StoreSettings>(settings);
   const [saving, setSaving] = useState(false);
+  const [aiPreviewApi, setAiPreviewApi] = useState("");
+  const [aiPreviewModelName, setAiPreviewModelName] = useState("");
+  const [loadingAiPreview, setLoadingAiPreview] = useState(true);
+  const [savingAiPreview, setSavingAiPreview] = useState(false);
 
   useEffect(() => {
     setFormState(settings);
   }, [settings]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadAiPreviewSettings() {
+      try {
+        const payload = await getAiPreviewSettings();
+        if (isMounted) {
+          setAiPreviewApi(payload.apiKey ?? "");
+          setAiPreviewModelName(payload.modelName ?? "");
+        }
+      } catch (error) {
+        if (isMounted) {
+          toast.error(error instanceof Error ? error.message : "Unable to load AI API settings.");
+        }
+      } finally {
+        if (isMounted) {
+          setLoadingAiPreview(false);
+        }
+      }
+    }
+
+    void loadAiPreviewSettings();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const updateField = <K extends keyof StoreSettings>(key: K, value: StoreSettings[K]) => {
     setFormState((current) => ({
@@ -224,6 +256,110 @@ export function Settings() {
             borderColor: "var(--c-border)",
           }}
         >
+          <h3
+            style={{
+              fontFamily: "var(--f-serif)",
+              fontSize: "1.1rem",
+              color: "var(--c-text-primary)",
+              marginBottom: "var(--s-3)",
+            }}
+          >
+            AI Preview API
+          </h3>
+
+          {storageBackend !== "firestore" && (
+            <div
+              className="border"
+              style={{
+                marginBottom: "var(--s-3)",
+                padding: "var(--s-2) var(--s-3)",
+                borderColor: "#F2C5C5",
+                backgroundColor: "#FFF7F7",
+                color: "#A94442",
+                fontSize: "0.85rem",
+              }}
+            >
+              Current storage is <strong>{storageBackend}</strong>. Changes here are not writing to Firestore.
+            </div>
+          )}
+
+          <div style={{ marginBottom: "var(--s-3)" }}>
+            <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
+              API Key / Endpoint (`settings/ai_preview`)
+            </label>
+            <input
+              type="password"
+              value={aiPreviewApi}
+              onChange={(event) => setAiPreviewApi(event.target.value)}
+              placeholder={loadingAiPreview ? "Loading..." : "Enter API value"}
+              disabled={loadingAiPreview || savingAiPreview}
+              className="w-full border transition-all"
+              style={{
+                padding: "var(--s-2) var(--s-3)",
+                borderColor: "var(--c-border)",
+                fontFamily: "var(--f-sans)",
+                fontSize: "0.95rem",
+                transition: "var(--t-fast)",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "var(--s-3)" }}>
+            <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
+              Model Name
+            </label>
+            <input
+              type="text"
+              value={aiPreviewModelName}
+              onChange={(event) => setAiPreviewModelName(event.target.value)}
+              placeholder={loadingAiPreview ? "Loading..." : "e.g. gpt-4o-mini"}
+              disabled={loadingAiPreview || savingAiPreview}
+              className="w-full border transition-all"
+              style={{
+                padding: "var(--s-2) var(--s-3)",
+                borderColor: "var(--c-border)",
+                fontFamily: "var(--f-sans)",
+                fontSize: "0.95rem",
+                transition: "var(--t-fast)",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "var(--s-4)" }}>
+            <button
+              type="button"
+              disabled={loadingAiPreview || savingAiPreview}
+              onClick={async () => {
+                setSavingAiPreview(true);
+                try {
+                  await updateAiPreviewSettings({ apiKey: aiPreviewApi, modelName: aiPreviewModelName });
+                  toast.success("AI API saved.");
+                } catch (error) {
+                  toast.error(error instanceof Error ? error.message : "Unable to save AI API.");
+                } finally {
+                  setSavingAiPreview(false);
+                }
+              }}
+              className="transition-all"
+              style={{
+                padding: "0 var(--s-4)",
+                height: "36px",
+                backgroundColor: "var(--c-bg-card)",
+                color: "var(--c-text-primary)",
+                fontFamily: "var(--f-sans)",
+                fontSize: "0.75rem",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                border: "1px solid var(--c-border)",
+                cursor: loadingAiPreview || savingAiPreview ? "not-allowed" : "pointer",
+                opacity: loadingAiPreview || savingAiPreview ? 0.7 : 1,
+                transition: "var(--t-fast)",
+              }}
+            >
+              {savingAiPreview ? "Saving AI API..." : "Save AI API"}
+            </button>
+          </div>
+
           <button
             type="submit"
             disabled={saving || loading}

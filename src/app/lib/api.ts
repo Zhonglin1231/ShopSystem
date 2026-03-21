@@ -239,6 +239,11 @@ export interface StoreSettings {
   deliveryRadius: number;
 }
 
+export interface AiPreviewSettings {
+  apiKey: string;
+  modelName: string;
+}
+
 export interface InventoryPayload {
   items: InventoryItem[];
   restocks: RestockRecord[];
@@ -424,6 +429,17 @@ export function getSettings() {
 
 export function updateSettings(payload: StoreSettings) {
   return request<StoreSettings>("/settings", {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getAiPreviewSettings() {
+  return request<AiPreviewSettings>("/settings/ai-preview");
+}
+
+export function updateAiPreviewSettings(payload: AiPreviewSettings) {
+  return request<AiPreviewSettings>("/settings/ai-preview", {
     method: "PUT",
     body: JSON.stringify(payload),
   });

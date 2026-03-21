@@ -20,6 +20,7 @@ class AppConfig:
     smtp_password: str | None
     smtp_sender: str | None
     smtp_use_tls: bool
+    require_firestore: bool
 
 
 def _env_flag(name: str, default: bool) -> bool:
@@ -58,4 +59,5 @@ def get_config() -> AppConfig:
         smtp_password=os.getenv("SHOPSYSTEM_SMTP_PASSWORD"),
         smtp_sender=os.getenv("SHOPSYSTEM_SMTP_SENDER"),
         smtp_use_tls=_env_flag("SHOPSYSTEM_SMTP_USE_TLS", True),
+        require_firestore=_env_flag("SHOPSYSTEM_REQUIRE_FIRESTORE", False),
     )

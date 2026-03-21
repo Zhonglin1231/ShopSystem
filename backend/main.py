@@ -18,6 +18,7 @@ from .schemas import (
     CreateFlowerRequest,
     CreateOrderRequest,
     CreateRestockRequest,
+    UpdateAiPreviewApiRequest,
     UpdateInventoryParRequest,
     UpdateInventoryRequest,
     UpdateInventoryStockRequest,
@@ -267,6 +268,22 @@ def download_weekly_report(report_id: str) -> FileResponse:
 def update_settings(payload: UpdateSettingsRequest) -> dict:
     try:
         return repository.update_settings(payload.model_dump())
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.get("/api/settings/ai-preview")
+def get_ai_preview_settings() -> dict:
+    try:
+        return repository.get_ai_preview_settings()
+    except RepositoryError as error:
+        _handle_repository_error(error)
+
+
+@app.put("/api/settings/ai-preview")
+def update_ai_preview_settings(payload: UpdateAiPreviewApiRequest) -> dict:
+    try:
+        return repository.update_ai_preview_settings(payload.model_dump())
     except RepositoryError as error:
         _handle_repository_error(error)
 

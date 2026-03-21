@@ -76,6 +76,7 @@ class FirestoreStore(SnapshotStore):
     MAINTENANCE_REPORTS_COLLECTION = "maintenance_reports"
     SETTINGS_COLLECTION = "settings"
     SETTINGS_DOCUMENT = "store"
+    AI_PREVIEW_DOCUMENT = "ai_preview"
     ORDERS_COLLECTION = "orders"
     LEGACY_COLLECTION = "shopsystem"
     LEGACY_DOCUMENT = "default"
@@ -225,6 +226,11 @@ class FirestoreStore(SnapshotStore):
 
 
 def create_store(config: AppConfig) -> tuple[SnapshotStore, str]:
+    if config.require_firestore:
+        firestore_store = FirestoreStore(config)
+        firestore_store.load_snapshot()
+        return firestore_store, "firestore"
+
     result: dict[str, SnapshotStore] = {}
     errors: list[Exception] = []
 
@@ -429,6 +435,8 @@ class ShopRepository:
         return isinstance(self.store, FirestoreStore) and self._firestore_enabled
 
     def _should_fallback_to_local(self, error: Exception) -> bool:
+        if self.config.require_firestore:
+            return False
         if isinstance(error, (ResourceExhausted, ServiceUnavailable)):
             return True
         if isinstance(error, GoogleAPICallError):
@@ -1231,6 +1239,55 @@ class ShopRepository:
 
     def get_settings(self) -> dict:
         return self._load_settings_fast()
+
+    def get_ai_preview_settings(self) -> dict:
+        if self._using_firestore():
+            try:
+                doc = self.store.client.collection(FirestoreStore.SETTINGS_COLLECTION).document(
+                    FirestoreStore.AI_PREVIEW_DOCUMENT
+                ).get(timeout=2)
+                payload = doc.to_dict() if doc.exists else {}
+                api_key = str((payload or {}).get("apiKey") or (payload or {}).get("api") or "").strip()
+                model_name = str((payload or {}).get("modelName") or (payload or {}).get("model") or "").strip()
+                return {"apiKey": api_key, "modelName": model_name}
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+
+        snapshot, _ = self._load_snapshot()
+        return {
+            "apiKey": str(snapshot.get("settings", {}).get("aiPreviewApi", "")).strip(),
+            "modelName": str(snapshot.get("settings", {}).get("aiPreviewModelName", "")).strip(),
+        }
+
+    def update_ai_preview_settings(self, payload: dict) -> dict:
+        api_key = str(payload.get("apiKey") or payload.get("api") or "").strip()
+        model_name = str(payload.get("modelName") or payload.get("model") or "").strip()
+
+        if self._using_firestore():
+            try:
+                self.store.client.collection(FirestoreStore.SETTINGS_COLLECTION).document(
+                    FirestoreStore.AI_PREVIEW_DOCUMENT
+                ).set(
+                    {"apiKey": api_key, "modelName": model_name},
+                    merge=True,
+                    timeout=2,
+                )
+                return {"apiKey": api_key, "modelName": model_name}
+            except Exception as error:
+                if not self._should_fallback_to_local(error):
+                    raise
+                self._activate_local_fallback(error)
+
+        with self._lock:
+            snapshot, _ = self._load_snapshot()
+            settings = snapshot.get("settings") or {}
+            settings["aiPreviewApi"] = api_key
+            settings["aiPreviewModelName"] = model_name
+            snapshot["settings"] = settings
+            self._persist_snapshot(snapshot)
+            return {"apiKey": api_key, "modelName": model_name}
 
     def update_settings(self, payload: dict) -> dict:
         with self._lock:
