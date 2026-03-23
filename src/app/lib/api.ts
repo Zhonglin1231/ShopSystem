@@ -317,7 +317,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new Error(payload?.detail || "Request failed.");
+    throw new Error(payload?.detail || "請求失敗。");
   }
 
   return payload as T;

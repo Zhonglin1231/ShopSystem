@@ -62,9 +62,9 @@ def build_firestore_order(order: dict) -> dict:
         "source": "shopsystem-local-sync",
         "sourceOrderId": order["id"],
         "bouquetData": {
-            "name": f"{order['customer_name']} Bouquet",
+            "name": f"{order['customer_name']}花束",
             "note": order.get("notes", ""),
-            "wrappingStyle": "Store Order",
+            "wrappingStyle": "店舖訂單",
             "ribbonColorHex": "#111111",
             "totalPrice": subtotal,
             "createdAt": created_at,

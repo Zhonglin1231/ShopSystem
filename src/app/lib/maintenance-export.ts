@@ -78,16 +78,16 @@ export function getTodayOrders(orders: Order[], timezone: string) {
 export function exportTodayOrdersExcel(orders: Order[], settings: StoreSettings) {
   const todayOrders = getTodayOrders(orders, settings.timezone);
   if (todayOrders.length === 0) {
-    throw new Error("No orders were created today.");
+    throw new Error("今日尚未有建立的訂單。");
   }
 
   const rows = todayOrders
     .map((order) => {
       const syncState = order.offlineMeta?.localOnly
         ? order.offlineMeta.syncStatus === "failed"
-          ? `Offline failed: ${order.offlineMeta.syncError ?? "Sync required"}`
-          : "Offline queued"
-        : "Synced";
+          ? `離線失敗：${order.offlineMeta.syncError ?? "需要同步"}`
+          : "離線排隊"
+        : "已同步";
 
       return `
         <Row>
@@ -96,7 +96,7 @@ export function exportTodayOrdersExcel(orders: Order[], settings: StoreSettings)
           <Cell><Data ss:Type="String">${escapeHtml(order.customerName)}</Data></Cell>
           <Cell><Data ss:Type="String">${escapeHtml(order.phone || "-")}</Data></Cell>
           <Cell><Data ss:Type="String">${escapeHtml(order.deliveryDateLabel)}</Data></Cell>
-          <Cell><Data ss:Type="String">${escapeHtml(order.deliveryAddress || "Pickup in store")}</Data></Cell>
+          <Cell><Data ss:Type="String">${escapeHtml(order.deliveryAddress || "到店自取")}</Data></Cell>
           <Cell><Data ss:Type="String">${escapeHtml(order.itemsSummary)}</Data></Cell>
           <Cell><Data ss:Type="Number">${order.total.toFixed(2)}</Data></Cell>
           <Cell><Data ss:Type="String">${escapeHtml(order.status)}</Data></Cell>
@@ -113,20 +113,20 @@ export function exportTodayOrdersExcel(orders: Order[], settings: StoreSettings)
       xmlns:o="urn:schemas-microsoft-com:office:office"
       xmlns:x="urn:schemas-microsoft-com:office:excel"
       xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
-      <Worksheet ss:Name="Today Orders">
+      <Worksheet ss:Name="今日訂單">
         <Table>
           <Row>
-            <Cell><Data ss:Type="String">Order ID</Data></Cell>
-            <Cell><Data ss:Type="String">Created At</Data></Cell>
-            <Cell><Data ss:Type="String">Customer</Data></Cell>
-            <Cell><Data ss:Type="String">Phone</Data></Cell>
-            <Cell><Data ss:Type="String">Delivery Date</Data></Cell>
-            <Cell><Data ss:Type="String">Address</Data></Cell>
-            <Cell><Data ss:Type="String">Items</Data></Cell>
-            <Cell><Data ss:Type="String">Total</Data></Cell>
-            <Cell><Data ss:Type="String">Status</Data></Cell>
-            <Cell><Data ss:Type="String">Sync State</Data></Cell>
-            <Cell><Data ss:Type="String">Notes</Data></Cell>
+            <Cell><Data ss:Type="String">訂單編號</Data></Cell>
+            <Cell><Data ss:Type="String">建立時間</Data></Cell>
+            <Cell><Data ss:Type="String">客戶</Data></Cell>
+            <Cell><Data ss:Type="String">電話</Data></Cell>
+            <Cell><Data ss:Type="String">送貨日期</Data></Cell>
+            <Cell><Data ss:Type="String">地址</Data></Cell>
+            <Cell><Data ss:Type="String">項目</Data></Cell>
+            <Cell><Data ss:Type="String">總額</Data></Cell>
+            <Cell><Data ss:Type="String">狀態</Data></Cell>
+            <Cell><Data ss:Type="String">同步狀態</Data></Cell>
+            <Cell><Data ss:Type="String">備註</Data></Cell>
           </Row>
           ${rows}
         </Table>
@@ -145,7 +145,7 @@ export function exportTodayOrdersExcel(orders: Order[], settings: StoreSettings)
 export function printTodayOrdersPdf(orders: Order[], settings: StoreSettings) {
   const todayOrders = getTodayOrders(orders, settings.timezone);
   if (todayOrders.length === 0) {
-    throw new Error("No orders were created today.");
+    throw new Error("今日尚未有建立的訂單。");
   }
 
   const totalRevenue = todayOrders.reduce((sum, order) => sum + order.total, 0);
@@ -153,9 +153,9 @@ export function printTodayOrdersPdf(orders: Order[], settings: StoreSettings) {
     .map((order) => {
       const syncLabel = order.offlineMeta?.localOnly
         ? order.offlineMeta.syncStatus === "failed"
-          ? `Offline failed: ${order.offlineMeta.syncError ?? "Needs manual retry"}`
-          : "Offline queued"
-        : "Synced";
+          ? `離線失敗：${order.offlineMeta.syncError ?? "需手動重試"}`
+          : "離線排隊"
+        : "已同步";
 
       return `
         <tr>
@@ -164,7 +164,7 @@ export function printTodayOrdersPdf(orders: Order[], settings: StoreSettings) {
           <td>${escapeHtml(order.customerName)}</td>
           <td>${escapeHtml(order.phone || "-")}</td>
           <td>${escapeHtml(order.deliveryDateLabel)}</td>
-          <td>${escapeHtml(order.deliveryAddress || "Pickup in store")}</td>
+          <td>${escapeHtml(order.deliveryAddress || "到店自取")}</td>
           <td>${escapeHtml(order.itemsSummary)}</td>
           <td>${escapeHtml(order.notes || "-")}</td>
           <td>${escapeHtml(order.status)}</td>
@@ -177,7 +177,7 @@ export function printTodayOrdersPdf(orders: Order[], settings: StoreSettings) {
 
   const printWindow = window.open("", "_blank", "width=1100,height=760");
   if (!printWindow) {
-    throw new Error("Popup blocked. Allow popups to print the PDF export.");
+    throw new Error("彈出視窗被封鎖，請允許彈窗後再列印 PDF 匯出。");
   }
 
   const titleDate = formatDateOnly(new Date().toISOString(), settings.timezone);
@@ -187,7 +187,7 @@ export function printTodayOrdersPdf(orders: Order[], settings: StoreSettings) {
     <html>
       <head>
         <meta charset="utf-8" />
-        <title>${escapeHtml(settings.storeName)} Today Orders</title>
+        <title>${escapeHtml(settings.storeName)} 今日訂單</title>
         <style>
           body {
             font-family: "Helvetica Neue", Arial, sans-serif;
@@ -258,36 +258,36 @@ export function printTodayOrdersPdf(orders: Order[], settings: StoreSettings) {
         </script>
       </head>
       <body>
-        <h1>${escapeHtml(settings.storeName)} - Today Orders</h1>
-        <p>${escapeHtml(titleDate)} emergency export for paper fallback.</p>
+        <h1>${escapeHtml(settings.storeName)} - 今日訂單</h1>
+        <p>${escapeHtml(titleDate)} 紙本應急匯出。</p>
         <div class="summary">
           <div class="card">
-            <div class="label">Orders</div>
+            <div class="label">訂單數</div>
             <div class="value">${todayOrders.length}</div>
           </div>
           <div class="card">
-            <div class="label">Revenue</div>
+            <div class="label">收入</div>
             <div class="value">${escapeHtml(formatCurrencyValue(totalRevenue, settings.currency))}</div>
           </div>
           <div class="card">
-            <div class="label">Offline queued</div>
+            <div class="label">離線排隊</div>
             <div class="value">${todayOrders.filter((order) => order.offlineMeta?.localOnly).length}</div>
           </div>
         </div>
         <table>
           <thead>
             <tr>
-              <th>Order ID</th>
-              <th>Created At</th>
-              <th>Customer</th>
-              <th>Phone</th>
-              <th>Delivery</th>
-              <th>Address</th>
-              <th>Items</th>
-              <th>Notes</th>
-              <th>Status</th>
-              <th>Sync</th>
-              <th>Total</th>
+              <th>訂單編號</th>
+              <th>建立時間</th>
+              <th>客戶</th>
+              <th>電話</th>
+              <th>送貨</th>
+              <th>地址</th>
+              <th>項目</th>
+              <th>備註</th>
+              <th>狀態</th>
+              <th>同步</th>
+              <th>總額</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>

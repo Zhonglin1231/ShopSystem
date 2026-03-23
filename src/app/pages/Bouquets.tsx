@@ -23,7 +23,7 @@ export function Bouquets() {
   });
 
   const handleDeleteBouquet = async (bouquetId: string, bouquetName: string) => {
-    const confirmed = window.confirm(`Delete ${bouquetName} from the bouquet catalogue?`);
+    const confirmed = window.confirm(`確定要從花束目錄刪除 ${bouquetName} 嗎？`);
     if (!confirmed) {
       return;
     }
@@ -31,9 +31,9 @@ export function Bouquets() {
     setDeletingBouquetId(bouquetId);
     try {
       await deleteBouquet(bouquetId);
-      toast.success(`Deleted ${bouquetName} from the bouquet catalogue.`);
+      toast.success(`已從花束目錄刪除 ${bouquetName}。`);
     } catch (deleteError) {
-      toast.error(deleteError instanceof Error ? deleteError.message : "Unable to delete the bouquet.");
+      toast.error(deleteError instanceof Error ? deleteError.message : "無法刪除花束。");
     } finally {
       setDeletingBouquetId(null);
     }
@@ -70,7 +70,7 @@ export function Bouquets() {
             type="text"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Find bouquets..."
+            placeholder="搜尋花束..."
             className="flex-1 border"
             style={{
               padding: "8px 12px",
@@ -93,7 +93,7 @@ export function Bouquets() {
               cursor: "pointer",
             }}
           >
-            Add New Bouquet
+            新增花束
           </button>
         </div>
 
@@ -107,7 +107,7 @@ export function Bouquets() {
               color: "var(--c-text-secondary)",
             }}
           >
-            Loading bouquet catalogue...
+            正在載入花束目錄...
           </div>
         ) : filteredBouquets.length === 0 ? (
           <div
@@ -120,8 +120,8 @@ export function Bouquets() {
             }}
           >
             {bouquets.length === 0
-              ? "No bouquets yet. Add your first bouquet recipe to group flowers into a repeatable arrangement."
-              : "No bouquets match your search."}
+              ? "目前尚未有花束。可先新增第一個花束配方。"
+              : "沒有符合搜尋條件的花束。"}
           </div>
         ) : (
           <div
@@ -183,7 +183,7 @@ export function Bouquets() {
                         opacity: deletingBouquetId === bouquet.id ? 0.7 : 1,
                       }}
                     >
-                      {deletingBouquetId === bouquet.id ? "..." : "Delete"}
+                      {deletingBouquetId === bouquet.id ? "..." : "刪除"}
                     </button>
                   </div>
 
@@ -195,9 +195,7 @@ export function Bouquets() {
                       color: "var(--c-text-secondary)",
                     }}
                   >
-                    {bouquet.varietyCount} flower type{bouquet.varietyCount === 1 ? "" : "s"} · {bouquet.totalQuantity} total
-                    {" "}
-                    units
+                    {bouquet.varietyCount} 種花材 · 總數 {bouquet.totalQuantity} 單位
                   </p>
 
                   <div className="flex flex-col" style={{ gap: "8px" }}>

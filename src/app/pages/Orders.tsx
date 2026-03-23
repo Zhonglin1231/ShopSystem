@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { OrderDetailsModal } from "../components/OrderDetailsModal";
 import { getOrders, Order, OrdersPage as OrdersPageData } from "../lib/api";
+import { translateOrderStatus } from "../lib/format";
 import { useShopData } from "../lib/shop-data";
 
 const ORDERS_PAGE_SIZE = 10;
@@ -87,7 +88,7 @@ export function Orders() {
         if (cancelled) {
           return;
         }
-        setPageError(requestError instanceof Error ? requestError.message : "Unable to load this page of orders.");
+        setPageError(requestError instanceof Error ? requestError.message : "無法載入此頁訂單。");
       })
       .finally(() => {
         if (!cancelled) {
@@ -110,6 +111,20 @@ export function Orders() {
       const rightTime = new Date(right.createdAt).getTime();
       return sortOrder === "Newest" ? rightTime - leftTime : leftTime - rightTime;
     });
+
+  const statusOptions = [
+    { value: "All", label: "全部" },
+    { value: "Queued", label: "已排隊" },
+    { value: "Preparing", label: "製作中" },
+    { value: "Ready", label: "可取貨" },
+    { value: "Delivered", label: "已送達" },
+    { value: "Cancelled", label: "已取消" },
+  ];
+
+  const sortOptions = [
+    { value: "Newest", label: "最新" },
+    { value: "Oldest", label: "最舊" },
+  ];
 
   const selectedOrder = pageData.find((order) => order.id === selectedOrderId) ?? null;
 
@@ -151,7 +166,7 @@ export function Orders() {
             type="text"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search orders by ID or customer..."
+            placeholder="按訂單編號或客戶搜尋..."
             className="flex-1 border"
             style={{
               padding: "8px 12px",
@@ -175,9 +190,9 @@ export function Orders() {
               textTransform: "uppercase",
             }}
           >
-            {["All", "Queued", "Preparing", "Ready", "Delivered", "Cancelled"].map((option) => (
-              <option key={option} value={option}>
-                {option}
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
               </option>
             ))}
           </select>
@@ -197,13 +212,16 @@ export function Orders() {
               textTransform: "uppercase",
             }}
           >
-            <option>Newest</option>
-            <option>Oldest</option>
+            {sortOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
 
         {(loading || pageLoading) && pageData.length === 0 ? (
-          <div style={{ padding: "var(--s-4)", color: "var(--c-text-secondary)" }}>Loading orders...</div>
+          <div style={{ padding: "var(--s-4)", color: "var(--c-text-secondary)" }}>正在載入訂單...</div>
         ) : (
           <>
             {offlineStatus.queueCount > 0 && (
@@ -217,14 +235,14 @@ export function Orders() {
                   color: "#8A5A00",
                 }}
               >
-                {offlineStatus.queueCount} queued offline order{offlineStatus.queueCount === 1 ? "" : "s"} pending sync.
+                有 {offlineStatus.queueCount} 筆離線訂單待同步。
               </div>
             )}
 
             <table className="w-full" style={{ borderCollapse: "collapse", fontSize: "0.9rem" }}>
             <thead>
               <tr>
-                {["Order ID", "Date", "Customer", "Items", "Total", "Status", "Actions"].map((header) => (
+                {["訂單編號", "日期", "客戶", "項目", "總額", "狀態", "操作"].map((header) => (
                   <th
                     key={header}
                     className="text-left"
@@ -253,7 +271,7 @@ export function Orders() {
                       color: "var(--c-text-secondary)",
                     }}
                   >
-                    No orders match the current filters.
+                    沒有符合目前篩選條件的訂單。
                   </td>
                 </tr>
               ) : (
@@ -272,7 +290,7 @@ export function Orders() {
                         <div>{order.displayId}</div>
                         {order.offlineMeta?.localOnly && (
                           <div style={{ marginTop: "4px", fontSize: "0.72rem", color: "var(--c-text-secondary)" }}>
-                            {order.offlineMeta.syncStatus === "failed" ? "Sync failed" : "Offline queue"}
+                            {order.offlineMeta.syncStatus === "failed" ? "同步失敗" : "離線佇列"}
                           </div>
                         )}
                       </td>
@@ -328,7 +346,7 @@ export function Orders() {
                             ...badgeStyle,
                           }}
                         >
-                          {order.status}
+                          {translateOrderStatus(order.status)}
                         </span>
                       </td>
                       <td
@@ -354,7 +372,7 @@ export function Orders() {
                             cursor: "pointer",
                           }}
                         >
-                          Details
+                          詳情
                         </button>
                       </td>
                     </tr>
@@ -373,7 +391,7 @@ export function Orders() {
               }}
             >
               <div style={{ color: "var(--c-text-secondary)", fontSize: "0.8rem" }}>
-                Page {pageMeta.page}
+                第 {pageMeta.page} 頁
               </div>
               <div className="flex items-center" style={{ gap: "var(--s-2)" }}>
                 <button
@@ -395,7 +413,7 @@ export function Orders() {
                     textTransform: "uppercase",
                   }}
                 >
-                  Prev
+                  上一頁
                 </button>
                 <button
                   type="button"
@@ -416,7 +434,7 @@ export function Orders() {
                     textTransform: "uppercase",
                   }}
                 >
-                  Next
+                  下一頁
                 </button>
               </div>
             </div>

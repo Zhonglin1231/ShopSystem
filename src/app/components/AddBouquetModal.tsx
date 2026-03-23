@@ -123,7 +123,7 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                 marginBottom: "2px",
               }}
             >
-              Bouquet Catalogue
+              花束目錄
             </p>
             <h2
               style={{
@@ -132,7 +132,7 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                 color: "var(--c-text-primary)",
               }}
             >
-              Add New Bouquet
+              新增花束
             </h2>
           </div>
           <button
@@ -163,7 +163,7 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                   color: "var(--c-text-secondary)",
                 }}
               >
-                Photo
+                相片
               </span>
               <div
                 className="flex flex-col items-center justify-center border cursor-pointer overflow-hidden"
@@ -202,7 +202,7 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                         lineHeight: "1.4",
                       }}
                     >
-                      Click to upload photo
+                      點擊上傳相片
                     </span>
                     <Upload size={13} color="var(--c-text-secondary)" />
                   </div>
@@ -239,14 +239,14 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                     marginBottom: "var(--s-2)",
                   }}
                 >
-                  Recipe Summary
+                  配方摘要
                 </p>
                 <div className="flex flex-col" style={{ gap: "6px" }}>
                   <span style={{ fontFamily: "var(--f-sans)", fontSize: "0.8rem", color: "var(--c-text-primary)" }}>
-                    {varietyCount} flower type{varietyCount === 1 ? "" : "s"}
+                    {varietyCount} 種花材
                   </span>
                   <span style={{ fontFamily: "var(--f-sans)", fontSize: "0.8rem", color: "var(--c-text-primary)" }}>
-                    {totalQuantity} total units
+                    總數 {totalQuantity} 單位
                   </span>
                 </div>
               </div>
@@ -265,13 +265,13 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                     marginBottom: "6px",
                   }}
                 >
-                  Bouquet Name *
+                  花束名稱 *
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
-                  placeholder="e.g. Spring Garden Bouquet"
+                  placeholder="例如：春日花園花束"
                   className="w-full border"
                   style={{
                     padding: "10px 12px",
@@ -304,10 +304,10 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                         marginBottom: "4px",
                       }}
                     >
-                      Bouquet Recipe
+                      花束配方
                     </p>
                     <p style={{ fontFamily: "var(--f-sans)", fontSize: "0.82rem", color: "var(--c-text-secondary)" }}>
-                      Choose the flowers and quantity for this bouquet.
+                      請選擇此花束的花材與數量。
                     </p>
                   </div>
                   <button
@@ -330,7 +330,7 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                     }}
                   >
                     <Plus size={14} />
-                    Add Flower
+                    新增花材
                   </button>
                 </div>
 
@@ -346,7 +346,7 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                       fontSize: "0.85rem",
                     }}
                   >
-                    Add flowers to the catalogue first before creating bouquets.
+                    建立花束前，請先把鮮花加入目錄。
                   </div>
                 ) : (
                   <div className="flex flex-col" style={{ gap: "var(--s-3)" }}>
@@ -372,7 +372,7 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                               marginBottom: "6px",
                             }}
                           >
-                            {index === 0 ? "Flower" : "Flower "}
+                            {index === 0 ? "花材" : "花材"}
                           </label>
                           <select
                             value={component.flowerId}
@@ -414,7 +414,7 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                               marginBottom: "6px",
                             }}
                           >
-                            Qty
+                            數量
                           </label>
                           <input
                             type="number"
@@ -494,18 +494,18 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
               cursor: "pointer",
             }}
           >
-            Cancel
+            取消
           </button>
           <button
             disabled={saving}
             onClick={async () => {
               if (!name.trim()) {
-                toast.error("Please enter a bouquet name.");
+                toast.error("請輸入花束名稱。");
                 return;
               }
 
               if (flowers.length === 0) {
-                toast.error("Add flowers to the catalogue before creating bouquets.");
+                toast.error("建立花束前請先新增鮮花至目錄。");
                 return;
               }
 
@@ -513,13 +513,13 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
 
               for (const component of components) {
                 if (!component.flowerId) {
-                  toast.error("Please choose a flower for each bouquet line.");
+                  toast.error("請為每一行花束項目選擇花材。");
                   return;
                 }
 
                 const quantity = Number.parseInt(component.quantity, 10);
                 if (Number.isNaN(quantity) || quantity <= 0) {
-                  toast.error("Please enter a valid quantity for each bouquet line.");
+                  toast.error("請為每一行花束項目輸入有效數量。");
                   return;
                 }
 
@@ -539,7 +539,7 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
                 resetForm();
                 onClose();
               } catch (error) {
-                toast.error(error instanceof Error ? error.message : "Unable to add the bouquet.");
+                toast.error(error instanceof Error ? error.message : "無法新增花束。");
               } finally {
                 setSaving(false);
               }
@@ -558,7 +558,7 @@ export function AddBouquetModal({ isOpen, onClose, flowers, onAddBouquet }: AddB
               opacity: saving ? 0.7 : 1,
             }}
           >
-            {saving ? "Saving..." : "Add Bouquet"}
+            {saving ? "儲存中..." : "新增花束"}
           </button>
         </div>
       </div>

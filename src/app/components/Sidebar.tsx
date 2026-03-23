@@ -2,15 +2,15 @@ import { Link, useLocation } from "react-router";
 import { useShopData } from "../lib/shop-data";
 
 const navItems = [
-  { path: "/", label: "Dashboard" },
-  { path: "/orders", label: "Orders" },
-  { path: "/flowers", label: "Flowers" },
-  { path: "/wrappings", label: "Wrappings" },
-  { path: "/bouquets", label: "Bouquets" },
-  { path: "/inventory", label: "Inventory" },
-  { path: "/analytics", label: "Analytics" },
-  { path: "/maintenance", label: "Maintenance" },
-  { path: "/settings", label: "Settings" },
+  { path: "/", label: "儀表板" },
+  { path: "/orders", label: "訂單" },
+  { path: "/flowers", label: "鮮花" },
+  { path: "/wrappings", label: "包裝" },
+  { path: "/bouquets", label: "花束" },
+  { path: "/inventory", label: "庫存" },
+  { path: "/analytics", label: "分析" },
+  { path: "/maintenance", label: "維護" },
+  { path: "/settings", label: "設定" },
 ];
 
 export function Sidebar() {
@@ -57,7 +57,7 @@ export function Sidebar() {
             color: "var(--c-text-secondary)",
           }}
         >
-          {storageBackend === "firestore" ? "Firebase Live Data" : "Local Seed Data"}
+          {storageBackend === "firestore" ? "Firebase 即時資料" : "本機種子資料"}
         </p>
       </div>
 

@@ -4,10 +4,10 @@ import { getAiPreviewSettings, StoreSettings, updateAiPreviewSettings } from "..
 import { useShopData } from "../lib/shop-data";
 
 const timezoneOptions = [
-  { value: "Asia/Shanghai", label: "UTC+8 (Shanghai)" },
-  { value: "Asia/Hong_Kong", label: "UTC+8 (Hong Kong)" },
-  { value: "America/New_York", label: "EST / EDT (New York)" },
-  { value: "America/Los_Angeles", label: "PST / PDT (Los Angeles)" },
+  { value: "Asia/Shanghai", label: "UTC+8（上海）" },
+  { value: "Asia/Hong_Kong", label: "UTC+8（香港）" },
+  { value: "America/New_York", label: "EST / EDT（紐約）" },
+  { value: "America/Los_Angeles", label: "PST / PDT（洛杉磯）" },
 ];
 
 export function Settings() {
@@ -35,7 +35,7 @@ export function Settings() {
         }
       } catch (error) {
         if (isMounted) {
-          toast.error(error instanceof Error ? error.message : "Unable to load AI API settings.");
+          toast.error(error instanceof Error ? error.message : "無法載入 AI API 設定。");
         }
       } finally {
         if (isMounted) {
@@ -98,7 +98,7 @@ export function Settings() {
             color: "var(--c-text-primary)",
           }}
         >
-          Store Settings
+          店舖設定
         </h3>
       </div>
 
@@ -108,9 +108,9 @@ export function Settings() {
           setSaving(true);
           try {
             await saveSettings(formState);
-            toast.success("Settings saved.");
+            toast.success("設定已儲存。");
           } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Unable to save settings.");
+            toast.error(error instanceof Error ? error.message : "無法儲存設定。");
           } finally {
             setSaving(false);
           }
@@ -118,7 +118,7 @@ export function Settings() {
       >
         <div style={{ marginBottom: "var(--s-4)" }}>
           <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
-            Store Name
+            店舖名稱
           </label>
           <input
             type="text"
@@ -137,7 +137,7 @@ export function Settings() {
 
         <div style={{ marginBottom: "var(--s-4)" }}>
           <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
-            Contact Email
+            聯絡電郵
           </label>
           <input
             type="email"
@@ -156,7 +156,7 @@ export function Settings() {
 
         <div style={{ marginBottom: "var(--s-4)" }}>
           <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
-            Maintenance Report Email
+            維護報告電郵
           </label>
           <input
             type="email"
@@ -183,7 +183,7 @@ export function Settings() {
         >
           <div>
             <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
-              Currency
+              貨幣
             </label>
             <select
               value={formState.currency}
@@ -206,7 +206,7 @@ export function Settings() {
 
           <div>
             <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
-              Timezone
+              時區
             </label>
             <select
               value={formState.timezone}
@@ -231,7 +231,7 @@ export function Settings() {
 
         <div style={{ marginBottom: "var(--s-4)" }}>
           <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
-            Delivery Radius (Miles)
+            配送範圍（英里）
           </label>
           <input
             type="number"
@@ -264,7 +264,7 @@ export function Settings() {
               marginBottom: "var(--s-3)",
             }}
           >
-            AI Preview API
+            AI 預覽 API
           </h3>
 
           {storageBackend !== "firestore" && (
@@ -279,19 +279,19 @@ export function Settings() {
                 fontSize: "0.85rem",
               }}
             >
-              Current storage is <strong>{storageBackend}</strong>. Changes here are not writing to Firestore.
+              目前儲存模式為 <strong>{storageBackend}</strong>。此處變更不會寫入 Firestore。
             </div>
           )}
 
           <div style={{ marginBottom: "var(--s-3)" }}>
             <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
-              API Key / Endpoint (`settings/ai_preview`)
+              API 金鑰 / 端點（`settings/ai_preview`）
             </label>
             <input
               type="password"
               value={aiPreviewApi}
               onChange={(event) => setAiPreviewApi(event.target.value)}
-              placeholder={loadingAiPreview ? "Loading..." : "Enter API value"}
+              placeholder={loadingAiPreview ? "載入中..." : "請輸入 API 值"}
               disabled={loadingAiPreview || savingAiPreview}
               className="w-full border transition-all"
               style={{
@@ -306,13 +306,13 @@ export function Settings() {
 
           <div style={{ marginBottom: "var(--s-3)" }}>
             <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
-              Model Name
+              模型名稱
             </label>
             <input
               type="text"
               value={aiPreviewModelName}
               onChange={(event) => setAiPreviewModelName(event.target.value)}
-              placeholder={loadingAiPreview ? "Loading..." : "e.g. gpt-4o-mini"}
+              placeholder={loadingAiPreview ? "載入中..." : "例如：gpt-4o-mini"}
               disabled={loadingAiPreview || savingAiPreview}
               className="w-full border transition-all"
               style={{
@@ -333,9 +333,9 @@ export function Settings() {
                 setSavingAiPreview(true);
                 try {
                   await updateAiPreviewSettings({ apiKey: aiPreviewApi, modelName: aiPreviewModelName });
-                  toast.success("AI API saved.");
+                  toast.success("AI API 已儲存。");
                 } catch (error) {
-                  toast.error(error instanceof Error ? error.message : "Unable to save AI API.");
+                  toast.error(error instanceof Error ? error.message : "無法儲存 AI API。");
                 } finally {
                   setSavingAiPreview(false);
                 }
@@ -356,7 +356,7 @@ export function Settings() {
                 transition: "var(--t-fast)",
               }}
             >
-              {savingAiPreview ? "Saving AI API..." : "Save AI API"}
+              {savingAiPreview ? "儲存 AI API 中..." : "儲存 AI API"}
             </button>
           </div>
 
@@ -379,7 +379,7 @@ export function Settings() {
               transition: "var(--t-fast)",
             }}
           >
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? "儲存中..." : "儲存變更"}
           </button>
         </div>
       </form>

@@ -52,12 +52,12 @@ export function Analytics() {
               color: "var(--c-text-primary)",
             }}
           >
-            Sales Performance
+            銷售表現
           </h3>
           <div className="grid" style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--s-3)", marginTop: "var(--s-3)" }}>
             <div>
               <p style={{ fontSize: "0.7rem", color: "var(--c-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                Gross Revenue
+                總收入
               </p>
               <p style={{ fontFamily: "var(--f-serif)", fontSize: "1.2rem", color: "var(--c-text-primary)" }}>
                 {analytics.totals.grossRevenueDisplay}
@@ -65,7 +65,7 @@ export function Analytics() {
             </div>
             <div>
               <p style={{ fontSize: "0.7rem", color: "var(--c-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                Completed
+                已完成訂單
               </p>
               <p style={{ fontFamily: "var(--f-serif)", fontSize: "1.2rem", color: "var(--c-text-primary)" }}>
                 {analytics.totals.completedOrders}
@@ -73,7 +73,7 @@ export function Analytics() {
             </div>
             <div>
               <p style={{ fontSize: "0.7rem", color: "var(--c-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                Avg Order
+                平均訂單金額
               </p>
               <p style={{ fontFamily: "var(--f-serif)", fontSize: "1.2rem", color: "var(--c-text-primary)" }}>
                 {analytics.totals.averageOrderValueDisplay}
@@ -83,7 +83,7 @@ export function Analytics() {
         </div>
 
         {loading && analytics.salesSeries.length === 0 ? (
-          <div style={{ padding: "var(--s-4)", color: "var(--c-text-secondary)" }}>Loading analytics...</div>
+          <div style={{ padding: "var(--s-4)", color: "var(--c-text-secondary)" }}>正在載入分析資料...</div>
         ) : (
           <div
             className="w-full border-b"
@@ -213,7 +213,7 @@ export function Analytics() {
               color: "var(--c-text-primary)",
             }}
           >
-            Top Sellers
+            熱銷商品
           </h3>
         </div>
 
@@ -229,7 +229,7 @@ export function Analytics() {
                   }}
                 >
                   <div>{`${index + 1}. ${seller.name}`}</div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--c-text-secondary)" }}>{seller.unitsSold} units sold</div>
+                  <div style={{ fontSize: "0.75rem", color: "var(--c-text-secondary)" }}>已售出 {seller.unitsSold} 單位</div>
                 </td>
                 <td
                   className="text-right"

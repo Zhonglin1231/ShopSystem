@@ -88,3 +88,33 @@ export function getChartBarColor(amount: number, max: number) {
   const lightness = 86 - ratio * 28;
   return `hsl(12 ${saturation}% ${lightness}%)`;
 }
+
+export function translateOrderStatus(status: string) {
+  const map: Record<string, string> = {
+    Queued: "已排隊",
+    Preparing: "製作中",
+    Ready: "可取貨",
+    Delivered: "已送達",
+    Cancelled: "已取消",
+    received: "已接單",
+  };
+  return map[status] ?? status;
+}
+
+export function translateStockStatus(status: string) {
+  const map: Record<string, string> = {
+    "In Stock": "有庫存",
+    "Low Stock": "低庫存",
+    "Out of Stock": "缺貨",
+  };
+  return map[status] ?? status;
+}
+
+export function translateDashboardLabel(label: string) {
+  const map: Record<string, string> = {
+    "Today's Orders": "今日訂單",
+    Pending: "待處理",
+    Revenue: "收入",
+  };
+  return map[label] ?? label;
+}

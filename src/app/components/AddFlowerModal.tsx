@@ -9,10 +9,10 @@ interface AddFlowerModalProps {
   onAddFlower?: (flower: CreateFlowerInput) => Promise<void> | void;
 }
 
-const categories = ["Rose", "Tulip", "Peony", "Eucalyptus", "Hydrangea", "Lavender", "Lily", "Orchid", "Sunflower", "Other"];
-const units = ["stem", "bunch", "pot", "box"];
-const seasons = ["Year-round", "Spring", "Summer", "Autumn", "Winter", "Spring-Summer", "Summer-Autumn"];
-const colors = ["Blush Pink", "Deep Red", "White", "Ivory", "Coral", "Yellow", "Purple", "Lilac", "Green", "Mixed"];
+const categories = ["玫瑰", "鬱金香", "牡丹", "尤加利", "繡球花", "薰衣草", "百合", "蘭花", "向日葵", "其他"];
+const units = ["枝", "束", "盆", "箱"];
+const seasons = ["全年", "春季", "夏季", "秋季", "冬季", "春夏", "夏秋"];
+const colors = ["淺粉", "深紅", "白色", "象牙白", "珊瑚色", "黃色", "紫色", "淡紫", "綠色", "混色"];
 
 export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalProps) {
   const [name, setName] = useState("");
@@ -61,12 +61,12 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
       return { label: "—", bg: "var(--c-border)", color: "var(--c-text-secondary)" };
     }
     if (quantity === 0) {
-      return { label: "Out of Stock", bg: "#FFF0F0", color: "#C53030" };
+      return { label: "缺貨", bg: "#FFF0F0", color: "#C53030" };
     }
     if (quantity <= 10) {
-      return { label: "Low Stock", bg: "#FFF0F0", color: "#C53030" };
+      return { label: "低庫存", bg: "#FFF0F0", color: "#C53030" };
     }
-    return { label: "In Stock", bg: "var(--c-accent-green-light)", color: "var(--c-accent-green)" };
+    return { label: "有庫存", bg: "var(--c-accent-green-light)", color: "var(--c-accent-green)" };
   };
 
   const status = statusFromStock();
@@ -113,7 +113,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                 marginBottom: "2px",
               }}
             >
-              Flower Catalogue
+              鮮花目錄
             </p>
             <h2
               style={{
@@ -122,7 +122,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                 color: "var(--c-text-primary)",
               }}
             >
-              Add New Flower
+              新增鮮花
             </h2>
           </div>
           <button
@@ -153,7 +153,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                   color: "var(--c-text-secondary)",
                 }}
               >
-                Photo
+                相片
               </span>
               <div
                 className="flex flex-col items-center justify-center border cursor-pointer overflow-hidden"
@@ -192,7 +192,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                         lineHeight: "1.4",
                       }}
                     >
-                      Click to upload photo
+                      點擊上傳相片
                     </span>
                     <Upload size={13} color="var(--c-text-secondary)" />
                   </div>
@@ -229,7 +229,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                     marginBottom: "var(--s-2)",
                   }}
                 >
-                  Stock Status
+                  庫存狀態
                 </p>
                 <span
                   style={{
@@ -260,13 +260,13 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                     marginBottom: "6px",
                   }}
                 >
-                  Flower Name *
+                  鮮花名稱 *
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
-                  placeholder="e.g. Garden Rose"
+                  placeholder="例如：花園玫瑰"
                   className="w-full border"
                   style={{
                     padding: "10px 12px",
@@ -293,7 +293,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                       marginBottom: "6px",
                     }}
                   >
-                    Category
+                    分類
                   </label>
                   <select
                     value={category}
@@ -328,7 +328,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                       marginBottom: "6px",
                     }}
                   >
-                    Color
+                    顏色
                   </label>
                   <select
                     value={color}
@@ -366,7 +366,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                       marginBottom: "6px",
                     }}
                   >
-                    Price (USD) *
+                    價格（USD）*
                   </label>
                   <div className="flex border" style={{ borderColor: "var(--c-border)" }}>
                     <span
@@ -414,7 +414,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                       marginBottom: "6px",
                     }}
                   >
-                    Unit
+                    單位
                   </label>
                   <select
                     value={unit}
@@ -452,14 +452,14 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                       marginBottom: "6px",
                     }}
                   >
-                    Opening Stock (qty)
+                    初始庫存（數量）
                   </label>
                   <input
                     type="number"
                     min={0}
                     value={stock}
                     onChange={(event) => setStock(event.target.value)}
-                    placeholder="e.g. 50"
+                    placeholder="例如：50"
                     className="w-full border"
                     style={{
                       padding: "10px 12px",
@@ -484,7 +484,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                       marginBottom: "6px",
                     }}
                   >
-                    Season
+                    季節
                   </label>
                   <select
                     value={season}
@@ -521,12 +521,12 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                     marginBottom: "6px",
                   }}
                 >
-                  Description
+                  描述
                 </label>
                 <textarea
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
-                  placeholder="Fragrance, care tips, sourcing, arrangement suggestions..."
+                  placeholder="香味、養護建議、來源、搭配建議..."
                   rows={3}
                   className="w-full border resize-none"
                   style={{
@@ -567,7 +567,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
               cursor: "pointer",
             }}
           >
-            Cancel
+            取消
           </button>
           <button
             disabled={saving}
@@ -576,15 +576,15 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
               const parsedStock = Number(stock || "0");
 
               if (!name.trim()) {
-                toast.error("Please enter a flower name.");
+                toast.error("請輸入鮮花名稱。");
                 return;
               }
               if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
-                toast.error("Please enter a valid price.");
+                toast.error("請輸入有效價格。");
                 return;
               }
               if (Number.isNaN(parsedStock) || parsedStock < 0) {
-                toast.error("Please enter a valid stock quantity.");
+                toast.error("請輸入有效庫存數量。");
                 return;
               }
 
@@ -605,7 +605,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
                 resetForm();
                 onClose();
               } catch (error) {
-                toast.error(error instanceof Error ? error.message : "Unable to add the flower.");
+                toast.error(error instanceof Error ? error.message : "無法新增鮮花。");
               } finally {
                 setSaving(false);
               }
@@ -624,7 +624,7 @@ export function AddFlowerModal({ isOpen, onClose, onAddFlower }: AddFlowerModalP
               opacity: saving ? 0.7 : 1,
             }}
           >
-            {saving ? "Saving..." : "Add Flower"}
+            {saving ? "儲存中..." : "新增鮮花"}
           </button>
         </div>
       </div>

@@ -66,7 +66,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
                 marginBottom: "2px",
               }}
             >
-              Inventory
+              庫存
             </p>
             <h2
               style={{
@@ -75,7 +75,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
                 color: "var(--c-text-primary)",
               }}
             >
-              Record Restock
+              記錄補貨
             </h2>
           </div>
           <button
@@ -101,7 +101,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
             const parsedUnitCost = parseFloat(unitCost);
 
             if (!selectedCode || Number.isNaN(parsedQuantity) || Number.isNaN(parsedUnitCost) || parsedQuantity <= 0 || parsedUnitCost < 0) {
-              toast.error("Please complete the restock form.");
+              toast.error("請完整填寫補貨表單。");
               return;
             }
 
@@ -116,7 +116,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
               setUnitCost("");
               onClose();
             } catch (error) {
-              toast.error(error instanceof Error ? error.message : "Unable to record the restock.");
+              toast.error(error instanceof Error ? error.message : "無法記錄補貨資料。");
             } finally {
               setSaving(false);
             }
@@ -136,7 +136,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
                 marginBottom: "6px",
               }}
             >
-              Select Item *
+              選擇項目 *
             </label>
             <select
               value={selectedCode}
@@ -154,7 +154,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
             >
               {inventory.map((item) => (
                 <option key={item.code} value={item.code}>
-                  {item.code} - {item.name} (Current: {item.stock})
+                  {item.code} - {item.name}（目前：{item.stock}）
                 </option>
               ))}
             </select>
@@ -173,14 +173,14 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
                   marginBottom: "6px",
                 }}
               >
-                Quantity Added *
+                新增數量 *
               </label>
               <input
                 type="number"
                 min="1"
                 value={quantity}
                 onChange={(event) => setQuantity(event.target.value)}
-                placeholder="e.g. 50"
+                placeholder="例如：50"
                 className="w-full border"
                 required
                 style={{
@@ -206,7 +206,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
                   marginBottom: "6px",
                 }}
               >
-                Unit Cost (USD) *
+                單位成本（USD）*
               </label>
               <div className="flex border" style={{ borderColor: "var(--c-border)" }}>
                 <span
@@ -257,7 +257,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
             >
               <div className="flex justify-between" style={{ marginBottom: "8px" }}>
                 <span style={{ fontFamily: "var(--f-sans)", fontSize: "0.8rem", color: "var(--c-text-secondary)" }}>
-                  Total Cost:
+                  總成本：
                 </span>
                 <span style={{ fontFamily: "var(--f-sans)", fontSize: "0.9rem", color: "var(--c-text-primary)", fontWeight: 500 }}>
                   ${totalCost}
@@ -265,7 +265,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
               </div>
               <div className="flex justify-between border-t" style={{ paddingTop: "8px", borderColor: "var(--c-border)" }}>
                 <span style={{ fontFamily: "var(--f-sans)", fontSize: "0.8rem", color: "var(--c-text-secondary)" }}>
-                  New Stock Level:
+                  新庫存：
                 </span>
                 <span style={{ fontFamily: "var(--f-sans)", fontSize: "0.9rem", color: "var(--c-accent-green)", fontWeight: 500 }}>
                   {selectedItem.stock + parseInt(quantity || "0", 10)}
@@ -291,7 +291,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
                 cursor: "pointer",
               }}
             >
-              Cancel
+              取消
             </button>
             <button
               type="submit"
@@ -308,7 +308,7 @@ export function AddRestockModal({ isOpen, inventory, onClose, onAddRestock }: Ad
                 cursor: quantity && unitCost && !saving ? "pointer" : "not-allowed",
               }}
             >
-              {saving ? "Saving..." : "Save Record"}
+              {saving ? "儲存中..." : "儲存紀錄"}
             </button>
           </div>
         </form>

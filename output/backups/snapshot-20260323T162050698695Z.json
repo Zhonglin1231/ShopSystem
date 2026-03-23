@@ -1,0 +1,1713 @@
+{
+  "bouquets": [],
+  "flowers": [
+    {
+      "season": "\u590f\u79cb",
+      "unit": "\u675f",
+      "category": "\u85b0\u8863\u8349",
+      "description": "\u5e36\u9999\u6c23\u7684\u82b1\u675f\u7d20\u6750\uff0c\u5e38\u7528\u65bc\u8cea\u611f\u3001\u9999\u6c1b\u8207\u4e7e\u71e5\u82b1\u8a2d\u8a08\u3002",
+      "image": "https://images.unsplash.com/photo-1468327768560-75b778cbb551?auto=format&fit=crop&w=1200&q=80",
+      "price": 7.5,
+      "inventory_code": "L-022",
+      "color": "\u6de1\u7d2b\u8272",
+      "name": "\u85b0\u8863\u8349",
+      "id": "lavender"
+    },
+    {
+      "season": "\u6625\u590f",
+      "unit": "\u679d",
+      "category": "\u7261\u4e39",
+      "description": "\u82b1\u74e3\u5c64\u6b21\u8c50\u5bcc\u3001\u8996\u89ba\u611f\u5f37\u70c8\u7684\u5b63\u7bc0\u82b1\u6750\u3002",
+      "image": "https://images.unsplash.com/photo-1588457776180-4206b4909301?auto=format&fit=crop&w=1200&q=80",
+      "price": 8.5,
+      "inventory_code": "P-017",
+      "color": "\u73ca\u745a\u7c89",
+      "name": "\u7c89\u7d05\u7261\u4e39",
+      "id": "pink-peony"
+    },
+    {
+      "season": "\u5168\u5e74",
+      "unit": "\u679d",
+      "category": "\u73ab\u7470",
+      "description": "\u7c89\u7d05\u73ab\u7470",
+      "inventory_code": "R-001",
+      "price": 12.0,
+      "image": "https://images.unsplash.com/photo-1468327768560-75b778cbb551?auto=format&fit=crop&w=1200&q=80",
+      "imageWasSanitized": true,
+      "color": "\u816e\u7d05\u7c89",
+      "name": "\u7c89\u7d05\u73ab\u7470",
+      "id": "pink-rose"
+    },
+    {
+      "season": "\u5168\u5e74",
+      "unit": "\u675f",
+      "category": "\u5c24\u52a0\u5229",
+      "description": "\u5e36\u6709\u6e05\u65b0\u9999\u6c23\u8207\u5713\u8449\u8cea\u611f\u7684\u7da0\u8449\u896f\u6750\u3002",
+      "image": "https://images.unsplash.com/photo-1678902439117-ea4268c7661b?auto=format&fit=crop&w=1200&q=80",
+      "price": 12.0,
+      "inventory_code": "E-042",
+      "color": "\u7da0\u8272",
+      "name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "silver-dollar-eucalyptus"
+    },
+    {
+      "season": "\u6625\u5b63",
+      "unit": "\u679d",
+      "category": "\u9b31\u91d1\u9999",
+      "description": "\u6e05\u96c5\u767d\u8272\u9b31\u91d1\u9999\uff0c\u9069\u5408\u512a\u96c5\u82b1\u675f\u8207\u6d3b\u52d5\u4f48\u7f6e\u3002",
+      "image": "https://images.unsplash.com/photo-1621025210758-0a014e936aaf?auto=format&fit=crop&w=1200&q=80",
+      "price": 3.0,
+      "inventory_code": "T-014",
+      "color": "\u767d\u8272",
+      "name": "\u767d\u8272\u9b31\u91d1\u9999",
+      "id": "white-tulip"
+    }
+  ],
+  "wrappings": [
+    {
+      "imageURL": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABwCAYAAADG4PRLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAFT9JREFUeAHtXduSo7gSBDe9u3ON/f/P26eNOD9wYtoNxyVISNJVumA82xtncqIHG4RUUqpu4uL+77//M13f3rsZU9f3l26H6fYnu2aM6f++94713TRNXRn7Mumc6SXtX0/vx125VKRY99SNY037PqxPferY3LnLBZ/H7vX1t+7Ll6/d+/s1yWHtjON4+zx24/vl9vl6+0s9mIXt5zOnPu1c6urWujd4g/zehT281fX6OnTD249r9+PtOo9RQNZFd17eOx38Vlin/QPDvEkTxDp5vWsrPLehTL/MPNtiQthn/GlZ+3t9fe2+ffveXa/XG4HjQty0EDl2N067d9t3I/V9fE9b+0uT8Pa31X9xJv5tjKf9OI/Tjy4Ha3dIFS7TZOqnmay+KyDNqd1AeJVna3DOS+ekAR2TTKnzl3st1XO9ti4X12y4eHl5uZMNbQzDkMix7Z9//rmQ9762uxE4b23eMXn2r5+MwLnMXO94J1/S+llv5+9dPLaMYS68EDh1FeQ9GQsZqStJlm2yRJMinAwF2CByOQwqb42wz58/d1+/fl212toDifZ53r9popGIz7MlsX3j2h7OYSvQdZu53TrRFTFsZcYunLO9fimbpzofeI9prXtKs7ZEXgv2A7bt84hDH/7444/u+/fviTDIgMGHCcW++e+6mNHbZ/OL6bCVv5nY9816mNarNdE+VmrgzPzNaneXl77zxqm/9DQb6tSUZ7cKxj6HZ+RsQq/dZg6OI+q87mfS2KyZLL/99tuOPCaLsZI3XZPGTd24bK387MvnU6c7jY8mu/rmCAOd0rG52mG3q0weCxSRh8+r2aH6z9A2DzwQGDzsw3fAyPv27dtOywzs/7BNAcxtvwU2933v18+qbWySPTmrfeDZiAjw9ucIZrSa5ajznrnkrcECFiOPzaZ9ZjLhB0GeEsqTko9BLtZojn75eK4fq6xz+HrejM8NspJQQ55XpmZmem3rIHmRqmmeBSwWvMDXWZtGErcL4hCVglwmbxzvo02V38rAH6IsytT4xFsacfM5l+scth9womiwpVyt1nnIyVR7zDOdJsPvv//effr0KZGCY2zqNGhh38h/qE+jXO0vZOCgiElU2b3JO8Dn2ArBk1zPTqCcBh6FR5z6EQxMpIEWbdofyxYtBtixt7e3VdtarE4EjgdyWqskPsUH1mB65mxZwCR6xGFrZtNyPdM8b4KBSJ6EMJtKcslNMFhbOTfUVSLe8nmGn0bgzyDMEJlKNZn4buR9+fJll5gbeJmMAw4cY82LXEMLmBSTRVeHvPKGYV7APj909/wpD0RtlHUETJqmB3wcmgdtMmCruR/DI/UsuUsapzhFA3NmY5KIqjUSbSGYfcf9WuPefNrCtAUsrE2qfSwTm7camZSMGvDyGgdE+I56uf76Fd8ToJHaWYCmAVhVMTOk+62skWdmE74MdXim8Yi8kcbXosUkP5XASJCzTLZqA4j0tI81z8gDWax1TOAZUfORSZrTWm/fcLIZ/+nQSNNLzjXaVBPJ5BkeJU/949HJqnV4fRt0BuMkbzHam1GRcF4HajpSO2sjLeMkmsuY5hl5UeRYO+g1uZ/Xp9YJANmRF2pgg3qHqMGaRvS7J2gk+CNmVCPLnOnEYNjaJpbHIJf+Yb/KrnLydb1noqb+0Aey0OxrWBu1gWh26+dHEPk9A2sGSOYr6Rh0BC6QS01n1IdW2c5A6c6CbBqhs6ylUyXyjgQE6u88zcAWxNr1PCWI1zgj8nKWA2V0Utfcq5PrX6Q0OewIZII8QT1EJvOsSBN1eR2K1jeRKuA2CPVbWIiGvB4ZJXkitPZ5cvJkz99FGGoqPouIWmgHemd5TLXRAD9oZtPIw2qKl9sZNHEuydQiey28vul+LcvHiia05fiZPk+F9TqnGgifB/L4Gh4n6rzykvPbKot+1n0mT4sZjRJ+z+9FJvXwUpqS5fnKI/BMiEeUl/8ZeUgVcD77uNIidIm8EnL9LtWjLoD7litfRWBOsJbApgYlLWNwZ6F5JgcvTjORHLSo6Wzxfc9wKV6OVyLPNlUERnb9jI7UzHBP43gwcRtEtKLChLbIHsnGvhPl2CR745ULSqL9nNADvMBiNwoPrSnBmWU9H8Cd52t3kU+0BWsmj+WA2QQiEnOmMxdAaVtaby3UfOb8rMrmphE5PMN8QBiAZ52nfYCmCgZ9XkGv82kfWvyeTjDFkbHJkedNIsXQ0viZguM8T+icxuH7/KDJvDyGQeUVlihg4bY9lP1On400j6zclPydTu4tZ1wIrO1cq8A1uZWned4sxHH1eRhQ+AvPjKIeNXUleVQulFEf+Gg0G7kS1MVayuXtKaedBubMg1ZWQmmgeFvaxwPI5IEQ/vNuAWSZ+Mo6zsmtN3qD6xEVTQ6eQFoP0p/ITURuhTE/GyHwoqwaoVTA0rHIdHqRVxJ2SRU836YrLZFWMHHeYHnhvELr4vNybiZyBxEid7KNS5BGeGx7gvJA1CJnHnnLn40kPKvAt0Docwp8uUhlRj018njawMjdL1qCTtJSwJYbW2suXZFv8Xm1gnqIZpKaSiWRNc/A+R78Xs58Kak5n6My6b7ILB+Bt0jhaVxVFApheFuDGu1jQdT8RjNNzaZpF8ji1RRcWcjlgNwfz2zX9hN/mDiM2qjWM4vRBK6RbWDb/wzkZnt0/wqOs+ZZwu4l4kom9tdORg1iSoNW0rZce3zXQB9E4LVyAE+7MzsyQYBn+7mDvMJiUC1jM6rap0S2BltRefhdNt2MUuStK0s8kUtX3iMMkf84G32QHrBJVbMJsO+DGY6u9XmERjLkTKjn7yCDd8NXTc7raTrI07Go5eQ0DdQwmeFFloBqHt/uzh3hWc/koQ7WRs/XaptKnjdoevMSNLAFdo5ZE7U+3jpvTV0GlvPpD7d4s87rjAmF290xaLquacA+zQNV8yKoz4tk0zwR+3TS1Ggew7u2ibq5nUh2nIMypxEYkZMrw+YDPg/aBSGVrNzCNXe0Rj6Gato03T8CbcDaq64EedCgJRfE1Gohk7hbSjsbkdmMcj2QZ9ABMqjPU3+nvs4zoaUBi3JEHGM/xedE/WfC9PsjYDlPJdCb5Z5Gsv3XJN2gxMDvcQfuTQ4PZE/f6/2LF5gwgfbHGlhTJ/rLfu8R7OUZn6OBTKRnNjFYTB6bKEBNpqd5iaj0gjz2Vfb/MB+bX4LTTRcLiuJF4Zzf0e9e5Knmlu9N1YDFWwhoxWkmtOSkeR+bELzKg8nRezVrzOZ+gJdB1PfdNEx6z4wCbAk8n6sap/3X72fgIQJryeNZaeBHvADvXSsl0lbyJitrdS/f+/wKkAYQLVCCVUPxTCL6jUelzySNcdoTuvxZQ+QSeUoOa56mC8BGor1ZjsjzMOG/urwrCoD4+Qrej/KIpiMNjJCLjEu4uyLfmlTqrFbyWAOtcx55nE/xd83tvAXr5UgiUXM4ErZInEcM9mv7GuSo6cRnrifCo0HN4DnpI5VG5HlrmwjJ9f5N3E1t4ABGzeY+eLB3i2Zm+K3o/BLixwYKEajKgPEyn66PdHvj6KUiEbxJxBpvE3do5crTPG2Moy+DpgpMHpPE5Kkf9FMHRJxJyTaNcMmaTWjO2uQWAPi6o2qq9c/+2Np4dfD41JKo5+/RGIVGgYHmel60aeTw9bwo7/PWOrOrLNbMKJYj6C8PHm9z4DKc7kAO0zr2ezw2vNWcstYPR3g4kfd8H75zBIbb3Q05f8cRp5I3TZm7yabFjJqdTErWYzde9Ghvwnn4RcRe8m6T04IyEJibFK1RqGc+PVQTqFrGW92fKr51Du9hAXR1xf7Yr3h5X2Q6dzItLxXvegvZZyIvvZnjZWKlNCOdvfpfjjS9Qff2QVYk4pHfy5nQVkRyQf6mZyM0NFatY7OJ11ex+YkWpflmpGiBmq8CRFHg6uP62TdufnHW0nnfsXeZqUxMXuTTHiGuhCoTygLwu7s8Z60BCw+uvsqK/5Q8j0gNAjz50rFxiUj7rexucJf98GV8vS+q1yPbxsL6yWYuuvJyNlTWZg1UqNn0FqZZY7zoE+WKKy6CfWDQrW/fd8si0cfyqJ0w3l+01Xp5H+SzC87WV28MMF7e56gM6q9FswnFSRpZsS/Ew5Vs6iLN01c15sgrgX3Z7AfTt3l1hnP5qe/gE6fkI7u1bY9Erx37s5fCwhp55WvI8+BZgZoxGPgErVAjTYN3bU+vKrCmGTg1UA3UVKGFPA/T+pb4TTPXn86ZOIW47XqZ41PI7ZlOaB5SIIs6vUBF0ZKeeOdEBOp5Q65hj0BO1A1IFbgBBmsdf/dWWeKlsu5ODq9TabsEMtP6yzJbQLOU7jYnuSQZffzgC08wJO3oOw8m11GreZob6rEaDFGlqnEsKOy/HeNX87P2oTOexnn5Xy2iAWLtT9tupgnf7WlWaOKslfbbRIuW3f5dev8FBewSQN7ObBOOBC483kcsz93L7li7dL8hWh7Dcb6nhd/o7v0Zclrn+YT6hHiaTeaqgf2239qdevKXS7tG8NjRr8fsZeLAhSfLEeJ2kj7gMgb1dZ6PA3B7HL8NgjHKwjTnTmxKPc1TU4V6uJNYDVGZNS9M7ffX3frLZXpdrWffT/PnG4mmeWuEOr7MP7h1S0VmT2q/vrLdIWC3PDIeJa6EXPQN7IIY9XnepRHO83jAeJUCVxXSbweln2mDFvrP8kEoJoK36n9zM3Y1sasN7ZbLEdN2WXA5kCbEtEwYS/Rndlfzvv5wFY1JS3T8bIIN6WoEEwd49h3X8/CgicEziesvmlwv6edo7J6VcbyZ1O6/3fSef/9apIGQwSMxl1OBpG6CC+jSj1Dhhxh7yglH+6m7cSEumdL3OTXperedj4BBhfPWN5Hn4TXFXIbvFsOqimnc+7VPv+I1TviVy/lHI2EGDZrwA2jDi8yYRN7Pfbjb320RqjUzl1suOyVTOs0/WfU+zQ7T5En6uF3p/ycClBokE+rddGMDirU+2+J2d9U8/rz5uXEmb+Sr6otXqcz7lFDI5wU2NYNrP4E6R5tLYJPqnUkcZ3WbNQ516/lTTKRnKaJjZ2ENrHpnVSUdWEJmBCwMTQX4R6B0pSWV6aYlOOjC6BOoTYCZ+NJV8K1+07SZvTnVmO5M8jPM5BF/WJ0Hsg/UG29ty8tjfFUaYLK8lCGKNCMhW2YzjrHfzPlDPh6lK88KPloT/FoM+xxpf2lIfR4n32ukyVGnk+dxcMIDXQuv45xS6KoIa7aXo3nJupb9J0lsNblrHsjEIdpkMClMmAUu+vgzk6Ypg0adNch1nI8xoR55EXIBE+MMUs/2iRcmMO1YNM+gQYpBycN++zUvfOdcb3JWV450whtgrz6eRJG2leqO0hxNcaK+5Pp/BnaJPGTVJB37mDwQpDfe6lpotFTGddZCBzOniVyeTaoGKbqKU2vaIiKeZXKjthiD3QxkVgd3TKOQBixKGvs8vq+FCS41XitwiUQvzdAcLFqsiL7r/lY5veOMswgf4Pf4+Tz4BG915Xp923I9edy4xVzkykVBSw7RRVn1ubz4jnt21IWgH3rfT02fztTEmrEcXl4u3adPn+/IY83byLttb8tjaY1zvP/5UX40THM1TyhPQA0ocprAE4zbUpOOc/keTr6ux0FcTlu5zZqgKoez/OJg5CGKhNmEoPiR31UDb/xcbXF6wo/+znd6zWuN9wJ6AUwJ6h81GPEWwL3cjskBYSCN+6rpg7YdTaBokv1spKU03GEFs6HCpYHCDbImrK3xdmZeXrr3G5n9dEmXXXgC8Ow3KBHYp4g0NooMvXNYg/j2P771sSaQakm8I3Jb6jmCwTTrx48fq7YhSUd+ty1Q26UhE+aS/maTuwxgWjl867RTOeFzx72En01iZHoBaBWbTC3j1Z3b77V5lOAzMfz1118ph/P8i/3ZsYTeksaX9SLp7mb1NLOnDn3U6M5D7jivrjDwPfJVvFWtq7+S37ltajSLY5q2lOoBTotCraMaTWp6sDl5uoa26N0snJ1/6c6eZLWBAkw/33B8hLicVYgIUIJr+/GIRm91jPOrtrhCzu94YAy72y12EV5d4zVlIh/K4PCe9ylhXrkItdqk8YHK6cndEpm2kGjNpMXsKBz3BqUPkl0PR8xE7tIQB1p6jsr1qIlqXZ3RtAVyPKNdRnrlskaLbIawLQmkg8adi7SpFIx44Gc0tE1NyB9FrSYqPE1u8YFRu944DmoGcOcZAoHa2cwRYq58KXzv+z5LfKShkDMKbGoQreS0mGE+R/vSAk+jsZ8xsInkQdC/GmcN6GqOHitBifGOeT6Qyxw1oRGJngxH6sIlr5ogpjTOhiFy/jW5U/SdFwRKM6gE6xRf54tkOpuwkokrtRn5xDNMO2O9qYkJa9USfPc6xj7gyIqF7eM7orGvZoBrUdK62nTGO67fPe074ieB4Yxk1xNEhTpi1o74sSPlDUd9VSv0lg+0XZtmKNIF3TPIi1DjM7V87vuz4WlBThtrolGUO2qqo3pTIv+sASolt55A+vkjoib48Mp6Y8D7WiwVl013Zv+MQWsh8SOhxi/VRpS1+/RYPEG69jc1HUXNrPro2mc4EmjkzitpZS6XTAR2T4AXaZb84L+BPA+R9kUrT6XAhUmLxpEj2ae/tf7/EbWT1fORnl/UepGSJTJtX0uU+AuPgQdf9+s29/lOA0sh6y+ci1zgw3ck6M3E+3Onsgk9k9iflSx/dHgmUv2m+ksut5VxNLA22aw1uyVn/gszcimFF8wAg56sjvRZ+EXiPaIxVw3kcRuwkwt4DraF1Nqy/wYSH1kGfAb28kz+i35y6tzeiH+h0/BPk3c0Kc/VV7OsdrQtvaxmGKZpLD5BVLPQrfdyeg5YL6VEjvojIJqE5cAib60eIVLbmSbnTU04yPBug9DKPJKjQdB9H9mMRu6kVKa23pZF7PsrNRKFtgxkDcleo1FdH4nEHAFeIs6PFOB7TRtefpdb+wT4vN0Pf/DDkJ45PIKSMFzuTBJbTXJk9rz8TKGT15vMSjLcVM6FRG3bFreAptsKvRMZUeUt0AAmKnO0nUd9aMk0qtbpeZFPBKIHe3Lml5+e0s9zWXpTkwpUwpHBrtVG75yfgVJbOY1oqQd16Tk1Cyb7cmJCIeB0cPmshvya462511GSc5dz8BnbVplK8MystqGP692X7/YmtCRkDUG5Mkc1+4zy6m9yGpAznZHWaV1nwDO7PGHt+DCO5TC55XiuTM1MrvG/R1HyaS3h/5my5Mrwo3bqZ43A/wGKBk281sN8WwAAAABJRU5ErkJggg==",
+      "price": 5.0,
+      "name": "\u73cd\u73e0\u767d",
+      "id": "flower"
+    },
+    {
+      "imageURL": "data:image/png;base64,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",
+      "price": 5.0,
+      "name": "\u73ab\u7470\u7c89",
+      "id": "flower-2"
+    },
+    {
+      "id": "flower-3",
+      "name": "\u9ad8\u7d1a\u9ed1",
+      "price": 5.0,
+      "imageURL": "data:image/png;base64,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"
+    }
+  ],
+  "inventory": [
+    {
+      "unit": "\u675f",
+      "category": "\u8449\u6750",
+      "updated_at": "2026-03-15T16:51:05+08:00",
+      "linked_flower_id": "silver-dollar-eucalyptus",
+      "par": 20,
+      "code": "E-042",
+      "name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "stock": 78
+    },
+    {
+      "unit": "\u675f",
+      "category": "\u896f\u82b1",
+      "updated_at": "2026-03-16T16:23:32+08:00",
+      "linked_flower_id": "lavender",
+      "par": 10,
+      "isAvailable": true,
+      "code": "L-022",
+      "name": "\u85b0\u8863\u8349",
+      "stock": 97
+    },
+    {
+      "unit": "\u679d",
+      "category": "\u9bae\u82b1",
+      "updated_at": "2026-03-23T17:29:13+08:00",
+      "linked_flower_id": "pink-peony",
+      "par": 15,
+      "isAvailable": false,
+      "code": "P-017",
+      "name": "\u7c89\u7d05\u7261\u4e39",
+      "stock": 10
+    },
+    {
+      "unit": "\u679d",
+      "category": "\u9bae\u82b1",
+      "updated_at": "2026-03-21T14:49:49+08:00",
+      "linked_flower_id": "pink-rose",
+      "par": 20,
+      "isAvailable": true,
+      "code": "R-001",
+      "name": "\u7c89\u7d05\u73ab\u7470",
+      "stock": 22
+    },
+    {
+      "unit": "\u679d",
+      "category": "\u9bae\u82b1",
+      "updated_at": "2026-03-15T18:29:53+08:00",
+      "linked_flower_id": "white-tulip",
+      "par": 35,
+      "isAvailable": true,
+      "code": "T-014",
+      "name": "\u767d\u8272\u9b31\u91d1\u9999",
+      "stock": 83
+    }
+  ],
+  "orders": [
+    {
+      "id": "#8902",
+      "created_at": "2026-03-24T10:30:00+08:00",
+      "customer_name": "Alice Chen",
+      "phone": "+1 (555) 204-1133",
+      "delivery_date": "2026-03-24T15:00:00+08:00",
+      "delivery_address": "28 Blossom Lane, San Francisco, CA",
+      "notes": "Card: Happy Birthday Mom. Use blush-toned wrapping.",
+      "status": "Preparing",
+      "subtotal": 126.0,
+      "delivery_fee": 8.0,
+      "total": 134.0,
+      "line_items": [
+        {
+          "flower_id": "pink-peony",
+          "name": "Pink Peony",
+          "qty": 12,
+          "unit": "stem",
+          "unit_price": 8.5
+        },
+        {
+          "flower_id": "silver-dollar-eucalyptus",
+          "name": "Silver Dollar Eucalyptus",
+          "qty": 2,
+          "unit": "bunch",
+          "unit_price": 12.0
+        }
+      ]
+    },
+    {
+      "id": "#8901",
+      "created_at": "2026-03-24T09:15:00+08:00",
+      "customer_name": "Mark Davis",
+      "phone": "+1 (555) 887-4420",
+      "delivery_date": "2026-03-24T11:00:00+08:00",
+      "delivery_address": "Pickup in store",
+      "notes": "No card needed.",
+      "status": "Delivered",
+      "subtotal": 41.0,
+      "delivery_fee": 0.0,
+      "total": 41.0,
+      "line_items": [
+        {
+          "flower_id": "white-tulip",
+          "name": "White Tulip",
+          "qty": 12,
+          "unit": "stem",
+          "unit_price": 3.0
+        },
+        {
+          "flower_id": "babys-breath",
+          "name": "Baby's Breath",
+          "qty": 1,
+          "unit": "bunch",
+          "unit_price": 5.0
+        }
+      ]
+    },
+    {
+      "id": "#8900",
+      "created_at": "2026-03-23T16:10:00+08:00",
+      "customer_name": "Sarah Lee",
+      "phone": "+1 (555) 312-6698",
+      "delivery_date": "2026-03-23T18:00:00+08:00",
+      "delivery_address": "14 Magnolia Ave, Oakland, CA",
+      "notes": "Vintage aesthetic, neutral palette.",
+      "status": "Delivered",
+      "subtotal": 111.0,
+      "delivery_fee": 8.0,
+      "total": 119.0,
+      "line_items": [
+        {
+          "flower_id": "dusty-rose",
+          "name": "Dusty Rose",
+          "qty": 10,
+          "unit": "stem",
+          "unit_price": 4.5
+        },
+        {
+          "flower_id": "pink-peony",
+          "name": "Pink Peony",
+          "qty": 6,
+          "unit": "stem",
+          "unit_price": 8.5
+        },
+        {
+          "flower_id": "lavender",
+          "name": "Lavender",
+          "qty": 2,
+          "unit": "bunch",
+          "unit_price": 7.5
+        }
+      ]
+    },
+    {
+      "id": "#8899",
+      "created_at": "2026-03-22T13:40:00+08:00",
+      "customer_name": "Jin Ho",
+      "phone": "+1 (555) 998-4412",
+      "delivery_date": "2026-03-22T16:30:00+08:00",
+      "delivery_address": "77 Clement Street, San Francisco, CA",
+      "notes": "Call on arrival.",
+      "status": "Ready",
+      "subtotal": 84.0,
+      "delivery_fee": 8.0,
+      "total": 92.0,
+      "line_items": [
+        {
+          "flower_id": "garden-rose",
+          "name": "Garden Rose",
+          "qty": 8,
+          "unit": "stem",
+          "unit_price": 6.0
+        },
+        {
+          "flower_id": "hydrangea",
+          "name": "Hydrangea",
+          "qty": 4,
+          "unit": "stem",
+          "unit_price": 9.0
+        }
+      ]
+    },
+    {
+      "id": "#8898",
+      "created_at": "2026-03-20T11:05:00+08:00",
+      "customer_name": "Natalie Wong",
+      "phone": "+1 (555) 663-1900",
+      "delivery_date": "2026-03-20T14:00:00+08:00",
+      "delivery_address": "Pickup in store",
+      "notes": "Wrap in kraft paper.",
+      "status": "Delivered",
+      "subtotal": 57.0,
+      "delivery_fee": 0.0,
+      "total": 57.0,
+      "line_items": [
+        {
+          "flower_id": "dusty-rose",
+          "name": "Dusty Rose",
+          "qty": 6,
+          "unit": "stem",
+          "unit_price": 4.5
+        },
+        {
+          "flower_id": "white-tulip",
+          "name": "White Tulip",
+          "qty": 10,
+          "unit": "stem",
+          "unit_price": 3.0
+        }
+      ]
+    },
+    {
+      "id": "#8897",
+      "created_at": "2026-03-18T14:20:00+08:00",
+      "customer_name": "Omar Patel",
+      "phone": "+1 (555) 880-7701",
+      "delivery_date": "2026-03-18T18:15:00+08:00",
+      "delivery_address": "9 Rosewood Ct, Berkeley, CA",
+      "notes": "Wedding table sample arrangement.",
+      "status": "Delivered",
+      "subtotal": 123.0,
+      "delivery_fee": 8.0,
+      "total": 131.0,
+      "line_items": [
+        {
+          "flower_id": "hydrangea",
+          "name": "Hydrangea",
+          "qty": 5,
+          "unit": "stem",
+          "unit_price": 9.0
+        },
+        {
+          "flower_id": "silver-dollar-eucalyptus",
+          "name": "Silver Dollar Eucalyptus",
+          "qty": 3,
+          "unit": "bunch",
+          "unit_price": 12.0
+        },
+        {
+          "flower_id": "garden-rose",
+          "name": "Garden Rose",
+          "qty": 7,
+          "unit": "stem",
+          "unit_price": 6.0
+        }
+      ]
+    }
+  ],
+  "restocks": [
+    {
+      "quantity": 100,
+      "unit_cost": 1.2,
+      "created_at": "2026-03-05T09:00:00-05:00",
+      "item_name": "\u9727\u7c89\u73ab\u7470",
+      "item_code": "R-001",
+      "id": "RS-1001"
+    },
+    {
+      "quantity": 20,
+      "unit_cost": 4.5,
+      "created_at": "2026-03-07T13:00:00-05:00",
+      "item_name": "8 \u540b\u73bb\u7483\u5713\u7b52",
+      "item_code": "V-102",
+      "id": "RS-1002"
+    },
+    {
+      "quantity": 25,
+      "unit_cost": 4.4,
+      "created_at": "2026-03-09T12:00:00-04:00",
+      "item_name": "\u7c89\u7d05\u7261\u4e39",
+      "item_code": "P-017",
+      "id": "RS-1003"
+    },
+    {
+      "quantity": 3,
+      "unit_cost": 1.5,
+      "created_at": "2026-03-10T14:01:06-04:00",
+      "item_name": "\u6eff\u5929\u661f",
+      "item_code": "B-010",
+      "id": "RS-1004"
+    },
+    {
+      "quantity": 3,
+      "unit_cost": 1.5,
+      "created_at": "2026-03-10T14:01:30-04:00",
+      "item_name": "\u6eff\u5929\u661f",
+      "item_code": "B-010",
+      "id": "RS-1005"
+    },
+    {
+      "quantity": 3,
+      "unit_cost": 1.5,
+      "created_at": "2026-03-10T14:01:46-04:00",
+      "item_name": "\u6eff\u5929\u661f",
+      "item_code": "B-010",
+      "id": "RS-1006"
+    },
+    {
+      "quantity": 3,
+      "unit_cost": 1.5,
+      "created_at": "2026-03-10T14:02:12-04:00",
+      "item_name": "\u6eff\u5929\u661f",
+      "item_code": "B-010",
+      "id": "RS-1007"
+    },
+    {
+      "quantity": 10,
+      "unit_cost": 3.0,
+      "item_code": "R-029",
+      "item_name": "hiii",
+      "created_at": "2026-03-10T23:42:23-04:00",
+      "id": "RS-1008"
+    },
+    {
+      "quantity": 100,
+      "unit_cost": 1.0,
+      "item_code": "R-029",
+      "item_name": "hiii",
+      "created_at": "2026-03-10T23:43:12-04:00",
+      "id": "RS-1009"
+    },
+    {
+      "quantity": 100,
+      "unit_cost": 1.0,
+      "item_code": "R-029",
+      "item_name": "hiii",
+      "created_at": "2026-03-10T23:43:53-04:00",
+      "id": "RS-1010"
+    },
+    {
+      "quantity": 10,
+      "unit_cost": 3.0,
+      "created_at": "2026-03-15T15:43:04+08:00",
+      "item_name": "\u85b0\u8863\u8349",
+      "item_code": "L-022",
+      "id": "RS-1011"
+    },
+    {
+      "quantity": 100,
+      "unit_cost": 10.0,
+      "created_at": "2026-03-16T16:23:32+08:00",
+      "item_name": "\u85b0\u8863\u8349",
+      "item_code": "L-022",
+      "id": "RS-1012"
+    },
+    {
+      "quantity": 10,
+      "unit_cost": 3.0,
+      "created_at": "2026-03-23T17:29:13+08:00",
+      "item_name": "\u7c89\u7d05\u7261\u4e39",
+      "item_code": "P-017",
+      "id": "RS-1013"
+    }
+  ],
+  "maintenance_logs": [
+    {
+      "created_at": "2026-03-15T14:54:49+08:00",
+      "related_name": null,
+      "severity": "critical",
+      "id": "ML-1001",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "title": "Weekly maintenance report failed",
+      "event_type": "report_generation_failed",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1001"
+      }
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1002",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 18,
+        "after": 19
+      },
+      "description": "Stock changed from 18 to 19 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:57:01+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1003",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 19,
+        "after": 20
+      },
+      "description": "Stock changed from 19 to 20 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:57:05+08:00"
+    },
+    {
+      "created_at": "2026-03-15T14:57:10+08:00",
+      "related_name": null,
+      "severity": "critical",
+      "id": "ML-1004",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "title": "Weekly maintenance report failed",
+      "event_type": "report_generation_failed",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1002"
+      }
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1005",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 20,
+        "after": 21
+      },
+      "description": "Stock changed from 20 to 21 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:57:14+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1006",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 21,
+        "after": 22
+      },
+      "description": "Stock changed from 21 to 22 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:57:18+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1007",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 22,
+        "after": 23
+      },
+      "description": "Stock changed from 22 to 23 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:57:22+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1008",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 23,
+        "after": 24
+      },
+      "description": "Stock changed from 23 to 24 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:57:27+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1009",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 24,
+        "after": 25
+      },
+      "description": "Stock changed from 24 to 25 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:57:32+08:00"
+    },
+    {
+      "created_at": "2026-03-15T14:57:36+08:00",
+      "related_name": null,
+      "severity": "critical",
+      "id": "ML-1010",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "title": "Weekly maintenance report failed",
+      "event_type": "report_generation_failed",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1003"
+      }
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1011",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 25,
+        "after": 26
+      },
+      "description": "Stock changed from 25 to 26 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:57:41+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1012",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 26,
+        "after": 27
+      },
+      "description": "Stock changed from 26 to 27 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:57:45+08:00"
+    },
+    {
+      "created_at": "2026-03-15T14:57:50+08:00",
+      "related_name": null,
+      "severity": "critical",
+      "id": "ML-1013",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "title": "Weekly maintenance report failed",
+      "event_type": "report_generation_failed",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1004"
+      }
+    },
+    {
+      "created_at": "2026-03-15T14:57:55+08:00",
+      "related_name": null,
+      "severity": "critical",
+      "id": "ML-1014",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "title": "Weekly maintenance report failed",
+      "event_type": "report_generation_failed",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1005"
+      }
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1015",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 27,
+        "after": 28
+      },
+      "description": "Stock changed from 27 to 28 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:58:13+08:00"
+    },
+    {
+      "created_at": "2026-03-15T14:58:18+08:00",
+      "related_name": null,
+      "severity": "critical",
+      "id": "ML-1016",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "title": "Weekly maintenance report failed",
+      "event_type": "report_generation_failed",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1006"
+      }
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1017",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 28,
+        "after": 29
+      },
+      "description": "Stock changed from 28 to 29 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T14:58:30+08:00"
+    },
+    {
+      "created_at": "2026-03-15T14:58:35+08:00",
+      "related_name": null,
+      "severity": "critical",
+      "id": "ML-1018",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "title": "Weekly maintenance report failed",
+      "event_type": "report_generation_failed",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1007"
+      }
+    },
+    {
+      "created_at": "2026-03-15T14:59:00+08:00",
+      "related_name": null,
+      "severity": "critical",
+      "id": "ML-1019",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "title": "Weekly maintenance report failed",
+      "event_type": "report_generation_failed",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1008"
+      }
+    },
+    {
+      "created_at": "2026-03-15T14:59:05+08:00",
+      "related_name": null,
+      "severity": "critical",
+      "id": "ML-1020",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "title": "Weekly maintenance report failed",
+      "event_type": "report_generation_failed",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1009"
+      }
+    },
+    {
+      "created_at": "2026-03-15T14:59:22+08:00",
+      "related_name": null,
+      "severity": "critical",
+      "id": "ML-1021",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "title": "Weekly maintenance report failed",
+      "event_type": "report_generation_failed",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1010"
+      }
+    },
+    {
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1011"
+      },
+      "severity": "critical",
+      "id": "ML-1022",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "event_type": "report_generation_failed",
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
+      "created_at": "2026-03-15T15:01:51+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1023",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 29,
+        "after": 30
+      },
+      "description": "Stock changed from 29 to 30 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:02:30+08:00"
+    },
+    {
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1012"
+      },
+      "severity": "critical",
+      "id": "ML-1024",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "event_type": "report_generation_failed",
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
+      "created_at": "2026-03-15T15:02:37+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1025",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 30,
+        "after": 31
+      },
+      "description": "Stock changed from 30 to 31 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:03:10+08:00"
+    },
+    {
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1013"
+      },
+      "severity": "critical",
+      "id": "ML-1026",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "event_type": "report_generation_failed",
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
+      "created_at": "2026-03-15T15:03:11+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1027",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 31,
+        "after": 32
+      },
+      "description": "Stock changed from 31 to 32 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:03:19+08:00"
+    },
+    {
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1014"
+      },
+      "severity": "critical",
+      "id": "ML-1028",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "event_type": "report_generation_failed",
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
+      "created_at": "2026-03-15T15:03:20+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1029",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 32,
+        "after": 33
+      },
+      "description": "Stock changed from 32 to 33 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:03:55+08:00"
+    },
+    {
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1015"
+      },
+      "severity": "critical",
+      "id": "ML-1030",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "event_type": "report_generation_failed",
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
+      "created_at": "2026-03-15T15:03:56+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1031",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 33,
+        "after": 34
+      },
+      "description": "Stock changed from 33 to 34 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:04:00+08:00"
+    },
+    {
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1016"
+      },
+      "severity": "critical",
+      "id": "ML-1032",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "event_type": "report_generation_failed",
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
+      "created_at": "2026-03-15T15:04:02+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1033",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 34,
+        "after": 35
+      },
+      "description": "Stock changed from 34 to 35 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:04:14+08:00"
+    },
+    {
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1017"
+      },
+      "severity": "critical",
+      "id": "ML-1034",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "event_type": "report_generation_failed",
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
+      "created_at": "2026-03-15T15:04:15+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1035",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 35,
+        "after": 36
+      },
+      "description": "Stock changed from 35 to 36 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:04:26+08:00"
+    },
+    {
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1018"
+      },
+      "severity": "critical",
+      "id": "ML-1036",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "event_type": "report_generation_failed",
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
+      "created_at": "2026-03-15T15:04:28+08:00"
+    },
+    {
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1019"
+      },
+      "severity": "critical",
+      "id": "ML-1037",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "event_type": "report_generation_failed",
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
+      "created_at": "2026-03-15T15:05:16+08:00"
+    },
+    {
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1020"
+      },
+      "severity": "critical",
+      "id": "ML-1038",
+      "description": "Unable to build PDF for Mar 02 - 08, 2026: No module named 'reportlab'",
+      "event_type": "report_generation_failed",
+      "title": "Weekly maintenance report failed",
+      "related_code": null,
+      "created_at": "2026-03-15T15:05:17+08:00"
+    },
+    {
+      "created_at": "2026-03-15T15:14:10+08:00",
+      "id": "ML-1039",
+      "severity": "info",
+      "related_name": null,
+      "description": "PDF generated for Mar 02 - 08, 2026.",
+      "event_type": "report_generated",
+      "title": "Weekly maintenance report generated",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1021",
+        "trigger": "scheduled"
+      }
+    },
+    {
+      "related_name": null,
+      "id": "ML-1040",
+      "severity": "warning",
+      "details": {
+        "reportId": "MR-1021",
+        "recipient": "hello@wailangarden.com"
+      },
+      "description": "SMTP \u90f5\u4ef6\u767c\u9001\u672a\u8a2d\u5b9a\u3002PDF \u5df2\u6e96\u5099\u597d\uff0c\u53ef\u4f9b hello@wailangarden.com \u4e0b\u8f09\u3002",
+      "title": "Weekly report delivery failed",
+      "event_type": "notification_failure",
+      "related_code": null,
+      "created_at": "2026-03-15T15:14:10+08:00"
+    },
+    {
+      "created_at": "2026-03-15T15:14:44+08:00",
+      "id": "ML-1041",
+      "severity": "info",
+      "related_name": null,
+      "description": "PDF generated for Mar 02 - 08, 2026.",
+      "event_type": "report_generated",
+      "title": "Weekly maintenance report generated",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1022",
+        "trigger": "manual"
+      }
+    },
+    {
+      "related_name": null,
+      "id": "ML-1042",
+      "severity": "warning",
+      "details": {
+        "reportId": "MR-1022",
+        "recipient": "hello@wailangarden.com"
+      },
+      "description": "SMTP \u90f5\u4ef6\u767c\u9001\u672a\u8a2d\u5b9a\u3002PDF \u5df2\u6e96\u5099\u597d\uff0c\u53ef\u4f9b hello@wailangarden.com \u4e0b\u8f09\u3002",
+      "title": "Weekly report delivery failed",
+      "event_type": "notification_failure",
+      "related_code": null,
+      "created_at": "2026-03-15T15:14:44+08:00"
+    },
+    {
+      "created_at": "2026-03-15T15:17:37+08:00",
+      "id": "ML-1043",
+      "severity": "info",
+      "related_name": null,
+      "description": "Dashboard data cache was refreshed from live storage.",
+      "event_type": "cache_refresh",
+      "title": "Dashboard cache refreshed",
+      "related_code": null,
+      "details": {
+        "backend": "firestore"
+      }
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1044",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 36,
+        "after": 37
+      },
+      "description": "Stock changed from 36 to 37 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:23:00+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1045",
+      "severity": "warning",
+      "details": {
+        "delta": 1,
+        "before": 37,
+        "after": 38
+      },
+      "description": "Stock changed from 37 to 38 (+1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:23:26+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1046",
+      "severity": "warning",
+      "details": {
+        "delta": -1,
+        "before": 38,
+        "after": 37
+      },
+      "description": "Stock changed from 38 to 37 (-1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:31:11+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1047",
+      "severity": "warning",
+      "details": {
+        "delta": -1,
+        "before": 37,
+        "after": 36
+      },
+      "description": "Stock changed from 37 to 36 (-1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:31:25+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1048",
+      "severity": "warning",
+      "details": {
+        "delta": -1,
+        "before": 36,
+        "after": 35
+      },
+      "description": "Stock changed from 36 to 35 (-1 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:31:49+08:00"
+    },
+    {
+      "related_name": "\u9280\u5143\u5c24\u52a0\u5229",
+      "id": "ML-1049",
+      "severity": "warning",
+      "details": {
+        "delta": 45,
+        "before": 35,
+        "after": 80
+      },
+      "description": "Stock changed from 35 to 80 (+45 bunch).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u9280\u5143\u5c24\u52a0\u5229",
+      "event_type": "inventory_correction",
+      "related_code": "E-042",
+      "created_at": "2026-03-15T15:40:04+08:00"
+    },
+    {
+      "id": "ML-1050",
+      "details": {
+        "reportId": "MR-1023",
+        "trigger": "manual"
+      },
+      "severity": "info",
+      "created_at": "2026-03-15T16:04:00+08:00",
+      "description": "PDF generated for Mar 02 - 08, 2026.",
+      "title": "Weekly maintenance report generated",
+      "event_type": "report_generated",
+      "related_code": null,
+      "related_name": null
+    },
+    {
+      "related_name": null,
+      "id": "ML-1051",
+      "severity": "warning",
+      "details": {
+        "reportId": "MR-1023",
+        "recipient": "hello@wailangarden.com"
+      },
+      "description": "SMTP \u90f5\u4ef6\u767c\u9001\u672a\u8a2d\u5b9a\u3002PDF \u5df2\u6e96\u5099\u597d\uff0c\u53ef\u4f9b hello@wailangarden.com \u4e0b\u8f09\u3002",
+      "title": "Weekly report delivery failed",
+      "event_type": "notification_failure",
+      "related_code": null,
+      "created_at": "2026-03-15T16:04:00+08:00"
+    },
+    {
+      "id": "ML-1052",
+      "related_name": null,
+      "severity": "info",
+      "created_at": "2026-03-16T11:44:10+08:00",
+      "description": "PDF generated for Mar 09 - 15, 2026.",
+      "event_type": "report_generated",
+      "title": "Weekly maintenance report generated",
+      "related_code": null,
+      "details": {
+        "reportId": "MR-1024",
+        "trigger": "scheduled"
+      }
+    },
+    {
+      "related_name": null,
+      "id": "ML-1053",
+      "severity": "warning",
+      "details": {
+        "reportId": "MR-1024",
+        "recipient": "hello@wailangarden.com"
+      },
+      "description": "SMTP \u90f5\u4ef6\u767c\u9001\u672a\u8a2d\u5b9a\u3002PDF \u5df2\u6e96\u5099\u597d\uff0c\u53ef\u4f9b hello@wailangarden.com \u4e0b\u8f09\u3002",
+      "title": "Weekly report delivery failed",
+      "event_type": "notification_failure",
+      "related_code": null,
+      "created_at": "2026-03-16T11:44:10+08:00"
+    },
+    {
+      "related_name": "\u7c89\u7d05\u73ab\u7470",
+      "id": "ML-1054",
+      "severity": "warning",
+      "details": {
+        "delta": 5,
+        "before": 20,
+        "after": 25
+      },
+      "description": "Stock changed from 20 to 25 (+5 stem).",
+      "title": "\u5df2\u4fee\u6b63\u5eab\u5b58\uff1a\u7c89\u7d05\u73ab\u7470",
+      "event_type": "inventory_correction",
+      "related_code": "R-001",
+      "created_at": "2026-03-21T14:49:37+08:00"
+    },
+    {
+      "id": "ML-1055",
+      "created_at": "2026-03-23T11:19:06+08:00",
+      "severity": "info",
+      "details": {
+        "reportId": "MR-1025",
+        "trigger": "scheduled"
+      },
+      "description": "PDF generated for Mar 16 - 22, 2026.",
+      "event_type": "report_generated",
+      "title": "Weekly maintenance report generated",
+      "related_code": null,
+      "related_name": null
+    },
+    {
+      "related_name": null,
+      "id": "ML-1056",
+      "severity": "warning",
+      "details": {
+        "reportId": "MR-1025",
+        "recipient": "hello@wailangarden.com"
+      },
+      "description": "SMTP \u90f5\u4ef6\u767c\u9001\u672a\u8a2d\u5b9a\u3002PDF \u5df2\u6e96\u5099\u597d\uff0c\u53ef\u4f9b hello@wailangarden.com \u4e0b\u8f09\u3002",
+      "title": "Weekly report delivery failed",
+      "event_type": "notification_failure",
+      "related_code": null,
+      "created_at": "2026-03-23T11:19:06+08:00"
+    }
+  ],
+  "maintenance_reports": [
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1001",
+      "pending_orders": 2,
+      "low_stock_items": 1,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1001.pdf",
+      "trigger": "scheduled",
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T14:54:49+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1002",
+      "pending_orders": 2,
+      "low_stock_items": 1,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1002.pdf",
+      "trigger": "scheduled",
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T14:57:09+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1003",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1003.pdf",
+      "trigger": "scheduled",
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T14:57:36+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1004",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1004.pdf",
+      "trigger": "scheduled",
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T14:57:49+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1005",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1005.pdf",
+      "trigger": "scheduled",
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T14:57:55+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1006",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1006.pdf",
+      "trigger": "scheduled",
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T14:58:18+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1007",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1007.pdf",
+      "trigger": "scheduled",
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T14:58:35+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1008",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1008.pdf",
+      "trigger": "manual",
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T14:59:00+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1009",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1009.pdf",
+      "trigger": "scheduled",
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T14:59:05+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1010",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1010.pdf",
+      "trigger": "scheduled",
+      "status": "generation_failed",
+      "recipient": "hello@wailangarden.com",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T14:59:22+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1011",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1011.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:01:51+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1012",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1012.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:02:37+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1013",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1013.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:03:11+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1014",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1014.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:03:20+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1015",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1015.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:03:56+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1016",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1016.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:04:02+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1017",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1017.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:04:15+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1018",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1018.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:04:28+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1019",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1019.pdf",
+      "trigger": "manual",
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:05:16+08:00"
+    },
+    {
+      "file_path": "",
+      "delivery_message": "PDF generation failed: No module named 'reportlab'",
+      "notification_failures": 0,
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "id": "MR-1020",
+      "pending_orders": 2,
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1020.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "generation_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:05:17+08:00"
+    },
+    {
+      "delivery_message": "SMTP \u90f5\u4ef6\u767c\u9001\u672a\u8a2d\u5b9a\u3002PDF \u5df2\u6e96\u5099\u597d\uff0c\u53ef\u4f9b hello@wailangarden.com \u4e0b\u8f09\u3002",
+      "notification_failures": 0,
+      "file_path": "output/pdf/maintenance-report-2026-03-02-2026-03-08-mr-1021.pdf",
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_end": "2026-03-08",
+      "week_start": "2026-03-02",
+      "pending_orders": 2,
+      "id": "MR-1021",
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1021.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "delivery_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:14:10+08:00"
+    },
+    {
+      "delivery_message": "SMTP \u90f5\u4ef6\u767c\u9001\u672a\u8a2d\u5b9a\u3002PDF \u5df2\u6e96\u5099\u597d\uff0c\u53ef\u4f9b hello@wailangarden.com \u4e0b\u8f09\u3002",
+      "notification_failures": 0,
+      "file_path": "output/pdf/maintenance-report-2026-03-02-2026-03-08-mr-1022.pdf",
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_end": "2026-03-08",
+      "week_start": "2026-03-02",
+      "pending_orders": 2,
+      "id": "MR-1022",
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1022.pdf",
+      "trigger": "manual",
+      "recipient": "hello@wailangarden.com",
+      "status": "delivery_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T15:14:44+08:00"
+    },
+    {
+      "delivery_message": "SMTP \u90f5\u4ef6\u767c\u9001\u672a\u8a2d\u5b9a\u3002PDF \u5df2\u6e96\u5099\u597d\uff0c\u53ef\u4f9b hello@wailangarden.com \u4e0b\u8f09\u3002",
+      "notification_failures": 0,
+      "file_path": "output/pdf/maintenance-report-2026-03-02-2026-03-08-mr-1023.pdf",
+      "notification_status": "failed",
+      "inventory_corrections": 0,
+      "week_end": "2026-03-08",
+      "week_start": "2026-03-02",
+      "pending_orders": 1,
+      "id": "MR-1023",
+      "low_stock_items": 0,
+      "file_name": "maintenance-report-2026-03-02-2026-03-08-mr-1023.pdf",
+      "trigger": "manual",
+      "recipient": "hello@wailangarden.com",
+      "status": "delivery_failed",
+      "week_label": "Mar 02 - 08, 2026",
+      "week_orders": 2,
+      "created_at": "2026-03-15T16:04:00+08:00"
+    },
+    {
+      "delivery_message": "SMTP \u90f5\u4ef6\u767c\u9001\u672a\u8a2d\u5b9a\u3002PDF \u5df2\u6e96\u5099\u597d\uff0c\u53ef\u4f9b hello@wailangarden.com \u4e0b\u8f09\u3002",
+      "notification_failures": 3,
+      "file_path": "output/pdf/maintenance-report-2026-03-09-2026-03-15-mr-1024.pdf",
+      "notification_status": "failed",
+      "inventory_corrections": 24,
+      "week_end": "2026-03-15",
+      "week_start": "2026-03-09",
+      "pending_orders": 9,
+      "id": "MR-1024",
+      "low_stock_items": 2,
+      "file_name": "maintenance-report-2026-03-09-2026-03-15-mr-1024.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "delivery_failed",
+      "week_label": "Mar 09 - 15, 2026",
+      "week_orders": 18,
+      "created_at": "2026-03-16T11:44:10+08:00"
+    },
+    {
+      "delivery_message": "SMTP \u90f5\u4ef6\u767c\u9001\u672a\u8a2d\u5b9a\u3002PDF \u5df2\u6e96\u5099\u597d\uff0c\u53ef\u4f9b hello@wailangarden.com \u4e0b\u8f09\u3002",
+      "notification_failures": 1,
+      "file_path": "output/pdf/maintenance-report-2026-03-16-2026-03-22-mr-1025.pdf",
+      "notification_status": "failed",
+      "inventory_corrections": 1,
+      "week_end": "2026-03-22",
+      "week_start": "2026-03-16",
+      "pending_orders": 8,
+      "id": "MR-1025",
+      "low_stock_items": 1,
+      "file_name": "maintenance-report-2026-03-16-2026-03-22-mr-1025.pdf",
+      "trigger": "scheduled",
+      "recipient": "hello@wailangarden.com",
+      "status": "delivery_failed",
+      "week_label": "Mar 16 - 22, 2026",
+      "week_orders": 0,
+      "created_at": "2026-03-23T11:19:06+08:00"
+    }
+  ],
+  "settings": {
+    "storeName": "\u851a\u862d\u82b1\u5712",
+    "currency": "HKD",
+    "contactEmail": "hello@wailangarden.com",
+    "maintenanceEmail": "hello@wailangarden.com",
+    "timezone": "Asia/Hong_Kong",
+    "deliveryRadius": 19
+  }
+}

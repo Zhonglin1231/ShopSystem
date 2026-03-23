@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AddRestockModal } from "../components/AddRestockModal";
+import { translateStockStatus } from "../lib/format";
 import { useShopData } from "../lib/shop-data";
 
 function escapeCsvCell(value: string | number) {
@@ -30,7 +31,7 @@ export function Inventory() {
 
   const handleExportReport = () => {
     const rows = [
-      ["Item Code", "Item Name", "Category", "Current Stock", "Par Level", "Avg Cost", "Status"],
+      ["項目編號", "項目名稱", "分類", "目前庫存", "安全庫存", "平均成本", "狀態"],
       ...inventory.map((item) => [item.code, item.name, item.category, item.stock, item.par, item.averageCostDisplay, item.status]),
     ];
     const csv = rows.map((row) => row.map(escapeCsvCell).join(",")).join("\n");
@@ -59,12 +60,12 @@ export function Inventory() {
       const nextPar = Number(rawPar);
 
       if (!Number.isInteger(nextStock) || nextStock < 0) {
-        toast.error(`Current stock for ${item.code} must be a whole number greater than or equal to 0.`);
+        toast.error(`${item.code} 的目前庫存必須是大於或等於 0 的整數。`);
         return;
       }
 
       if (!Number.isInteger(nextPar) || nextPar < 0) {
-        toast.error(`Par level for ${item.code} must be a whole number greater than or equal to 0.`);
+        toast.error(`${item.code} 的安全庫存必須是大於或等於 0 的整數。`);
         return;
       }
 
@@ -84,9 +85,9 @@ export function Inventory() {
     setSavingAll(true);
     try {
       await saveInventoryDrafts(changes);
-      toast.success(`Saved ${changes.length} inventory change${changes.length === 1 ? "" : "s"}.`);
+      toast.success(`已儲存 ${changes.length} 項庫存變更。`);
     } catch (saveError) {
-      toast.error(saveError instanceof Error ? saveError.message : "Unable to save inventory changes.");
+      toast.error(saveError instanceof Error ? saveError.message : "無法儲存庫存變更。");
     } finally {
       setSavingAll(false);
     }
@@ -140,7 +141,7 @@ export function Inventory() {
                 paddingBottom: "4px",
               }}
             >
-              Stock Levels
+              庫存水平
             </button>
             <button
               onClick={() => setActiveTab("history")}
@@ -156,7 +157,7 @@ export function Inventory() {
                 paddingBottom: "4px",
               }}
             >
-              Restock History
+              補貨記錄
             </button>
           </div>
           <div className="flex gap-3">
@@ -177,7 +178,7 @@ export function Inventory() {
                 opacity: !hasDraftChanges || savingAll ? 0.6 : 1,
               }}
             >
-              {savingAll ? "Saving..." : hasDraftChanges ? "Save Changes" : "Saved"}
+              {savingAll ? "儲存中..." : hasDraftChanges ? "儲存變更" : "已儲存"}
             </button>
             <button
               onClick={() => setIsRestockModalOpen(true)}
@@ -194,7 +195,7 @@ export function Inventory() {
                 cursor: "pointer",
               }}
             >
-              Record Restock
+              記錄補貨
             </button>
             <button
               className="border"
@@ -212,18 +213,18 @@ export function Inventory() {
                 cursor: "pointer",
               }}
             >
-              Export Report
+              匯出報告
             </button>
           </div>
         </div>
 
         {loading && inventory.length === 0 && activeTab === "stock" ? (
-          <div style={{ padding: "var(--s-4)", color: "var(--c-text-secondary)" }}>Loading inventory...</div>
+          <div style={{ padding: "var(--s-4)", color: "var(--c-text-secondary)" }}>正在載入庫存...</div>
         ) : activeTab === "stock" ? (
           <table className="w-full" style={{ borderCollapse: "collapse", fontSize: "0.9rem" }}>
             <thead>
               <tr>
-                {["Item Code", "Item Name", "Category", "Current Stock", "Par Level", "Avg Cost", "Status", "Quick Update"].map((header) => (
+                {["項目編號", "項目名稱", "分類", "目前庫存", "安全庫存", "平均成本", "狀態", "快速調整"].map((header) => (
                   <th
                     key={header}
                     className="text-left"
@@ -371,7 +372,7 @@ export function Inventory() {
                         color: item.statusClass === "success" ? "var(--c-accent-green)" : "#C53030",
                       }}
                     >
-                      {item.status}
+                      {translateStockStatus(item.status)}
                     </span>
                   </td>
                   <td
@@ -445,7 +446,7 @@ export function Inventory() {
           <table className="w-full" style={{ borderCollapse: "collapse", fontSize: "0.9rem" }}>
             <thead>
               <tr>
-                {["ID", "Date", "Item", "Quantity", "Unit Cost", "Total Cost"].map((header) => (
+                {["編號", "日期", "項目", "數量", "單位成本", "總成本"].map((header) => (
                   <th
                     key={header}
                     className="text-left"
@@ -468,7 +469,7 @@ export function Inventory() {
               {restocks.length === 0 ? (
                 <tr>
                   <td colSpan={6} style={{ padding: "var(--s-4)", color: "var(--c-text-secondary)" }}>
-                    No restocks recorded yet.
+                    尚未有補貨記錄。
                   </td>
                 </tr>
               ) : (
@@ -543,7 +544,7 @@ export function Inventory() {
         onClose={() => setIsRestockModalOpen(false)}
         onAddRestock={async (record) => {
           await createRestock(record);
-          toast.success(`Recorded restock for ${record.itemCode}.`);
+          toast.success(`已記錄 ${record.itemCode} 的補貨。`);
         }}
       />
     </>

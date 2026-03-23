@@ -1,5 +1,12 @@
 import { Link } from "react-router";
-import { buildChartBars, buildChartScale, formatCompactCurrency, getChartBarColor } from "../lib/format";
+import {
+  buildChartBars,
+  buildChartScale,
+  formatCompactCurrency,
+  getChartBarColor,
+  translateDashboardLabel,
+  translateOrderStatus,
+} from "../lib/format";
 import { useShopData } from "../lib/shop-data";
 
 function statusStyles(statusClass: string) {
@@ -39,7 +46,7 @@ export function Dashboard() {
           color: "var(--c-text-secondary)",
         }}
       >
-        Loading store overview...
+        正在載入店舖總覽...
       </div>
     );
   }
@@ -88,7 +95,7 @@ export function Dashboard() {
                 color: "var(--c-text-secondary)",
               }}
             >
-              {kpi.label}
+              {translateDashboardLabel(kpi.label)}
             </span>
             <span
               style={{
@@ -155,7 +162,7 @@ export function Dashboard() {
                 color: "var(--c-text-primary)",
               }}
             >
-              Weekly Sales Trend
+              每週銷售趨勢
             </h3>
             <div
               style={{
@@ -166,7 +173,7 @@ export function Dashboard() {
                 color: "var(--c-text-secondary)",
               }}
             >
-              LAST 7 DAYS
+              最近 7 天
             </div>
           </div>
 
@@ -297,7 +304,7 @@ export function Dashboard() {
                 color: "var(--c-text-primary)",
               }}
             >
-              Recent Orders
+              最近訂單
             </h3>
             <Link
               to="/orders"
@@ -307,14 +314,14 @@ export function Dashboard() {
                 textDecoration: "none",
               }}
             >
-              VIEW ALL
+              查看全部
             </Link>
           </div>
 
           <table className="w-full" style={{ borderCollapse: "collapse", fontSize: "0.9rem" }}>
             <thead>
               <tr>
-                {["ID", "Customer", "Status"].map((header) => (
+                {["編號", "客戶", "狀態"].map((header) => (
                   <th
                     key={header}
                     className="text-left"
@@ -373,7 +380,7 @@ export function Dashboard() {
                           ...badgeStyle,
                         }}
                       >
-                        {order.status}
+                        {translateOrderStatus(order.status)}
                       </span>
                     </td>
                   </tr>

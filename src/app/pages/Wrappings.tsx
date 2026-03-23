@@ -53,12 +53,12 @@ export function Wrappings() {
     const parsedPrice = Number(price);
 
     if (!name.trim()) {
-      toast.error("Please enter a wrapping name.");
+      toast.error("請輸入包裝名稱。");
       return;
     }
 
     if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
-      toast.error("Please enter a valid price.");
+      toast.error("請輸入有效價格。");
       return;
     }
 
@@ -69,18 +69,18 @@ export function Wrappings() {
         price: parsedPrice,
         image: imageData,
       });
-      toast.success(`Added ${name.trim()} to wrapping options.`);
+      toast.success(`已新增 ${name.trim()} 到包裝選項。`);
       resetForm();
       setShowCreateForm(false);
     } catch (createError) {
-      toast.error(createError instanceof Error ? createError.message : "Unable to add wrapping.");
+      toast.error(createError instanceof Error ? createError.message : "無法新增包裝。");
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteWrapping = async (wrappingId: string, wrappingName: string) => {
-    const confirmed = window.confirm(`Delete ${wrappingName} from wrapping options?`);
+    const confirmed = window.confirm(`確定要從包裝選項刪除 ${wrappingName} 嗎？`);
     if (!confirmed) {
       return;
     }
@@ -88,9 +88,9 @@ export function Wrappings() {
     setDeletingWrappingId(wrappingId);
     try {
       await deleteWrapping(wrappingId);
-      toast.success(`Deleted ${wrappingName} from wrapping options.`);
+      toast.success(`已從包裝選項刪除 ${wrappingName}。`);
     } catch (deleteError) {
-      toast.error(deleteError instanceof Error ? deleteError.message : "Unable to delete the wrapping.");
+      toast.error(deleteError instanceof Error ? deleteError.message : "無法刪除包裝。");
     } finally {
       setDeletingWrappingId(null);
     }
@@ -126,7 +126,7 @@ export function Wrappings() {
           type="text"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Find wrapping options..."
+          placeholder="搜尋包裝選項..."
           className="flex-1 border"
           style={{
             padding: "8px 12px",
@@ -149,7 +149,7 @@ export function Wrappings() {
             cursor: "pointer",
           }}
         >
-          {showCreateForm ? "Close" : "Add Wrapping"}
+          {showCreateForm ? "關閉" : "新增包裝"}
         </button>
       </div>
 
@@ -174,13 +174,13 @@ export function Wrappings() {
           >
             <div>
               <label className="block" style={{ marginBottom: "6px", fontSize: "0.78rem" }}>
-                Name
+                名稱
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                placeholder="e.g. Pearl White"
+                placeholder="例如：珍珠白"
                 className="w-full border"
                 style={{
                   padding: "10px 12px",
@@ -191,7 +191,7 @@ export function Wrappings() {
             </div>
             <div>
               <label className="block" style={{ marginBottom: "6px", fontSize: "0.78rem" }}>
-                Price
+                價格
               </label>
               <input
                 type="number"
@@ -210,7 +210,7 @@ export function Wrappings() {
             </div>
             <div>
               <label className="block" style={{ marginBottom: "6px", fontSize: "0.78rem" }}>
-                Upload Image
+                上傳圖片
               </label>
               <div className="flex" style={{ gap: "var(--s-2)" }}>
                 <button
@@ -227,7 +227,7 @@ export function Wrappings() {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  Choose File
+                  選擇檔案
                 </button>
                 <div
                   className="border"
@@ -243,9 +243,9 @@ export function Wrappings() {
                     whiteSpace: "nowrap",
                     backgroundColor: "#FDFBFB",
                   }}
-                  title={imageName ?? "No file selected"}
+                  title={imageName ?? "未選擇檔案"}
                 >
-                  {imageName ?? "No file selected"}
+                  {imageName ?? "未選擇檔案"}
                 </div>
               </div>
               <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleFileChange} />
@@ -254,7 +254,7 @@ export function Wrappings() {
 
           {imageData && (
             <div style={{ marginBottom: "var(--s-3)" }}>
-              <p style={{ marginBottom: "6px", fontSize: "0.78rem", color: "var(--c-text-secondary)" }}>Preview</p>
+              <p style={{ marginBottom: "6px", fontSize: "0.78rem", color: "var(--c-text-secondary)" }}>預覽</p>
               <div
                 className="border overflow-hidden"
                 style={{
@@ -264,7 +264,7 @@ export function Wrappings() {
                   backgroundColor: "#f0f0f0",
                 }}
               >
-                <ImageWithFallback src={imageData} alt="Wrapping preview" className="w-full h-full object-cover" />
+                <ImageWithFallback src={imageData} alt="包裝預覽" className="w-full h-full object-cover" />
               </div>
             </div>
           )}
@@ -286,7 +286,7 @@ export function Wrappings() {
               opacity: saving ? 0.7 : 1,
             }}
           >
-            {saving ? "Saving..." : "Save Wrapping"}
+            {saving ? "儲存中..." : "儲存包裝"}
           </button>
         </form>
       )}
@@ -301,7 +301,7 @@ export function Wrappings() {
             color: "var(--c-text-secondary)",
           }}
         >
-          Loading wrapping options...
+          正在載入包裝選項...
         </div>
       ) : filteredWrappings.length === 0 ? (
         <div
@@ -313,7 +313,7 @@ export function Wrappings() {
             color: "var(--c-text-secondary)",
           }}
         >
-          {wrappings.length === 0 ? "No wrapping options yet." : "No wrapping options match your search."}
+          {wrappings.length === 0 ? "目前尚未有包裝選項。" : "沒有符合搜尋條件的包裝選項。"}
         </div>
       ) : (
         <div
@@ -375,7 +375,7 @@ export function Wrappings() {
                       opacity: deletingWrappingId === wrapping.id ? 0.7 : 1,
                     }}
                   >
-                    {deletingWrappingId === wrapping.id ? "..." : "Delete"}
+                    {deletingWrappingId === wrapping.id ? "..." : "刪除"}
                   </button>
                 </div>
 

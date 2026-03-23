@@ -56,7 +56,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
 
   const addItem = () => {
     if (!defaultFlowerId) {
-      toast.error("Add or restock flowers before creating an order.");
+      toast.error("請先新增或補貨鮮花，再建立訂單。");
       return;
     }
 
@@ -151,7 +151,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                 color: "var(--c-text-primary)",
               }}
             >
-              New Order
+              新增訂單
             </h2>
           </div>
           <button
@@ -182,7 +182,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                 color: "#8A5A00",
               }}
             >
-              Offline mode is active. New orders will be queued locally and synced when the network returns.
+              離線模式啟用中。新訂單會先儲存在本機，網絡恢復後自動同步。
             </div>
           )}
 
@@ -197,7 +197,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                 color: "#A94442",
               }}
             >
-              No flowers are available. Add inventory first, then create an order.
+              目前沒有可用鮮花。請先補充庫存再建立訂單。
             </div>
           )}
 
@@ -214,13 +214,13 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                   marginBottom: "6px",
                 }}
               >
-                Customer Name *
+                客戶姓名 *
               </label>
               <input
                 type="text"
                 value={customerName}
                 onChange={(event) => setCustomerName(event.target.value)}
-                placeholder="e.g. Alice Chen"
+                placeholder="例如：陳小姐"
                 className="w-full border"
                 style={{
                   padding: "10px 12px",
@@ -246,13 +246,13 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                   marginBottom: "6px",
                 }}
               >
-                Phone / Contact
+                電話 / 聯絡方式
               </label>
               <input
                 type="text"
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
-                placeholder="e.g. +1 (555) 000-1234"
+                placeholder="例如：+852 9123 4567"
                 className="w-full border"
                 style={{
                   padding: "10px 12px",
@@ -278,7 +278,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                   marginBottom: "6px",
                 }}
               >
-                Delivery Date *
+                送貨日期 *
               </label>
               <input
                 type="date"
@@ -309,13 +309,13 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                   marginBottom: "6px",
                 }}
               >
-                Delivery Address
+                送貨地址
               </label>
               <input
                 type="text"
                 value={deliveryAddress}
                 onChange={(event) => setDeliveryAddress(event.target.value)}
-                placeholder="Leave blank for pickup in store"
+                placeholder="留空代表到店自取"
                 className="w-full border"
                 style={{
                   padding: "10px 12px",
@@ -341,7 +341,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                   color: "var(--c-text-secondary)",
                 }}
               >
-                Order Items
+                訂單項目
               </span>
               <button
                 onClick={addItem}
@@ -358,7 +358,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                 }}
               >
                 <Plus size={12} />
-                Add Item
+                新增項目
               </button>
             </div>
 
@@ -370,7 +370,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                 marginBottom: "var(--s-2)",
               }}
             >
-              {["Flower", "Qty", "Unit Price", ""].map((heading) => (
+              {["鮮花", "數量", "單價", ""].map((heading) => (
                 <span
                   key={heading}
                   style={{
@@ -414,7 +414,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                     >
                       {availableFlowers.map((option) => (
                         <option key={option.id} value={option.id}>
-                          {option.name} ({option.stock} left)
+                          {option.name}（剩餘 {option.stock}）
                         </option>
                       ))}
                     </select>
@@ -442,7 +442,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                         padding: "8px 4px",
                       }}
                     >
-                      {flower ? formatCurrency(flower.price, settings.currency) : "N/A"}
+                      {flower ? formatCurrency(flower.price, settings.currency) : "不適用"}
                     </span>
                     <button
                       onClick={() => removeItem(item.id)}
@@ -478,12 +478,12 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                 marginBottom: "6px",
               }}
             >
-              Special Notes
+              特別備註
             </label>
             <textarea
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
-              placeholder="Card message, wrapping preference, allergies..."
+              placeholder="卡片訊息、包裝偏好、過敏資訊..."
               rows={3}
               className="w-full border resize-none"
               style={{
@@ -511,7 +511,7 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
               className="flex justify-between"
               style={{ marginBottom: "var(--s-2)", fontFamily: "var(--f-sans)", fontSize: "0.85rem", color: "var(--c-text-secondary)" }}
             >
-              <span>Subtotal</span>
+              <span>小計</span>
               <span>{formatCurrency(subtotal, settings.currency)}</span>
             </div>
             <div
@@ -525,14 +525,14 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                 color: "var(--c-text-secondary)",
               }}
             >
-              <span>{isPickup ? "Pickup" : "Delivery"}</span>
+              <span>{isPickup ? "自取" : "送貨"}</span>
               <span>{formatCurrency(deliveryFee, settings.currency)}</span>
             </div>
             <div
               className="flex justify-between"
               style={{ fontFamily: "var(--f-serif)", fontSize: "1.15rem", color: "var(--c-text-primary)" }}
             >
-              <span>Total</span>
+              <span>總計</span>
               <span>{formatCurrency(total, settings.currency)}</span>
             </div>
           </div>
@@ -561,21 +561,21 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
               cursor: "pointer",
             }}
           >
-            Cancel
+            取消
           </button>
           <button
             disabled={saving || availableFlowers.length === 0}
             onClick={async () => {
               if (!customerName.trim()) {
-                toast.error("Please enter a customer name.");
+                toast.error("請輸入客戶姓名。");
                 return;
               }
               if (!deliveryDate) {
-                toast.error("Please choose a delivery date.");
+                toast.error("請選擇送貨日期。");
                 return;
               }
               if (resolvedItems.length === 0) {
-                toast.error("Please add at least one item.");
+                toast.error("請至少新增一個項目。");
                 return;
               }
 
@@ -595,13 +595,13 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                 });
                 toast.success(
                   createdOrder.offlineMeta?.localOnly
-                    ? `Order queued locally for ${customerName.trim()}.`
-                    : `Order placed for ${customerName.trim()}.`,
+                    ? `已為 ${customerName.trim()} 將訂單加入本機佇列。`
+                    : `已為 ${customerName.trim()} 建立訂單。`,
                 );
                 resetForm();
                 onClose();
               } catch (error) {
-                toast.error(error instanceof Error ? error.message : "Unable to place the order.");
+                toast.error(error instanceof Error ? error.message : "無法建立訂單。");
               } finally {
                 setSaving(false);
               }
@@ -621,8 +621,8 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
             }}
           >
             {saving
-              ? "Saving..."
-              : `${offlineStatus.isOnline ? "Place Order" : "Queue Order"} - ${formatCurrency(total, settings.currency)}`}
+              ? "儲存中..."
+              : `${offlineStatus.isOnline ? "建立訂單" : "加入佇列"} - ${formatCurrency(total, settings.currency)}`}
           </button>
         </div>
       </div>

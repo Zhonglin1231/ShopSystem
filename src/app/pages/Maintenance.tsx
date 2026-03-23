@@ -126,7 +126,7 @@ export function Maintenance() {
                     color: "var(--c-text-primary)",
                   }}
                 >
-                  System Health
+                  系統健康狀態
                 </h3>
                 <div
                   style={{
@@ -135,7 +135,7 @@ export function Maintenance() {
                     fontSize: "0.8rem",
                   }}
                 >
-                  Checked {systemHealth.checkedAtLabel}
+                  檢查時間：{systemHealth.checkedAtLabel}
                 </div>
               </div>
               <span
@@ -166,25 +166,25 @@ export function Maintenance() {
                   detail: systemHealth.firebase.details,
                 },
                 {
-                  label: "Notifications",
+                  label: "通知",
                   status: systemHealth.notifications.status,
                   value: systemHealth.notifications.label,
                   detail: systemHealth.notifications.details,
                 },
                 {
-                  label: "Last backup",
+                  label: "最近備份",
                   status: systemHealth.backups.status,
                   value: systemHealth.backups.label,
-                  detail: `${systemHealth.backups.fileCount} files in ${systemHealth.backups.directory}`,
+                  detail: `${systemHealth.backups.directory} 內有 ${systemHealth.backups.fileCount} 個檔案`,
                 },
                 {
-                  label: "Offline queue",
+                  label: "離線佇列",
                   status: offlineStatus.failedCount > 0 ? "warning" : offlineStatus.queueCount > 0 ? "warning" : "ok",
-                  value: offlineStatus.isOnline ? "Online" : "Offline",
+                  value: offlineStatus.isOnline ? "在線" : "離線",
                   detail:
                     offlineStatus.queueCount > 0
-                      ? `${offlineStatus.queueCount} orders pending sync`
-                      : `Last sync ${offlineStatus.lastSyncedLabel}`,
+                      ? `${offlineStatus.queueCount} 筆訂單待同步`
+                      : `上次同步：${offlineStatus.lastSyncedLabel}`,
                 },
               ].map((item) => (
                 <div
@@ -267,7 +267,7 @@ export function Maintenance() {
                     color: "var(--c-text-primary)",
                   }}
                 >
-                  Offline Continuity
+                  離線延續運作
                 </h3>
                 <div
                   style={{
@@ -276,7 +276,7 @@ export function Maintenance() {
                     fontSize: "0.8rem",
                   }}
                 >
-                  Orders keep flowing locally while the network is unavailable.
+                  網絡中斷時，訂單會先在本機持續記錄。
                 </div>
               </div>
               <span
@@ -288,7 +288,7 @@ export function Maintenance() {
                   ...serviceStatusStyles(offlineStatus.isOnline ? "ok" : "warning"),
                 }}
               >
-                {offlineStatus.isOnline ? "Online" : "Offline"}
+                {offlineStatus.isOnline ? "在線" : "離線"}
               </span>
             </div>
 
@@ -302,19 +302,19 @@ export function Maintenance() {
             >
               {[
                 {
-                  label: "Queued orders",
+                  label: "排隊中的訂單",
                   value: offlineStatus.queueCount,
-                  hint: offlineStatus.syncing ? "Syncing now" : "Waiting locally",
+                  hint: offlineStatus.syncing ? "正在同步" : "本機等待中",
                 },
                 {
-                  label: "Failed syncs",
+                  label: "同步失敗",
                   value: offlineStatus.failedCount,
-                  hint: offlineStatus.lastSyncError || "None",
+                  hint: offlineStatus.lastSyncError || "無",
                 },
                 {
-                  label: "Last sync",
+                  label: "上次同步",
                   value: offlineStatus.lastSyncedLabel,
-                  hint: offlineStatus.isOnline ? "Auto-sync on reconnect" : "Waiting for connection",
+                  hint: offlineStatus.isOnline ? "連線後自動同步" : "等待連線",
                 },
               ].map((item) => (
                 <div
@@ -373,7 +373,7 @@ export function Maintenance() {
                     marginBottom: "var(--s-3)",
                   }}
                 >
-                  Local queue
+                  本機佇列
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--s-2)" }}>
@@ -440,7 +440,7 @@ export function Maintenance() {
                     color: "var(--c-text-primary)",
                   }}
                 >
-                  Emergency Export
+                  緊急匯出
                 </h3>
                 <div
                   style={{
@@ -449,7 +449,7 @@ export function Maintenance() {
                     fontSize: "0.8rem",
                   }}
                 >
-                  Export today's orders to continue on paper if the system needs to fall back.
+                  如系統需降級運作，可匯出今日訂單以紙本處理。
                 </div>
               </div>
             </div>
@@ -463,11 +463,11 @@ export function Maintenance() {
               }}
             >
               {[
-                { label: "Today's orders", value: todayOrders.length, hint: "Includes offline queued orders" },
+                { label: "今日訂單", value: todayOrders.length, hint: "包含離線排隊訂單" },
                 {
-                  label: "Queued in export",
+                  label: "匯出中排隊",
                   value: todayOrders.filter((order) => order.offlineMeta?.localOnly).length,
-                  hint: "Marked in PDF and Excel",
+                  hint: "會於 PDF 與 Excel 標示",
                 },
               ].map((item) => (
                 <div
@@ -513,9 +513,9 @@ export function Maintenance() {
                   try {
                     const allOrders = await getAllOrders();
                     printTodayOrdersPdf(allOrders, settings);
-                    toast.success("Print dialog opened. Choose 'Save as PDF' for the emergency export.");
+                    toast.success("已開啟列印視窗，可選擇「儲存為 PDF」進行緊急匯出。");
                   } catch (exportError) {
-                    toast.error(exportError instanceof Error ? exportError.message : "Unable to prepare the PDF export.");
+                    toast.error(exportError instanceof Error ? exportError.message : "無法準備 PDF 匯出。");
                   }
                 }}
                 style={{
@@ -531,16 +531,16 @@ export function Maintenance() {
                   cursor: "pointer",
                 }}
               >
-                Export PDF
+                匯出 PDF
               </button>
               <button
                 onClick={async () => {
                   try {
                     const allOrders = await getAllOrders();
                     exportTodayOrdersExcel(allOrders, settings);
-                    toast.success("Today's orders exported for Excel.");
+                    toast.success("今日訂單已匯出為 Excel。");
                   } catch (exportError) {
-                    toast.error(exportError instanceof Error ? exportError.message : "Unable to export today's orders.");
+                    toast.error(exportError instanceof Error ? exportError.message : "無法匯出今日訂單。");
                   }
                 }}
                 style={{
@@ -556,7 +556,7 @@ export function Maintenance() {
                   cursor: "pointer",
                 }}
               >
-                Export Excel
+                匯出 Excel
               </button>
             </div>
           </div>
@@ -585,7 +585,7 @@ export function Maintenance() {
                     color: "var(--c-text-primary)",
                   }}
                 >
-                  Maintenance Console
+                  維護控制台
                 </h3>
                 <div
                   style={{
@@ -594,7 +594,7 @@ export function Maintenance() {
                     fontSize: "0.8rem",
                   }}
                 >
-                  Daily recovery tools stay separate from the sales dashboard.
+                  每日復原工具與銷售儀表板分開管理。
                 </div>
               </div>
               <button
@@ -604,7 +604,7 @@ export function Maintenance() {
                     const result = await refreshMaintenanceCache();
                     toast.success(result.message);
                   } catch (refreshError) {
-                    toast.error(refreshError instanceof Error ? refreshError.message : "Unable to refresh cache.");
+                    toast.error(refreshError instanceof Error ? refreshError.message : "無法重新整理快取。");
                   } finally {
                     setRefreshingCache(false);
                   }
@@ -624,7 +624,7 @@ export function Maintenance() {
                   opacity: refreshingCache || !offlineStatus.isOnline ? 0.7 : 1,
                 }}
               >
-                {refreshingCache ? "Refreshing..." : "Quick Restart"}
+                {refreshingCache ? "重新整理中..." : "快速重啟"}
               </button>
             </div>
 
@@ -637,24 +637,24 @@ export function Maintenance() {
             >
               {[
                 {
-                  label: "Inventory corrections",
+                  label: "庫存修正",
                   value: dashboard.maintenanceSummary.inventoryCorrectionsThisWeek,
-                  hint: "This week",
+                  hint: "本週",
                 },
                 {
-                  label: "Notification failures",
+                  label: "通知失敗",
                   value: dashboard.maintenanceSummary.notificationFailuresThisWeek,
-                  hint: "This week",
+                  hint: "本週",
                 },
                 {
-                  label: "Low stock items",
+                  label: "低庫存項目",
                   value: dashboard.maintenanceSummary.openLowStockItems,
-                  hint: "Need watching",
+                  hint: "需留意",
                 },
                 {
-                  label: "Last cache refresh",
+                  label: "最近快取更新",
                   value: dashboard.maintenanceSummary.lastCacheRefreshLabel,
-                  hint: `${dashboard.maintenanceSummary.pendingOrders} pending orders`,
+                  hint: `${dashboard.maintenanceSummary.pendingOrders} 筆待處理訂單`,
                 },
               ].map((item) => (
                 <div
@@ -723,7 +723,7 @@ export function Maintenance() {
                     marginBottom: "6px",
                   }}
                 >
-                  Weekly Maintenance Report
+                  每週維護報告
                 </div>
                 <div
                   style={{
@@ -732,12 +732,12 @@ export function Maintenance() {
                     color: "var(--c-text-primary)",
                   }}
                 >
-                  {latestReport ? latestReport.weekLabel : "No report yet"}
+                  {latestReport ? latestReport.weekLabel : "尚無報告"}
                 </div>
                 <div style={{ marginTop: "4px", fontSize: "0.8rem", color: "var(--c-text-secondary)" }}>
                   {latestReport
-                    ? `Generated ${latestReport.createdAtLabel}${latestReport.recipient ? ` for ${latestReport.recipient}` : ""}`
-                    : "The dashboard will auto-create the latest completed week report."}
+                    ? `已於 ${latestReport.createdAtLabel} 產生${latestReport.recipient ? `（收件者：${latestReport.recipient}）` : ""}`
+                    : "系統會自動建立最近一週的完成報告。"}
                 </div>
               </div>
               {latestReport && (
@@ -756,7 +756,7 @@ export function Maintenance() {
             </div>
 
             <div style={{ fontSize: "0.86rem", color: "var(--c-text-primary)", marginBottom: "var(--s-3)" }}>
-              {latestReport?.deliveryMessage || "Use the report to review this week's exceptions before escalating."}
+              {latestReport?.deliveryMessage || "請先檢視本週異常再決定是否升級處理。"}
             </div>
 
             {latestReport && (
@@ -769,9 +769,9 @@ export function Maintenance() {
                 }}
               >
                 {[
-                  { label: "Corrections", value: latestReport.inventoryCorrections },
-                  { label: "Failures", value: latestReport.notificationFailures },
-                  { label: "Low stock", value: latestReport.lowStockItems },
+                  { label: "修正", value: latestReport.inventoryCorrections },
+                  { label: "失敗", value: latestReport.notificationFailures },
+                  { label: "低庫存", value: latestReport.lowStockItems },
                 ].map((item) => (
                   <div key={item.label} style={{ backgroundColor: "white", padding: "var(--s-2)", border: "1px solid var(--c-border)" }}>
                     <div style={{ fontSize: "0.72rem", color: "var(--c-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
@@ -791,11 +791,11 @@ export function Maintenance() {
                     const report = await generateWeeklyMaintenanceReport();
                     toast.success(
                       report.notificationStatus === "sent"
-                        ? "Weekly report generated and delivered."
-                        : "Weekly report generated. Check delivery status in the dashboard.",
+                        ? "每週報告已產生並送達。"
+                        : "每週報告已產生，請於儀表板查看送達狀態。",
                     );
                   } catch (reportError) {
-                    toast.error(reportError instanceof Error ? reportError.message : "Unable to generate weekly report.");
+                    toast.error(reportError instanceof Error ? reportError.message : "無法產生每週報告。");
                   } finally {
                     setGeneratingReport(false);
                   }
@@ -815,7 +815,7 @@ export function Maintenance() {
                   opacity: generatingReport || !offlineStatus.isOnline ? 0.7 : 1,
                 }}
               >
-                {generatingReport ? "Generating..." : "Regenerate PDF"}
+                {generatingReport ? "產生中..." : "重新產生 PDF"}
               </button>
 
               {latestReport?.downloadUrl && (
@@ -837,7 +837,7 @@ export function Maintenance() {
                     textDecoration: "none",
                   }}
                 >
-                  Download PDF
+                  下載 PDF
                 </a>
               )}
             </div>
@@ -867,10 +867,10 @@ export function Maintenance() {
                     color: "var(--c-text-primary)",
                   }}
                 >
-                  Exception Log
+                  異常記錄
                 </h3>
                 <div style={{ marginTop: "4px", fontSize: "0.8rem", color: "var(--c-text-secondary)" }}>
-                  Inventory corrections and delivery issues stay visible here.
+                  庫存修正與送達問題會顯示於此。
                 </div>
               </div>
             </div>
@@ -878,7 +878,7 @@ export function Maintenance() {
             <table className="w-full" style={{ borderCollapse: "collapse", fontSize: "0.9rem" }}>
               <thead>
                 <tr>
-                  {["When", "Type", "Details", "Severity"].map((header) => (
+                  {["時間", "類型", "詳情", "嚴重程度"].map((header) => (
                     <th
                       key={header}
                       className="text-left"
@@ -901,7 +901,7 @@ export function Maintenance() {
                 {dashboard.maintenanceLogs.length === 0 ? (
                   <tr>
                     <td colSpan={4} style={{ padding: "var(--s-4)", color: "var(--c-text-secondary)" }}>
-                      No maintenance exceptions logged yet.
+                      目前尚未有維護異常記錄。
                     </td>
                   </tr>
                 ) : (
@@ -941,7 +941,7 @@ export function Maintenance() {
                         <div style={{ color: "var(--c-text-secondary)" }}>{log.description}</div>
                         {log.relatedCode && (
                           <div style={{ marginTop: "6px", fontSize: "0.78rem", color: "var(--c-text-secondary)" }}>
-                            Ref: {log.relatedCode}
+                            參考：{log.relatedCode}
                             {log.relatedName ? ` - ${log.relatedName}` : ""}
                           </div>
                         )}

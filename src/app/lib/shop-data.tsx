@@ -140,7 +140,7 @@ const emptyDashboard: DashboardData = {
     openLowStockItems: 0,
     pendingOrders: 0,
     lastCacheRefreshAt: null,
-    lastCacheRefreshLabel: "Not yet",
+    lastCacheRefreshLabel: "尚未",
   },
   maintenanceLogs: [],
   latestWeeklyReport: null,
@@ -170,21 +170,21 @@ const emptySystemHealth: SystemHealth = {
   status: "unknown",
   storage: "unknown",
   checkedAt: new Date(0).toISOString(),
-  checkedAtLabel: "Unavailable",
+  checkedAtLabel: "不可用",
   firebase: {
     status: "unknown",
-    label: "Unknown",
-    details: "Health data has not been loaded yet.",
+    label: "未知",
+    details: "尚未載入健康狀態資料。",
   },
   notifications: {
     status: "unknown",
-    label: "Unknown",
-    details: "Health data has not been loaded yet.",
+    label: "未知",
+    details: "尚未載入健康狀態資料。",
   },
   backups: {
     status: "unknown",
-    label: "Unavailable",
-    details: "No backup metadata is available yet.",
+    label: "不可用",
+    details: "目前沒有可用的備份中繼資料。",
     lastBackupAt: null,
     directory: "output/backups",
     fileCount: 0,
@@ -273,7 +273,7 @@ function playNewOrderAlertSound() {
 
 function formatDateTimeLabel(value: string | null, timezone: string) {
   if (!value) {
-    return "Not yet";
+    return "尚未";
   }
 
   try {
@@ -499,10 +499,10 @@ function loadOfflineState(): OfflineState {
     }
 
     const parsed = JSON.parse(rawValue) as Partial<OfflineState>;
-    const queue = Array.isArray(parsed.queue)
+    const queue: OfflineQueuedOrder[] = Array.isArray(parsed.queue)
       ? parsed.queue.map((entry) => ({
           ...entry,
-          syncStatus: entry.syncStatus === "failed" ? "failed" : "queued",
+          syncStatus: (entry.syncStatus === "failed" ? "failed" : "queued") as OfflineSyncStatus,
           syncError: entry.syncError ?? null,
         }))
       : [];
@@ -548,7 +548,7 @@ function buildOfflinePreviewOrder(
     const lineTotal = unitPrice * item.quantity;
     return {
       flowerId: item.flowerId,
-      name: flower?.name ?? "Unavailable flower",
+      name: flower?.name ?? "不可用花材",
       qty: item.quantity,
       unit: flower?.unit ?? "stem",
       unitPrice,
@@ -572,7 +572,7 @@ function buildOfflinePreviewOrder(
     phone: payload.phone.trim(),
     deliveryDate: payload.deliveryDate,
     deliveryDateLabel: formatDeliveryLabel(payload.deliveryDate, settings.timezone),
-    deliveryAddress: payload.deliveryAddress.trim() || "Pickup in store",
+    deliveryAddress: payload.deliveryAddress.trim() || "到店自取",
     notes: payload.notes.trim(),
     itemsSummary: summarizeItems(lineItems),
     subtotal,
@@ -581,7 +581,7 @@ function buildOfflinePreviewOrder(
     deliveryFeeDisplay: formatCurrencyValue(deliveryFee, settings.currency),
     total,
     totalDisplay: formatCurrencyValue(total, settings.currency),
-    status: "Queued",
+    status: "已排隊",
     statusClass: "pending",
     lineItems,
     offlineMeta: {
@@ -679,7 +679,7 @@ function validateOfflineOrderPayload(payload: CreateOrderInput, flowers: Flower[
   for (const [flowerId, quantity] of requestedByFlower.entries()) {
     const flower = flowers.find((entry) => entry.id === flowerId);
     if (!flower) {
-      throw new Error("Some flowers are no longer available.");
+      throw new Error("部分花材已不可用。");
     }
     if (flower.stock < quantity) {
       throw new Error(`Not enough stock for ${flower.name}.`);
@@ -798,7 +798,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
       const nextError =
         requestError instanceof Error
           ? requestError.message
-          : "Unable to load the store data.";
+          : "無法載入店舖資料。";
       setError(nextError);
 
       if (!isOnline || isLikelyNetworkError(requestError)) {
@@ -806,7 +806,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
           ...current,
           status: "degraded",
           checkedAt: new Date().toISOString(),
-          checkedAtLabel: "Offline",
+          checkedAtLabel: "離線",
         }));
       }
     } finally {
@@ -916,7 +916,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
         } catch (syncError) {
           if (isLikelyNetworkError(syncError)) {
             const message =
-              syncError instanceof Error ? syncError.message : "Network connection dropped while syncing queued orders.";
+              syncError instanceof Error ? syncError.message : "同步排隊訂單時網絡中斷。";
             lastSyncError = message;
             setOfflineState((current) => ({
               ...current,
@@ -935,7 +935,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
           }
 
           const message =
-            syncError instanceof Error ? syncError.message : "This queued order could not be synced.";
+            syncError instanceof Error ? syncError.message : "此排隊訂單無法同步。";
           lastSyncError = message;
           setOfflineState((current) => ({
             ...current,
@@ -1168,7 +1168,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
         },
         updateOrderStatus: (orderId, status) => {
           if (orderId.startsWith("offline-")) {
-            return Promise.reject(new Error("Queued offline orders can be updated after they sync."));
+            return Promise.reject(new Error("離線排隊訂單需同步後才可更新。"));
           }
 
           return runMutation(() => updateOrderStatusRequest(orderId, status));
@@ -1236,7 +1236,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
 export function useShopData() {
   const context = useContext(ShopDataContext);
   if (context === null) {
-    throw new Error("useShopData must be used inside ShopDataProvider.");
+    throw new Error("`useShopData` 必須在 `ShopDataProvider` 內使用。");
   }
   return context;
 }

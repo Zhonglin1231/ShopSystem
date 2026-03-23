@@ -4,20 +4,20 @@ import { useShopData } from "../lib/shop-data";
 import { useModals } from "./ModalContext";
 
 const titleMap: Record<string, string> = {
-  "/": "Dashboard",
-  "/orders": "Orders",
-  "/flowers": "Flowers",
-  "/wrappings": "Wrappings",
-  "/bouquets": "Bouquets",
-  "/inventory": "Inventory",
-  "/analytics": "Analytics",
-  "/maintenance": "Maintenance",
-  "/settings": "Settings",
+  "/": "儀表板",
+  "/orders": "訂單",
+  "/flowers": "鮮花",
+  "/wrappings": "包裝",
+  "/bouquets": "花束",
+  "/inventory": "庫存",
+  "/analytics": "分析",
+  "/maintenance": "維護",
+  "/settings": "設定",
 };
 
 export function TopBar() {
   const location = useLocation();
-  const title = titleMap[location.pathname] || "Dashboard";
+  const title = titleMap[location.pathname] || "儀表板";
   const { settings } = useShopData();
   const { openNewOrder } = useModals();
 
@@ -70,7 +70,7 @@ export function TopBar() {
             transition: "var(--t-fast)",
           }}
         >
-          New Order
+          新增訂單
         </button>
 
         <div

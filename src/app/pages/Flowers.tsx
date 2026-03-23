@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AddFlowerModal } from "../components/AddFlowerModal";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { translateStockStatus } from "../lib/format";
 import { useShopData } from "../lib/shop-data";
 
 export function Flowers() {
@@ -24,7 +25,7 @@ export function Flowers() {
   });
 
   const handleDeleteFlower = async (flowerId: string, flowerName: string) => {
-    const confirmed = window.confirm(`Delete ${flowerName} from the catalogue? This also removes its inventory item.`);
+    const confirmed = window.confirm(`確定要從目錄刪除 ${flowerName} 嗎？相關庫存項目亦會一併刪除。`);
     if (!confirmed) {
       return;
     }
@@ -32,9 +33,9 @@ export function Flowers() {
     setDeletingFlowerId(flowerId);
     try {
       await deleteFlower(flowerId);
-      toast.success(`Deleted ${flowerName} from the catalogue.`);
+      toast.success(`已從目錄刪除 ${flowerName}。`);
     } catch (deleteError) {
-      toast.error(deleteError instanceof Error ? deleteError.message : "Unable to delete the flower.");
+      toast.error(deleteError instanceof Error ? deleteError.message : "無法刪除鮮花。")
     } finally {
       setDeletingFlowerId(null);
     }
@@ -71,7 +72,7 @@ export function Flowers() {
             type="text"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Find flowers..."
+            placeholder="搜尋鮮花..."
             className="flex-1 border"
             style={{
               padding: "8px 12px",
@@ -94,7 +95,7 @@ export function Flowers() {
               cursor: "pointer",
             }}
           >
-            Add New Flower
+            新增鮮花
           </button>
         </div>
 
@@ -108,7 +109,7 @@ export function Flowers() {
               color: "var(--c-text-secondary)",
             }}
           >
-            Loading flower catalogue...
+            正在載入鮮花目錄...
           </div>
         ) : (
           <div
@@ -170,7 +171,7 @@ export function Flowers() {
                         opacity: deletingFlowerId === flower.id ? 0.7 : 1,
                       }}
                     >
-                      {deletingFlowerId === flower.id ? "..." : "Delete"}
+                      {deletingFlowerId === flower.id ? "..." : "刪除"}
                     </button>
                   </div>
 
@@ -211,7 +212,7 @@ export function Flowers() {
                               : "#B7791F",
                       }}
                     >
-                      {flower.status}
+                      {translateStockStatus(flower.status)}
                     </span>
                   </div>
 
@@ -223,7 +224,7 @@ export function Flowers() {
                       color: "var(--c-text-secondary)",
                     }}
                   >
-                    Stock: {flower.stock}
+                    庫存：{flower.stock}
                   </p>
                 </div>
               </div>
@@ -237,7 +238,7 @@ export function Flowers() {
         onClose={() => setAddFlowerOpen(false)}
         onAddFlower={async (payload) => {
           await createFlower(payload);
-          toast.success(`Added ${payload.name} to the catalogue.`);
+          toast.success(`已將 ${payload.name} 新增至目錄。`);
         }}
       />
     </>

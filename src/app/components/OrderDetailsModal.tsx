@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Order } from "../lib/api";
+import { translateOrderStatus } from "../lib/format";
 
 interface OrderDetailsModalProps {
   isOpen: boolean;
@@ -20,10 +21,10 @@ interface OrderDetailsModalProps {
 }
 
 const timelineSteps = [
-  { key: "received", label: "Order Received", icon: Clock },
-  { key: "preparing", label: "Preparing", icon: Package },
-  { key: "ready", label: "Ready for Pickup", icon: CheckCircle },
-  { key: "delivered", label: "Delivered", icon: Truck },
+  { key: "received", label: "已接單", icon: Clock },
+  { key: "preparing", label: "製作中", icon: Package },
+  { key: "ready", label: "可取貨", icon: CheckCircle },
+  { key: "delivered", label: "已送達", icon: Truck },
 ];
 
 function statusStyles(statusClass: string) {
@@ -59,9 +60,9 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
     setSaving(true);
     try {
       await onUpdateStatus(status);
-      toast.success(`Order ${order.id} updated to ${status}.`);
+      toast.success(`訂單 ${order.id} 已更新為「${translateOrderStatus(status)}」。`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Unable to update the order.");
+      toast.error(error instanceof Error ? error.message : "無法更新訂單。");
     } finally {
       setSaving(false);
     }
@@ -105,7 +106,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                 marginBottom: "2px",
               }}
             >
-              Order Details
+              訂單詳情
             </p>
             <div className="flex items-center" style={{ gap: "var(--s-3)" }}>
               <h2
@@ -128,7 +129,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                   fontFamily: "var(--f-sans)",
                 }}
               >
-                {order.status}
+                {translateOrderStatus(order.status)}
               </span>
             </div>
             <p
@@ -139,7 +140,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                 marginTop: "2px",
               }}
             >
-              Placed {order.dateLabel}
+              下單時間：{order.dateLabel}
             </p>
           </div>
           <button
@@ -171,8 +172,8 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                 color: "#8A5A00",
               }}
             >
-              This order is stored locally and will sync automatically once the network returns.
-              {order.offlineMeta?.syncError ? ` Latest sync error: ${order.offlineMeta.syncError}` : ""}
+              此訂單暫存於本機，網絡恢復後會自動同步。
+              {order.offlineMeta?.syncError ? ` 最近同步錯誤：${order.offlineMeta.syncError}` : ""}
             </div>
           )}
 
@@ -187,7 +188,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                 color: "#A94442",
               }}
             >
-              This order was cancelled and its reserved stock has been returned to inventory.
+              此訂單已取消，預留庫存已退回庫存系統。
             </div>
           )}
 
@@ -210,7 +211,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                 marginBottom: "var(--s-3)",
               }}
             >
-              Fulfillment Status
+              履約狀態
             </p>
             <div className="flex items-center" style={{ gap: 0 }}>
               {timelineSteps.map((step, index) => {
@@ -291,7 +292,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                   marginBottom: "var(--s-3)",
                 }}
               >
-                Customer
+                客戶
               </p>
               <p
                 style={{
@@ -307,13 +308,13 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                 <div className="flex items-center" style={{ gap: "8px" }}>
                   <Phone size={13} color="var(--c-text-secondary)" />
                   <span style={{ fontFamily: "var(--f-sans)", fontSize: "0.85rem", color: "var(--c-text-secondary)" }}>
-                    {order.phone || "No phone provided"}
+                    {order.phone || "未提供電話"}
                   </span>
                 </div>
                 <div className="flex items-start" style={{ gap: "8px" }}>
                   <MapPin size={13} color="var(--c-text-secondary)" style={{ marginTop: "2px", flexShrink: 0 }} />
                   <span style={{ fontFamily: "var(--f-sans)", fontSize: "0.85rem", color: "var(--c-text-secondary)" }}>
-                    {order.deliveryAddress || "Pickup in store"}
+                    {order.deliveryAddress || "到店自取"}
                   </span>
                 </div>
                 <div className="flex items-center" style={{ gap: "8px" }}>
@@ -343,7 +344,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                   marginBottom: "var(--s-3)",
                 }}
               >
-                Special Notes
+                特別備註
               </p>
               <p
                 style={{
@@ -354,7 +355,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                   fontStyle: order.notes ? "italic" : "normal",
                 }}
               >
-                {order.notes || "No special notes for this order."}
+                {order.notes || "此訂單沒有特別備註。"}
               </p>
             </div>
           </div>
@@ -370,12 +371,12 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                 marginBottom: "var(--s-3)",
               }}
             >
-              Items Ordered
+              訂購項目
             </p>
             <table className="w-full" style={{ borderCollapse: "collapse" }}>
               <thead>
                 <tr>
-                  {["Item", "Unit Price", "Qty", "Line Total"].map((heading) => (
+                  {["項目", "單價", "數量", "小計"].map((heading) => (
                     <th
                       key={heading}
                       className="text-left"
@@ -456,7 +457,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                   color: "var(--c-text-secondary)",
                 }}
               >
-                <span>Subtotal</span>
+                <span>小計</span>
                 <span>{order.subtotalDisplay}</span>
               </div>
               {order.deliveryFee > 0 && (
@@ -469,7 +470,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                     color: "var(--c-text-secondary)",
                   }}
                 >
-                  <span>Delivery</span>
+                  <span>送貨費</span>
                   <span>{order.deliveryFeeDisplay}</span>
                 </div>
               )}
@@ -483,7 +484,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                   color: "var(--c-text-primary)",
                 }}
               >
-                <span>Total</span>
+                <span>總計</span>
                 <span>{order.totalDisplay}</span>
               </div>
             </div>
@@ -513,7 +514,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
               cursor: "pointer",
             }}
           >
-            Close
+            關閉
           </button>
           <div className="flex" style={{ gap: "var(--s-2)" }}>
             {!isOfflineQueuedOrder && order.status !== "Delivered" && order.status !== "Cancelled" && (
@@ -535,7 +536,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                     opacity: saving ? 0.7 : 1,
                   }}
                 >
-                  Cancel Order
+                  取消訂單
                 </button>
                 {nextStatus && (
                   <button
@@ -555,7 +556,7 @@ export function OrderDetailsModal({ isOpen, order, onClose, onUpdateStatus }: Or
                       opacity: saving ? 0.7 : 1,
                     }}
                   >
-                    {saving ? "Saving..." : order.status === "Preparing" ? "Mark Ready" : "Mark Delivered"}
+                    {saving ? "儲存中..." : order.status === "Preparing" ? "標記為可取貨" : "標記為已送達"}
                   </button>
                 )}
               </>
