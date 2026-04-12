@@ -45,7 +45,7 @@ export function Sidebar() {
         >
           {nameParts[0] ?? "Wai"}
           <br />
-          {nameParts.slice(1).join(" ") || "Lan Garden"}
+          {nameParts.slice(1).join(" ") || "Wai Lan Garden"}
         </h1>
         <p
           style={{
