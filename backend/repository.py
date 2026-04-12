@@ -86,9 +86,6 @@ class FirestoreStore(SnapshotStore):
         if firebase_admin is None or credentials is None or firestore is None:
             raise RepositoryError("Firebase Admin SDK is not installed.")
 
-        if config.firebase_credentials_path is None:
-            raise RepositoryError("Firebase credential file was not found.")
-
         app_name = "shopsystem"
         existing_app = None
         for app in firebase_admin._apps.values():  # type: ignore[attr-defined]
@@ -97,8 +94,11 @@ class FirestoreStore(SnapshotStore):
                 break
 
         if existing_app is None:
-            cert = credentials.Certificate(str(config.firebase_credentials_path))
-            existing_app = firebase_admin.initialize_app(cert, name=app_name)
+            if config.firebase_credentials_path is not None:
+                cert = credentials.Certificate(str(config.firebase_credentials_path))
+                existing_app = firebase_admin.initialize_app(cert, name=app_name)
+            else:
+                existing_app = firebase_admin.initialize_app(name=app_name)
 
         self.client = firestore.client(existing_app)
 

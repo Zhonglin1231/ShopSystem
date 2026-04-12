@@ -315,9 +315,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     ...init,
   });
 
-  const payload = await response.json().catch(() => null);
+  const contentType = response.headers.get("content-type") ?? "";
+  let payload: unknown = null;
+
+  if (contentType.includes("application/json")) {
+    payload = await response.json().catch(() => null);
+  } else {
+    payload = await response.text().catch(() => "");
+  }
+
   if (!response.ok) {
-    throw new Error(payload?.detail || "請求失敗。");
+    if (payload && typeof payload === "object" && "detail" in payload) {
+      throw new Error(String((payload as { detail?: unknown }).detail ?? "請求失敗。"));
+    }
+    throw new Error("請求失敗。");
+  }
+
+  if (payload === null || typeof payload === "string") {
+    throw new Error("後端 API 回傳格式異常，可能是 /api 被改寫到前端頁面（index.html）。");
   }
 
   return payload as T;
