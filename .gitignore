@@ -5,3 +5,5 @@ dist
 backend/data/store.json
 __pycache__
 *.pyc
+*firebase-adminsdk-*.json
+.secrets/

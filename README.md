@@ -11,9 +11,10 @@
 
 ## 数据存储
 
-系统会优先尝试使用项目根目录下的 Firebase service account JSON：
+系统会按以下顺序读取 Firebase service account JSON：
 
-- `flower-757d9-firebase-adminsdk-fbsvc-d05a09dcce.json`
+- `SHOPSYSTEM_FIREBASE_CREDENTIALS` 环境变量
+- `./.secrets/firebase-service-account.json`
 
 如果 Firebase 可用，系统会采用顶层集合结构：
 

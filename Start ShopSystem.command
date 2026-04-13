@@ -59,6 +59,17 @@ fi
 
 cd "$SCRIPT_DIR" || exit 1
 
+if [ -z "${SHOPSYSTEM_FIREBASE_CREDENTIALS:-}" ]; then
+  if [ -f "$SCRIPT_DIR/.secrets/firebase-service-account.json" ]; then
+    export SHOPSYSTEM_FIREBASE_CREDENTIALS="$SCRIPT_DIR/.secrets/firebase-service-account.json"
+  fi
+fi
+
+if [ -n "${SHOPSYSTEM_FIREBASE_CREDENTIALS:-}" ]; then
+  echo "Using Firebase credentials: $SHOPSYSTEM_FIREBASE_CREDENTIALS"
+  echo
+fi
+
 echo "Building frontend bundle ..."
 if ! npm run build >/dev/null 2>&1; then
   echo
