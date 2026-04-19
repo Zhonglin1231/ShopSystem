@@ -5,6 +5,8 @@ const navItems = [
   { path: "/", label: "儀表板" },
   { path: "/orders", label: "訂單" },
   { path: "/flowers", label: "鮮花" },
+  { path: "/suppliers", label: "供應商" },
+  { path: "/customers", label: "客戶" },
   { path: "/wrappings", label: "包裝" },
   { path: "/bouquets", label: "花束" },
   { path: "/inventory", label: "庫存" },

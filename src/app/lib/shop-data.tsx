@@ -53,6 +53,21 @@ import {
   WeeklyMaintenanceReport,
 } from "./api";
 
+interface Customer {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  status: "Active" | "Inactive";
+  statusLabel: string;
+  notes: string;
+  totalOrders: number;
+  totalSpent: number;
+  totalSpentDisplay: string;
+  createdAt: string;
+}
+
 type OfflineSyncStatus = "queued" | "syncing" | "failed";
 
 interface OfflineQueuedOrder {
@@ -92,6 +107,7 @@ interface ShopDataContextValue {
   analytics: AnalyticsData;
   settings: StoreSettings;
   systemHealth: SystemHealth;
+  customers: Customer[];
   offlineStatus: OfflineStatus;
   offlineQueue: OfflineQueuedOrder[];
   newOrderAlertCount: number;
@@ -116,6 +132,7 @@ interface ShopDataContextValue {
   saveInventoryDrafts: (changes: Array<{ itemCode: string; stock: number; parLevel: number }>) => Promise<void>;
   createRestock: (payload: CreateRestockInput) => Promise<RestockRecord>;
   saveSettings: (payload: StoreSettings) => Promise<StoreSettings>;
+  addCustomer: (customerData: Omit<Customer, "id" | "createdAt">) => void;
 }
 
 const OFFLINE_STATE_KEY = "shopsystem.offline-state";
@@ -695,6 +712,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
   const [baseFlowers, setBaseFlowers] = useState<Flower[]>([]);
   const [baseWrappings, setBaseWrappings] = useState<Wrapping[]>([]);
   const [baseInventory, setBaseInventory] = useState<InventoryItem[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [restocks, setRestocks] = useState<RestockRecord[]>([]);
   const [analytics, setAnalytics] = useState<AnalyticsData>(emptyAnalytics);
   const [settings, setSettings] = useState<StoreSettings>(defaultSettings);
@@ -1136,6 +1154,7 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
         analytics,
         settings,
         systemHealth,
+        customers,
         offlineStatus,
         offlineQueue: offlineState.queue,
         newOrderAlertCount,
@@ -1226,6 +1245,15 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
         },
         createRestock: (payload) => runMutation(() => createRestockRequest(payload)),
         saveSettings: (payload) => runMutation(() => updateSettingsRequest(payload)),
+        addCustomer: (customerData) => {
+          const newCustomer: Customer = {
+            id: `customer-${Date.now()}`,
+            ...customerData,
+            statusLabel: customerData.status === "Active" ? "活躍" : "不活躍",
+            createdAt: new Date().toISOString(),
+          };
+          setCustomers((current) => [newCustomer, ...current]);
+        },
       }}
     >
       {children}

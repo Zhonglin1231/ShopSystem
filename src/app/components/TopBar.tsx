@@ -7,6 +7,8 @@ const titleMap: Record<string, string> = {
   "/": "儀表板",
   "/orders": "訂單",
   "/flowers": "鮮花",
+  "/suppliers": "供應商",
+  "/customers": "客戶",
   "/wrappings": "包裝",
   "/bouquets": "花束",
   "/inventory": "庫存",

@@ -196,10 +196,9 @@ function CarouselPrevious({
       {...props}
     >
       <ArrowLeft />
-      <span className="sr-only">Previous slide</span>
-    </Button>
+      <span className="sr-only">上一張幻燈片</span>
+    </button>
   );
-}
 
 function CarouselNext({
   className,
@@ -226,10 +225,9 @@ function CarouselNext({
       {...props}
     >
       <ArrowRight />
-      <span className="sr-only">Next slide</span>
-    </Button>
+      <span className="sr-only">下一張幻燈片</span>
+    </button>
   );
-}
 
 export {
   type CarouselApi,

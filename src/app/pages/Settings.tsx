@@ -197,10 +197,10 @@ export function Settings() {
                 transition: "var(--t-fast)",
               }}
             >
-              <option value="USD">USD ($)</option>
-              <option value="HKD">HKD (HK$)</option>
-              <option value="CNY">CNY (RMB)</option>
-              <option value="EUR">EUR (€)</option>
+              <option value="USD">美元（USD $）</option>
+              <option value="HKD">港幣（HKD HK$）</option>
+              <option value="CNY">人民幣（CNY RMB）</option>
+              <option value="EUR">歐元（EUR €）</option>
             </select>
           </div>
 

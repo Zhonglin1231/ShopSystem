@@ -3,6 +3,7 @@ import { OrderDetailsModal } from "../components/OrderDetailsModal";
 import { getOrders, Order, OrdersPage as OrdersPageData } from "../lib/api";
 import { translateOrderStatus } from "../lib/format";
 import { useShopData } from "../lib/shop-data";
+import { Link } from "react-router";
 
 const ORDERS_PAGE_SIZE = 10;
 
@@ -310,7 +311,20 @@ export function Orders() {
                           color: "var(--c-text-primary)",
                         }}
                       >
-                        {order.customerName}
+                        <Link
+                          to="/customers"
+                          style={{
+                            color: "var(--c-accent-black)",
+                            textDecoration: "none",
+                            fontWeight: "bold",
+                          }}
+                          onClick={(e) => {
+                            // Store customer name in sessionStorage to open details on customers page
+                            sessionStorage.setItem("selectedCustomerName", order.customerName);
+                          }}
+                        >
+                          {order.customerName}
+                        </Link>
                       </td>
                       <td
                         style={{

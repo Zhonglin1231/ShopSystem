@@ -16,7 +16,7 @@ interface NewOrderModalProps {
 }
 
 export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
-  const { flowers, createOrder, settings, offlineStatus } = useShopData();
+  const { flowers, createOrder, settings, offlineStatus, customers, addCustomer } = useShopData();
   const availableFlowers = flowers.filter((flower) => flower.stock > 0);
   const defaultFlowerId = availableFlowers[0]?.id ?? "";
 
@@ -593,6 +593,23 @@ export function NewOrderModal({ isOpen, onClose }: NewOrderModalProps) {
                     quantity: item.qty,
                   })),
                 });
+
+                // Check if customer exists, if not, add them
+                const existingCustomer = customers.find(c => c.name === customerName.trim());
+                if (!existingCustomer) {
+                  addCustomer({
+                    name: customerName.trim(),
+                    phone: phone.trim(),
+                    email: "", // Could be enhanced to collect email in the future
+                    address: deliveryAddress.trim(),
+                    status: "Active",
+                    notes: "",
+                    totalOrders: 1,
+                    totalSpent: subtotal + deliveryFee,
+                    totalSpentDisplay: formatCurrency(subtotal + deliveryFee, settings.currency),
+                  });
+                }
+
                 toast.success(
                   createdOrder.offlineMeta?.localOnly
                     ? `已為 ${customerName.trim()} 將訂單加入本機佇列。`

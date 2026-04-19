@@ -115,6 +115,8 @@ export function translateDashboardLabel(label: string) {
     "Today's Orders": "今日訂單",
     Pending: "待處理",
     Revenue: "收入",
+    "Low Stock": "低庫存",
+    "Pending Orders": "待處理訂單",
   };
   return map[label] ?? label;
 }

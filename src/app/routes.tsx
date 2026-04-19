@@ -9,6 +9,8 @@ import { Inventory } from "./pages/Inventory";
 import { Analytics } from "./pages/Analytics";
 import { Maintenance } from "./pages/Maintenance";
 import { Settings } from "./pages/Settings";
+import { Suppliers } from "./pages/Suppliers";
+import { Customers } from "./pages/Customers";
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +20,8 @@ export const router = createBrowserRouter([
       { index: true, Component: Dashboard },
       { path: "orders", Component: Orders },
       { path: "flowers", Component: Flowers },
+      { path: "suppliers", Component: Suppliers },
+      { path: "customers", Component: Customers },
       { path: "wrappings", Component: Wrappings },
       { path: "bouquets", Component: Bouquets },
       { path: "inventory", Component: Inventory },
