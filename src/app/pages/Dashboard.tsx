@@ -5,6 +5,7 @@ import {
   formatCompactCurrency,
   getChartBarColor,
   translateDashboardLabel,
+  translateKpiTrend,
   translateOrderStatus,
 } from "../lib/format";
 import { useShopData } from "../lib/shop-data";
@@ -113,7 +114,7 @@ export function Dashboard() {
                 color: kpi.isUp ? "var(--c-accent-green)" : "#D66D75",
               }}
             >
-              {kpi.trend}
+              {translateKpiTrend(kpi.trend)}
             </span>
 
             <span

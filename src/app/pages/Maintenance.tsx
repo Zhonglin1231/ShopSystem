@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { getAllOrders } from "../lib/api";
+import { translateServiceStatus, translateSystemLabel } from "../lib/format";
 import { exportTodayOrdersExcel, getTodayOrders, printTodayOrdersPdf } from "../lib/maintenance-export";
 import { useShopData } from "../lib/shop-data";
 
@@ -147,7 +148,7 @@ export function Maintenance() {
                   ...serviceStatusStyles(systemHealth.status),
                 }}
               >
-                {systemHealth.status}
+                {translateServiceStatus(systemHealth.status)}
               </span>
             </div>
 
@@ -162,19 +163,19 @@ export function Maintenance() {
                 {
                   label: "Firebase",
                   status: systemHealth.firebase.status,
-                  value: systemHealth.firebase.label,
+                  value: translateSystemLabel(systemHealth.firebase.label),
                   detail: systemHealth.firebase.details,
                 },
                 {
                   label: "通知",
                   status: systemHealth.notifications.status,
-                  value: systemHealth.notifications.label,
+                  value: translateSystemLabel(systemHealth.notifications.label),
                   detail: systemHealth.notifications.details,
                 },
                 {
                   label: "最近備份",
                   status: systemHealth.backups.status,
-                  value: systemHealth.backups.label,
+                  value: translateSystemLabel(systemHealth.backups.label),
                   detail: `${systemHealth.backups.directory} 內有 ${systemHealth.backups.fileCount} 個檔案`,
                 },
                 {
@@ -217,7 +218,7 @@ export function Maintenance() {
                         ...serviceStatusStyles(item.status),
                       }}
                     >
-                      {item.status}
+                      {translateServiceStatus(item.status)}
                     </span>
                   </div>
                   <div
@@ -407,7 +408,7 @@ export function Maintenance() {
                           ...serviceStatusStyles(entry.syncStatus === "failed" ? "warning" : "ok"),
                         }}
                       >
-                        {entry.syncStatus}
+                        {translateServiceStatus(entry.syncStatus)}
                       </span>
                     </div>
                   ))}
@@ -750,7 +751,7 @@ export function Maintenance() {
                     ...reportStatusStyles(latestReport.status),
                   }}
                 >
-                  {latestReport.status.replace("_", " ")}
+                  {translateServiceStatus(latestReport.status)}
                 </span>
               )}
             </div>
@@ -962,7 +963,7 @@ export function Maintenance() {
                             ...maintenanceBadgeStyles(log.severity),
                           }}
                         >
-                          {log.severity}
+                          {translateServiceStatus(log.severity)}
                         </span>
                       </td>
                     </tr>

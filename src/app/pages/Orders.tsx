@@ -462,7 +462,7 @@ export function Orders() {
         onClose={() => setSelectedOrderId(null)}
         onUpdateStatus={async (status) => {
           if (!selectedOrder) {
-            return Promise.reject(new Error("No order selected."));
+            return Promise.reject(new Error("尚未選擇訂單。"));
           }
 
           const updatedOrder = await updateOrderStatus(selectedOrder.id, status);

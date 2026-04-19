@@ -1,6 +1,6 @@
 export function formatCurrency(amount: number, currency = "USD") {
   try {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("zh-HK", {
       style: "currency",
       currency,
       maximumFractionDigits: 2,
@@ -12,7 +12,7 @@ export function formatCurrency(amount: number, currency = "USD") {
 
 export function formatCompactCurrency(amount: number, currency = "USD") {
   try {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("zh-HK", {
       style: "currency",
       currency,
       notation: "compact",
@@ -117,6 +117,46 @@ export function translateDashboardLabel(label: string) {
     Revenue: "收入",
     "Low Stock": "低庫存",
     "Pending Orders": "待處理訂單",
+  };
+  return map[label] ?? label;
+}
+
+export function translateKpiTrend(trend: string) {
+  const map: Record<string, string> = {
+    "No change vs yesterday": "與昨日持平",
+    "+1 vs yesterday": "較昨日 +1",
+    "Action required": "需要跟進",
+  };
+  return map[trend] ?? trend;
+}
+
+export function translateServiceStatus(status: string) {
+  const map: Record<string, string> = {
+    ok: "正常",
+    warning: "警告",
+    degraded: "降級",
+    failed: "失敗",
+    disabled: "已停用",
+    fallback: "備援",
+    unknown: "未知",
+    queued: "排隊中",
+    syncing: "同步中",
+    sent: "已送達",
+    delivery_failed: "送達失敗",
+    generation_failed: "產生失敗",
+    critical: "嚴重",
+  };
+  return map[status] ?? status;
+}
+
+export function translateSystemLabel(label: string) {
+  const map: Record<string, string> = {
+    Connected: "已連線",
+    Disconnected: "未連線",
+    "Not configured": "未設定",
+    Configured: "已設定",
+    Unknown: "未知",
+    Unavailable: "不可用",
   };
   return map[label] ?? label;
 }

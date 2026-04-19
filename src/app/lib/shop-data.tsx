@@ -294,7 +294,7 @@ function formatDateTimeLabel(value: string | null, timezone: string) {
   }
 
   try {
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat("zh-HK", {
       month: "short",
       day: "2-digit",
       year: "numeric",
@@ -312,7 +312,7 @@ function formatDeliveryLabel(value: string, timezone: string) {
   try {
     const hasTime = value.includes("T");
     const normalized = hasTime ? value : `${value}T09:00:00`;
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat("zh-HK", {
       month: "short",
       day: "2-digit",
       year: "numeric",
@@ -325,7 +325,7 @@ function formatDeliveryLabel(value: string, timezone: string) {
 
 function formatCurrencyValue(amount: number, currency: string) {
   try {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("zh-HK", {
       style: "currency",
       currency,
       minimumFractionDigits: 2,
@@ -385,7 +385,7 @@ function updateDashboardWithIncomingOrder(
         return {
           ...kpi,
           value: String(Number.isNaN(nextValue) ? 1 : nextValue + 1),
-          trend: kpi.trend === "No change vs yesterday" ? "+1 vs yesterday" : kpi.trend,
+          trend: kpi.trend === "No change vs yesterday" || kpi.trend === "與昨日持平" ? "較昨日 +1" : kpi.trend,
           isUp: true,
         };
       }
@@ -395,7 +395,7 @@ function updateDashboardWithIncomingOrder(
         return {
           ...kpi,
           value: String(Number.isNaN(nextValue) ? 1 : nextValue + 1),
-          trend: "Action required",
+          trend: "需要跟進",
           isUp: false,
         };
       }
