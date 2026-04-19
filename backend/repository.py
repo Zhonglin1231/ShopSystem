@@ -1394,13 +1394,13 @@ class ShopRepository:
         if previous_revenue > 0:
             revenue_trend = f"{revenue_delta / previous_revenue:+.0%} this week"
         elif current_revenue > 0:
-            revenue_trend = "Fresh week of sales"
+            revenue_trend = "最新一週銷量"
         else:
-            revenue_trend = "No sales yet"
+            revenue_trend = "暫無銷量"
 
         order_delta = len(today_orders) - len(yesterday_orders)
         if order_delta == 0:
-            order_trend = "No change vs yesterday"
+            order_trend = "和昨日持平"
         else:
             order_trend = f"{order_delta:+d} vs yesterday"
 
@@ -1429,7 +1429,7 @@ class ShopRepository:
                 {
                     "label": "Low Stock",
                     "value": str(len(low_stock_items)),
-                    "trend": "Items critical" if low_stock_items else "Healthy levels",
+                    "trend": "庫存緊張" if low_stock_items else "庫存充足",
                     "isUp": False,
                 },
             ],
