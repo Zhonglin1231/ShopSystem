@@ -7,11 +7,6 @@ import { AddSupplierModal } from "../components/AddSupplierModal";
 // TYPE DEFINITIONS
 // ============================================================================
 
-interface SuppliedFlower {
-  flowerId: string;        // Reference to Flower.id for linking to existing flower records
-  flowerName: string;
-  category: string;
-}
 
 interface PurchaseHistory {
   id: string;
@@ -33,7 +28,6 @@ interface Supplier {
   contactPerson: string;
   phone: string;
   email: string;
-  suppliedFlowers: SuppliedFlower[];  // Array of flower references
   status: "Active" | "Inactive";      // Simple status for filtering
   statusLabel: string;
   notes: string;
@@ -53,11 +47,6 @@ const MOCK_SUPPLIERS: Supplier[] = [
     contactPerson: "李先生",
     phone: "+852-2234-5678",
     email: "contact@aoyeflowers.hk",
-    suppliedFlowers: [
-      { flowerId: "flower-001", flowerName: "玫瑰", category: "Rose" },
-      { flowerId: "flower-002", flowerName: "向日葵", category: "Sunflower" },
-      { flowerId: "flower-003", flowerName: "康乃馨", category: "Carnation" },
-    ],
     status: "Active",
     statusLabel: "啟用中",
     notes: "主要供應商，質量穩定，交貨準時。",
@@ -96,10 +85,6 @@ const MOCK_SUPPLIERS: Supplier[] = [
     contactPerson: "王女士",
     phone: "+852-2527-1234",
     email: "sales@huajijimport.hk",
-    suppliedFlowers: [
-      { flowerId: "flower-004", flowerName: "蘭花", category: "Orchid" },
-      { flowerId: "flower-005", flowerName: "桔梗", category: "Lisianthus" },
-    ],
     status: "Active",
     statusLabel: "啟用中",
     notes: "進口鮮花專家，提供高質素花卉。",
@@ -126,10 +111,6 @@ const MOCK_SUPPLIERS: Supplier[] = [
     contactPerson: "陳先生",
     phone: "+852-2692-8888",
     email: "admin@lvweifloralart.hk",
-    suppliedFlowers: [
-      { flowerId: "flower-006", flowerName: "繡球花", category: "Hydrangea" },
-      { flowerId: "flower-007", flowerName: "菊花", category: "Chrysanthemum" },
-    ],
     status: "Inactive",
     statusLabel: "停用",
     notes: "暫停合作，尋找其他供應商。",
@@ -326,7 +307,7 @@ export function Suppliers() {
           <table className="w-full" style={{ borderCollapse: "collapse", fontSize: "0.9rem" }}>
             <thead>
               <tr>
-                {["公司名稱", "聯絡人", "電話", "供應的鮮花", "狀態", "操作"].map((header) => (
+                {["公司名稱", "聯絡人", "電話", "狀態", "操作"].map((header) => (
                   <th
                     key={header}
                     className="text-left"
@@ -349,7 +330,7 @@ export function Suppliers() {
               {filteredSuppliers.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={5}
                     style={{
                       padding: "var(--s-4)",
                       color: "var(--c-text-secondary)",
@@ -362,7 +343,6 @@ export function Suppliers() {
               ) : (
                 filteredSuppliers.map((supplier, index) => {
                   const badgeStyle = statusStyles(supplier.status);
-                  const flowerNames = supplier.suppliedFlowers.map((f) => f.flowerName).join(", ");
 
                   return (
                     <tr key={supplier.id}>
@@ -414,26 +394,6 @@ export function Suppliers() {
                         }}
                       >
                         {supplier.phone}
-                      </td>
-                      <td
-                        style={{
-                          padding: "var(--s-3)",
-                          borderBottom:
-                            index === filteredSuppliers.length - 1 ? "none" : "1px solid var(--c-border)",
-                          color: "var(--c-text-primary)",
-                          fontSize: "0.85rem",
-                        }}
-                      >
-                        {flowerNames}
-                        <div
-                          style={{
-                            marginTop: "4px",
-                            fontSize: "0.75rem",
-                            color: "var(--c-text-secondary)",
-                          }}
-                        >
-                          {supplier.suppliedFlowers.length} 種
-                        </div>
                       </td>
                       <td
                         style={{

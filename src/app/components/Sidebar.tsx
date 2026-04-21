@@ -1,18 +1,60 @@
 import { Link, useLocation } from "react-router";
 import { useShopData } from "../lib/shop-data";
 
-const navItems = [
-  { path: "/", label: "儀表板" },
-  { path: "/orders", label: "訂單" },
-  { path: "/flowers", label: "鮮花" },
-  { path: "/suppliers", label: "供應商" },
-  { path: "/customers", label: "客戶" },
-  { path: "/wrappings", label: "包裝" },
-  { path: "/bouquets", label: "花束" },
-  { path: "/inventory", label: "庫存" },
-  { path: "/analytics", label: "分析" },
-  { path: "/maintenance", label: "維護" },
-  { path: "/settings", label: "設定" },
+interface NavGroup {
+  groupTitle?: string;
+  items: { path: string; label: string }[];
+}
+
+const navGroups: NavGroup[] = [
+  {
+    items: [
+      { path: "/", label: "儀表板" },
+    ],
+  },
+  {
+    items: [
+      { path: "/orders", label: "訂單管理" },
+    ],
+  },
+  {
+    items: [
+      { path: "/customers", label: "客戶管理" },
+    ],
+  },
+  {
+    groupTitle: "產品管理",
+    items: [
+      { path: "/flowers", label: "鮮花" },
+      { path: "/bouquets", label: "花束" },
+      { path: "/wrappings", label: "包裝" },
+    ],
+  },
+  {
+    items: [
+      { path: "/inventory", label: "庫存管理" },
+    ],
+  },
+  {
+    items: [
+      { path: "/suppliers", label: "供應商管理" },
+    ],
+  },
+  {
+    items: [
+      { path: "/analytics", label: "分析報表" },
+    ],
+  },
+  {
+    items: [
+      { path: "/maintenance", label: "系統維護" },
+    ],
+  },
+  {
+    items: [
+      { path: "/settings", label: "設定" },
+    ],
+  },
 ];
 
 export function Sidebar() {
@@ -63,57 +105,87 @@ export function Sidebar() {
         </p>
       </div>
 
-      <nav className="flex flex-col" style={{ gap: "var(--s-2)" }}>
-        {navItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={`flex items-center relative transition-all ${isActive(item.path) ? "active" : ""}`}
-            onClick={() => {
-              if (item.path === "/orders") {
-                clearNewOrderAlerts();
-              }
-            }}
-            style={{
-              padding: "var(--s-3)",
-              color: "var(--c-text-primary)",
-              fontFamily: "var(--f-sans)",
-              fontSize: "0.9rem",
-              letterSpacing: "0.02em",
-              textDecoration: "none",
-              transition: "var(--t-fast)",
-              backgroundColor: isActive(item.path) ? "rgba(255,255,255,0.4)" : "transparent",
-              justifyContent: "space-between",
-            }}
-          >
-            <span className="flex items-center" style={{ gap: "var(--s-2)" }}>
-              {isActive(item.path) && (
-                <span
-                  className="absolute left-0 top-0 bottom-0 w-[3px]"
-                  style={{ backgroundColor: "var(--c-accent-black)" }}
-                />
-              )}
-              <span>{item.label}</span>
-            </span>
-            {item.path === "/orders" && newOrderAlertCount > 0 && (
-              <span
+      <nav className="flex flex-col" style={{ gap: "var(--s-3)" }}>
+        {navGroups.map((group, groupIndex) => (
+          <div key={groupIndex} style={{ display: "flex", flexDirection: "column", gap: "var(--s-2)" }}>
+            {group.groupTitle && (
+              <div
                 style={{
-                  minWidth: "22px",
-                  height: "22px",
-                  padding: "0 6px",
-                  borderRadius: "999px",
-                  backgroundColor: "#C53030",
-                  color: "#FFFFFF",
-                  fontSize: "0.72rem",
-                  lineHeight: "22px",
-                  textAlign: "center",
+                  padding: "var(--s-3)",
+                  color: "var(--c-text-primary)",
                   fontFamily: "var(--f-sans)",
+                  fontSize: "0.9rem",
+                  letterSpacing: "0.02em",
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "var(--s-2)",
+                  cursor: "default",
                 }}
               >
-                {newOrderAlertCount > 99 ? "99+" : newOrderAlertCount}
-              </span>
+                <span>{group.groupTitle}</span>
+                <span style={{ color: "var(--c-text-secondary)", fontSize: "0.7rem" }}>▼</span>
+              </div>
             )}
-          </Link>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--s-2)" }}>
+              {group.items.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center relative transition-all ${isActive(item.path) ? "active" : ""}`}
+                  onClick={() => {
+                    if (item.path === "/orders") {
+                      clearNewOrderAlerts();
+                    }
+                  }}
+                  style={{
+                    padding: "var(--s-3)",
+                    paddingLeft: group.groupTitle ? "calc(var(--s-3) + var(--s-4))" : "var(--s-3)",
+                    color: "var(--c-text-primary)",
+                    fontFamily: "var(--f-sans)",
+                    fontSize: "0.9rem",
+                    letterSpacing: "0.02em",
+                    textDecoration: "none",
+                    transition: "var(--t-fast)",
+                    backgroundColor: isActive(item.path) ? "rgba(255,255,255,0.4)" : "transparent",
+                    justifyContent: "space-between",
+                    position: "relative",
+                  }}
+                >
+                  <span className="flex items-center" style={{ gap: "var(--s-2)" }}>
+                    {isActive(item.path) && (
+                      <span
+                        className="absolute left-0 top-0 bottom-0 w-[3px]"
+                        style={{ backgroundColor: "var(--c-accent-black)" }}
+                      />
+                    )}
+                    {group.groupTitle && (
+                      <span style={{ color: "var(--c-text-secondary)", fontSize: "0.5rem", marginLeft: "-var(--s-1)" }}>●</span>
+                    )}
+                    <span>{item.label}</span>
+                  </span>
+                  {item.path === "/orders" && newOrderAlertCount > 0 && (
+                    <span
+                      style={{
+                        minWidth: "22px",
+                        height: "22px",
+                        padding: "0 6px",
+                        borderRadius: "999px",
+                        backgroundColor: "#C53030",
+                        color: "#FFFFFF",
+                        fontSize: "0.72rem",
+                        lineHeight: "22px",
+                        textAlign: "center",
+                        fontFamily: "var(--f-sans)",
+                      }}
+                    >
+                      {newOrderAlertCount > 99 ? "99+" : newOrderAlertCount}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
     </aside>

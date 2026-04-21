@@ -1392,17 +1392,17 @@ class ShopRepository:
 
         revenue_delta = current_revenue - previous_revenue
         if previous_revenue > 0:
-            revenue_trend = f"{revenue_delta / previous_revenue:+.0%} this week"
+            revenue_trend = f"{revenue_delta / previous_revenue:+.0%} 本週"
         elif current_revenue > 0:
-            revenue_trend = "最新一週銷量"
+            revenue_trend = "本週新銷售"
         else:
-            revenue_trend = "暫無銷量"
+            revenue_trend = "尚未有銷售"
 
         order_delta = len(today_orders) - len(yesterday_orders)
         if order_delta == 0:
-            order_trend = "和昨日持平"
+            order_trend = "與昨日無異"
         else:
-            order_trend = f"{order_delta:+d} vs yesterday"
+            order_trend = f"相比昨日 {order_delta:+d}"
 
         recent_orders = [self._serialize_order(order, settings) for order in orders[:4]]
 
@@ -1417,7 +1417,7 @@ class ShopRepository:
                 {
                     "label": "Pending",
                     "value": str(len(pending_orders)),
-                    "trend": "Action required" if pending_orders else "All clear",
+                    "trend": "需要跟進" if pending_orders else "全部正常",
                     "isUp": False,
                 },
                 {

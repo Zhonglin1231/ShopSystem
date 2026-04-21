@@ -385,7 +385,7 @@ function updateDashboardWithIncomingOrder(
         return {
           ...kpi,
           value: String(Number.isNaN(nextValue) ? 1 : nextValue + 1),
-          trend: kpi.trend === "No change vs yesterday" || kpi.trend === "與昨日持平" ? "較昨日 +1" : kpi.trend,
+          trend: kpi.trend === "與昨日無異" ? "相比昨日 +1" : kpi.trend,
           isUp: true,
         };
       }

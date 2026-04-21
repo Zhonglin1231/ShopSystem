@@ -1,0 +1,516 @@
+{
+  "bouquets": [],
+  "flowers": [
+    {
+      "id": "dusty-rose",
+      "name": "Dusty Rose",
+      "category": "Rose",
+      "color": "Blush Pink",
+      "price": 4.5,
+      "unit": "stem",
+      "season": "Year-round",
+      "description": "Soft pink rose with muted tones for romantic arrangements.",
+      "image": "https://images.unsplash.com/photo-1595483416504-65b0328153c1?auto=format&fit=crop&w=1200&q=80",
+      "inventory_code": "R-001"
+    },
+    {
+      "id": "white-tulip",
+      "name": "White Tulip",
+      "category": "Tulip",
+      "color": "White",
+      "price": 3.0,
+      "unit": "stem",
+      "season": "Spring",
+      "description": "Crisp white tulips for elegant bouquets and event work.",
+      "image": "https://images.unsplash.com/photo-1621025210758-0a014e936aaf?auto=format&fit=crop&w=1200&q=80",
+      "inventory_code": "T-014"
+    },
+    {
+      "id": "silver-dollar-eucalyptus",
+      "name": "Silver Dollar Eucalyptus",
+      "category": "Eucalyptus",
+      "color": "Green",
+      "price": 12.0,
+      "unit": "bunch",
+      "season": "Year-round",
+      "description": "Textural greenery with a fresh scent and rounded leaves.",
+      "image": "https://images.unsplash.com/photo-1678902439117-ea4268c7661b?auto=format&fit=crop&w=1200&q=80",
+      "inventory_code": "E-042"
+    },
+    {
+      "id": "pink-peony",
+      "name": "Pink Peony",
+      "category": "Peony",
+      "color": "Coral",
+      "price": 8.5,
+      "unit": "stem",
+      "season": "Spring-Summer",
+      "description": "Lush seasonal bloom with layered petals and strong visual impact.",
+      "image": "https://images.unsplash.com/photo-1588457776180-4206b4909301?auto=format&fit=crop&w=1200&q=80",
+      "inventory_code": "P-017"
+    },
+    {
+      "id": "garden-rose",
+      "name": "Garden Rose",
+      "category": "Rose",
+      "color": "Ivory",
+      "price": 6.0,
+      "unit": "stem",
+      "season": "Year-round",
+      "description": "Premium rose with a fuller head for bridal and premium work.",
+      "image": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=1200&q=80",
+      "inventory_code": "R-028"
+    },
+    {
+      "id": "hydrangea",
+      "name": "Hydrangea",
+      "category": "Hydrangea",
+      "color": "Mixed",
+      "price": 9.0,
+      "unit": "stem",
+      "season": "Summer",
+      "description": "Large-volume bloom for statement bouquets and installations.",
+      "image": "https://images.unsplash.com/photo-1597848212624-c84e6d3b6166?auto=format&fit=crop&w=1200&q=80",
+      "inventory_code": "H-033"
+    },
+    {
+      "id": "babys-breath",
+      "name": "Baby's Breath",
+      "category": "Filler",
+      "color": "White",
+      "price": 5.0,
+      "unit": "bunch",
+      "season": "Year-round",
+      "description": "Airy filler flower that softens mixed bouquets.",
+      "image": "https://images.unsplash.com/photo-1526045478516-99145907023c?auto=format&fit=crop&w=1200&q=80",
+      "inventory_code": "B-010"
+    },
+    {
+      "id": "lavender",
+      "name": "Lavender",
+      "category": "Lavender",
+      "color": "Lilac",
+      "price": 7.5,
+      "unit": "bunch",
+      "season": "Summer-Autumn",
+      "description": "Aromatic bundle used for texture, fragrance, and dried work.",
+      "image": "https://images.unsplash.com/photo-1468327768560-75b778cbb551?auto=format&fit=crop&w=1200&q=80",
+      "inventory_code": "L-022"
+    }
+  ],
+  "wrappings": [],
+  "inventory": [
+    {
+      "code": "R-001",
+      "name": "Dusty Rose",
+      "category": "Fresh Flowers",
+      "stock": 145,
+      "par": 50,
+      "unit": "stem",
+      "linked_flower_id": "dusty-rose",
+      "updated_at": "2026-04-18T21:29:00+08:00"
+    },
+    {
+      "code": "T-014",
+      "name": "White Tulip",
+      "category": "Fresh Flowers",
+      "stock": 86,
+      "par": 35,
+      "unit": "stem",
+      "linked_flower_id": "white-tulip",
+      "updated_at": "2026-04-18T23:29:00+08:00"
+    },
+    {
+      "code": "E-042",
+      "name": "Silver Dollar Eucalyptus",
+      "category": "Foliage",
+      "stock": 12,
+      "par": 20,
+      "unit": "bunch",
+      "linked_flower_id": "silver-dollar-eucalyptus",
+      "updated_at": "2026-04-19T01:29:00+08:00"
+    },
+    {
+      "code": "P-017",
+      "name": "Pink Peony",
+      "category": "Fresh Flowers",
+      "stock": 18,
+      "par": 15,
+      "unit": "stem",
+      "linked_flower_id": "pink-peony",
+      "updated_at": "2026-04-19T02:29:00+08:00"
+    },
+    {
+      "code": "R-028",
+      "name": "Garden Rose",
+      "category": "Fresh Flowers",
+      "stock": 64,
+      "par": 25,
+      "unit": "stem",
+      "linked_flower_id": "garden-rose",
+      "updated_at": "2026-04-18T22:29:00+08:00"
+    },
+    {
+      "code": "H-033",
+      "name": "Hydrangea",
+      "category": "Fresh Flowers",
+      "stock": 24,
+      "par": 18,
+      "unit": "stem",
+      "linked_flower_id": "hydrangea",
+      "updated_at": "2026-04-18T20:29:00+08:00"
+    },
+    {
+      "code": "B-010",
+      "name": "Baby's Breath",
+      "category": "Filler Flowers",
+      "stock": 31,
+      "par": 12,
+      "unit": "bunch",
+      "linked_flower_id": "babys-breath",
+      "updated_at": "2026-04-18T19:29:00+08:00"
+    },
+    {
+      "code": "L-022",
+      "name": "Lavender",
+      "category": "Filler Flowers",
+      "stock": 14,
+      "par": 10,
+      "unit": "bunch",
+      "linked_flower_id": "lavender",
+      "updated_at": "2026-04-18T18:29:00+08:00"
+    },
+    {
+      "code": "V-102",
+      "name": "Glass Cylinder 8\"",
+      "category": "Hardgoods",
+      "stock": 34,
+      "par": 10,
+      "unit": "piece",
+      "linked_flower_id": null,
+      "updated_at": "2026-04-18T00:29:00+08:00"
+    }
+  ],
+  "orders": [
+    {
+      "id": "#8902",
+      "created_at": "2026-04-19T10:30:00+08:00",
+      "customer_name": "Alice Chen",
+      "phone": "+1 (555) 204-1133",
+      "delivery_date": "2026-04-19T15:00:00+08:00",
+      "delivery_address": "28 Blossom Lane, San Francisco, CA",
+      "notes": "Card: Happy Birthday Mom. Use blush-toned wrapping.",
+      "status": "Preparing",
+      "subtotal": 126.0,
+      "delivery_fee": 8.0,
+      "total": 134.0,
+      "line_items": [
+        {
+          "flower_id": "pink-peony",
+          "name": "Pink Peony",
+          "qty": 12,
+          "unit": "stem",
+          "unit_price": 8.5
+        },
+        {
+          "flower_id": "silver-dollar-eucalyptus",
+          "name": "Silver Dollar Eucalyptus",
+          "qty": 2,
+          "unit": "bunch",
+          "unit_price": 12.0
+        }
+      ]
+    },
+    {
+      "id": "#8901",
+      "created_at": "2026-04-19T09:15:00+08:00",
+      "customer_name": "Mark Davis",
+      "phone": "+1 (555) 887-4420",
+      "delivery_date": "2026-04-19T11:00:00+08:00",
+      "delivery_address": "Pickup in store",
+      "notes": "No card needed.",
+      "status": "Delivered",
+      "subtotal": 41.0,
+      "delivery_fee": 0.0,
+      "total": 41.0,
+      "line_items": [
+        {
+          "flower_id": "white-tulip",
+          "name": "White Tulip",
+          "qty": 12,
+          "unit": "stem",
+          "unit_price": 3.0
+        },
+        {
+          "flower_id": "babys-breath",
+          "name": "Baby's Breath",
+          "qty": 1,
+          "unit": "bunch",
+          "unit_price": 5.0
+        }
+      ]
+    },
+    {
+      "id": "#8900",
+      "created_at": "2026-04-18T16:10:00+08:00",
+      "customer_name": "Sarah Lee",
+      "phone": "+1 (555) 312-6698",
+      "delivery_date": "2026-04-18T18:00:00+08:00",
+      "delivery_address": "14 Magnolia Ave, Oakland, CA",
+      "notes": "Vintage aesthetic, neutral palette.",
+      "status": "Delivered",
+      "subtotal": 111.0,
+      "delivery_fee": 8.0,
+      "total": 119.0,
+      "line_items": [
+        {
+          "flower_id": "dusty-rose",
+          "name": "Dusty Rose",
+          "qty": 10,
+          "unit": "stem",
+          "unit_price": 4.5
+        },
+        {
+          "flower_id": "pink-peony",
+          "name": "Pink Peony",
+          "qty": 6,
+          "unit": "stem",
+          "unit_price": 8.5
+        },
+        {
+          "flower_id": "lavender",
+          "name": "Lavender",
+          "qty": 2,
+          "unit": "bunch",
+          "unit_price": 7.5
+        }
+      ]
+    },
+    {
+      "id": "#8899",
+      "created_at": "2026-04-17T13:40:00+08:00",
+      "customer_name": "Jin Ho",
+      "phone": "+1 (555) 998-4412",
+      "delivery_date": "2026-04-17T16:30:00+08:00",
+      "delivery_address": "77 Clement Street, San Francisco, CA",
+      "notes": "Call on arrival.",
+      "status": "Ready",
+      "subtotal": 84.0,
+      "delivery_fee": 8.0,
+      "total": 92.0,
+      "line_items": [
+        {
+          "flower_id": "garden-rose",
+          "name": "Garden Rose",
+          "qty": 8,
+          "unit": "stem",
+          "unit_price": 6.0
+        },
+        {
+          "flower_id": "hydrangea",
+          "name": "Hydrangea",
+          "qty": 4,
+          "unit": "stem",
+          "unit_price": 9.0
+        }
+      ]
+    },
+    {
+      "id": "#8898",
+      "created_at": "2026-04-15T11:05:00+08:00",
+      "customer_name": "Natalie Wong",
+      "phone": "+1 (555) 663-1900",
+      "delivery_date": "2026-04-15T14:00:00+08:00",
+      "delivery_address": "Pickup in store",
+      "notes": "Wrap in kraft paper.",
+      "status": "Delivered",
+      "subtotal": 57.0,
+      "delivery_fee": 0.0,
+      "total": 57.0,
+      "line_items": [
+        {
+          "flower_id": "dusty-rose",
+          "name": "Dusty Rose",
+          "qty": 6,
+          "unit": "stem",
+          "unit_price": 4.5
+        },
+        {
+          "flower_id": "white-tulip",
+          "name": "White Tulip",
+          "qty": 10,
+          "unit": "stem",
+          "unit_price": 3.0
+        }
+      ]
+    },
+    {
+      "id": "#8897",
+      "created_at": "2026-04-13T14:20:00+08:00",
+      "customer_name": "Omar Patel",
+      "phone": "+1 (555) 880-7701",
+      "delivery_date": "2026-04-13T18:15:00+08:00",
+      "delivery_address": "9 Rosewood Ct, Berkeley, CA",
+      "notes": "Wedding table sample arrangement.",
+      "status": "Delivered",
+      "subtotal": 123.0,
+      "delivery_fee": 8.0,
+      "total": 131.0,
+      "line_items": [
+        {
+          "flower_id": "hydrangea",
+          "name": "Hydrangea",
+          "qty": 5,
+          "unit": "stem",
+          "unit_price": 9.0
+        },
+        {
+          "flower_id": "silver-dollar-eucalyptus",
+          "name": "Silver Dollar Eucalyptus",
+          "qty": 3,
+          "unit": "bunch",
+          "unit_price": 12.0
+        },
+        {
+          "flower_id": "garden-rose",
+          "name": "Garden Rose",
+          "qty": 7,
+          "unit": "stem",
+          "unit_price": 6.0
+        }
+      ]
+    }
+  ],
+  "restocks": [
+    {
+      "id": "RS-1003",
+      "created_at": "2026-04-18T01:29:00+08:00",
+      "item_code": "P-017",
+      "item_name": "Pink Peony",
+      "quantity": 25,
+      "unit_cost": 4.4
+    },
+    {
+      "id": "RS-1002",
+      "created_at": "2026-04-16T02:29:00+08:00",
+      "item_code": "V-102",
+      "item_name": "Glass Cylinder 8\"",
+      "quantity": 20,
+      "unit_cost": 4.5
+    },
+    {
+      "id": "RS-1001",
+      "created_at": "2026-04-13T22:29:00+08:00",
+      "item_code": "R-001",
+      "item_name": "Dusty Rose",
+      "quantity": 100,
+      "unit_cost": 1.2
+    }
+  ],
+  "maintenance_logs": [
+    {
+      "id": "ML-1001",
+      "created_at": "2026-04-19T03:29:39+08:00",
+      "event_type": "report_generated",
+      "severity": "info",
+      "title": "Weekly maintenance report generated",
+      "description": "PDF generated for Apr 06 - 12, 2026.",
+      "related_code": null,
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1001",
+        "trigger": "scheduled"
+      }
+    },
+    {
+      "id": "ML-1002",
+      "created_at": "2026-04-19T03:29:39+08:00",
+      "event_type": "notification_failure",
+      "severity": "warning",
+      "title": "Weekly report delivery failed",
+      "description": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
+      "related_code": null,
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1001",
+        "recipient": "hello@wailangarden.com"
+      }
+    },
+    {
+      "id": "ML-1003",
+      "created_at": "2026-04-21T14:03:56+08:00",
+      "event_type": "report_generated",
+      "severity": "info",
+      "title": "Weekly maintenance report generated",
+      "description": "PDF generated for Apr 13 - 19, 2026.",
+      "related_code": null,
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1002",
+        "trigger": "scheduled"
+      }
+    },
+    {
+      "id": "ML-1004",
+      "created_at": "2026-04-21T14:03:56+08:00",
+      "event_type": "notification_failure",
+      "severity": "warning",
+      "title": "Weekly report delivery failed",
+      "description": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
+      "related_code": null,
+      "related_name": null,
+      "details": {
+        "reportId": "MR-1002",
+        "recipient": "hello@wailangarden.com"
+      }
+    }
+  ],
+  "maintenance_reports": [
+    {
+      "id": "MR-1001",
+      "created_at": "2026-04-19T03:29:33+08:00",
+      "week_start": "2026-04-06",
+      "week_end": "2026-04-12",
+      "week_label": "Apr 06 - 12, 2026",
+      "trigger": "scheduled",
+      "file_name": "maintenance-report-2026-04-06-2026-04-12-mr-1001.pdf",
+      "file_path": "output/pdf/maintenance-report-2026-04-06-2026-04-12-mr-1001.pdf",
+      "status": "delivery_failed",
+      "notification_status": "failed",
+      "delivery_message": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "notification_failures": 0,
+      "week_orders": 0,
+      "pending_orders": 2,
+      "low_stock_items": 1
+    },
+    {
+      "id": "MR-1002",
+      "created_at": "2026-04-21T14:03:56+08:00",
+      "week_start": "2026-04-13",
+      "week_end": "2026-04-19",
+      "week_label": "Apr 13 - 19, 2026",
+      "trigger": "scheduled",
+      "file_name": "maintenance-report-2026-04-13-2026-04-19-mr-1002.pdf",
+      "file_path": "output/pdf/maintenance-report-2026-04-13-2026-04-19-mr-1002.pdf",
+      "status": "delivery_failed",
+      "notification_status": "failed",
+      "delivery_message": "SMTP delivery is not configured. PDF is ready for hello@wailangarden.com to download.",
+      "recipient": "hello@wailangarden.com",
+      "inventory_corrections": 0,
+      "notification_failures": 1,
+      "week_orders": 6,
+      "pending_orders": 2,
+      "low_stock_items": 1
+    }
+  ],
+  "settings": {
+    "storeName": "Wai Lan Garden",
+    "contactEmail": "hello@wailangarden.com",
+    "maintenanceEmail": "hello@wailangarden.com",
+    "currency": "USD",
+    "timezone": "Asia/Shanghai",
+    "deliveryRadius": 15
+  }
+}
