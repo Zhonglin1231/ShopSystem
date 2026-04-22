@@ -607,8 +607,8 @@ class ShopRepository:
                 settings,
                 event_type="cache_refresh",
                 severity="info",
-                title="Dashboard cache refreshed",
-                description="Dashboard data cache was refreshed from live storage.",
+                title="儀表板快取已更新",
+                description="儀表板數據快取已從即時存儲更新。",
                 details={"backend": self.backend_name},
             )
             self._persist_snapshot(snapshot)
@@ -1195,10 +1195,10 @@ class ShopRepository:
                     settings,
                     event_type="inventory_correction",
                     severity="warning",
-                    title=f"Inventory corrected for {item['name']}",
+                    title=f"已修正 {item['name']} 的庫存",
                     description=(
-                        f"Stock changed from {previous_stock} to {item['stock']} "
-                        f"({delta:+d} {item.get('unit', 'units')})."
+                        f"庫存從 {previous_stock} 變更為 {item['stock']} "
+                        f"({delta:+d} {item.get('unit', 'units')})。"
                     ),
                     related_code=item["code"],
                     related_name=item["name"],
@@ -1232,10 +1232,10 @@ class ShopRepository:
                     settings,
                     event_type="inventory_correction",
                     severity="warning",
-                    title=f"Inventory corrected for {item['name']}",
+                    title=f"已修正 {item['name']} 的庫存",
                     description=(
-                        f"Stock changed from {previous_stock} to {next_stock} "
-                        f"({delta:+d} {item.get('unit', 'units')})."
+                        f"庫存從 {previous_stock} 變更為 {next_stock} "
+                        f"({delta:+d} {item.get('unit', 'units')})。"
                     ),
                     related_code=item["code"],
                     related_name=item["name"],
@@ -1586,8 +1586,8 @@ class ShopRepository:
                 settings,
                 event_type="report_generation_failed",
                 severity="critical",
-                title="Weekly maintenance report failed",
-                description=f"Unable to build PDF for {week_label}: {error}",
+                title="每週維護報告生成失敗",
+                description=f"無法為 {week_label} 構建 PDF：{error}",
                 details={"reportId": report_id},
             )
             return report
@@ -1598,8 +1598,8 @@ class ShopRepository:
             settings,
             event_type="report_generated",
             severity="info",
-            title="Weekly maintenance report generated",
-            description=f"PDF generated for {week_label}.",
+            title="每週維護報告已生成",
+            description=f"已為 {week_label} 生成 PDF。",
             details={"reportId": report_id, "trigger": trigger},
         )
 
@@ -1619,7 +1619,7 @@ class ShopRepository:
                 settings,
                 event_type="notification_failure",
                 severity="warning",
-                title="Weekly report delivery failed",
+                title="每週報告發送失敗",
                 description=message,
                 details={"reportId": report_id, "recipient": report["recipient"]},
             )
@@ -1629,7 +1629,7 @@ class ShopRepository:
                 settings,
                 event_type="report_sent",
                 severity="info",
-                title="Weekly report delivered",
+                title="每週報告已發送",
                 description=message,
                 details={"reportId": report_id, "recipient": report["recipient"]},
             )
@@ -1843,7 +1843,7 @@ class ShopRepository:
         if not recipient:
             return False, "No maintenance recipient email is configured. PDF was saved locally."
         if not self.config.smtp_host or not self.config.smtp_sender:
-            return False, f"SMTP delivery is not configured. PDF is ready for {recipient} to download."
+            return False, f"未配置 SMTP 發送。PDF 已準備好供 {recipient} 下載。"
 
         message = EmailMessage()
         message["Subject"] = f"{settings['storeName']} maintenance report - {week_label}"
@@ -2383,12 +2383,12 @@ class ShopRepository:
 
     def _serialize_maintenance_log(self, record: dict, settings: dict) -> dict:
         event_labels = {
-            "inventory_correction": "Inventory correction",
-            "notification_failure": "Notification failure",
-            "cache_refresh": "Cache refresh",
-            "report_generation_failed": "Report generation failed",
-            "report_generated": "Report generated",
-            "report_sent": "Report delivered",
+            "inventory_correction": "庫存修正",
+            "notification_failure": "通知失敗",
+            "cache_refresh": "快取更新",
+            "report_generation_failed": "報告生成失敗",
+            "report_generated": "報告已生成",
+            "report_sent": "報告已發送",
         }
         return {
             "id": record["id"],
