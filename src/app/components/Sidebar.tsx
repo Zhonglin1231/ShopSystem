@@ -76,9 +76,12 @@ export function Sidebar() {
         backgroundColor: "var(--c-bg-sidebar)",
         borderColor: "var(--c-border-pink)",
         padding: "var(--s-5) var(--s-4)",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <div style={{ marginBottom: "var(--s-6)" }}>
+      <div style={{ marginBottom: "var(--s-6)", flexShrink: 0 }}>
         <h1
           className="leading-[1.1] italic"
           style={{
@@ -105,7 +108,16 @@ export function Sidebar() {
         </p>
       </div>
 
-      <nav className="flex flex-col" style={{ gap: "var(--s-3)" }}>
+      <nav
+        className="flex flex-col"
+        style={{
+          gap: "var(--s-3)",
+          flex: 1,
+          overflowY: "auto",
+          overflowX: "hidden",
+          paddingRight: "4px",
+        }}
+      >
         {navGroups.map((group, groupIndex) => (
           <div key={groupIndex} style={{ display: "flex", flexDirection: "column", gap: "var(--s-2)" }}>
             {group.groupTitle && (

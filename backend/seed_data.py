@@ -124,7 +124,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
         {
             "code": "R-001",
             "name": "Dusty Rose",
-            "category": "Fresh Flowers",
+            "category": "鮮花",
             "stock": 145,
             "par": 50,
             "unit": "stem",
@@ -134,7 +134,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
         {
             "code": "T-014",
             "name": "White Tulip",
-            "category": "Fresh Flowers",
+            "category": "鮮花",
             "stock": 86,
             "par": 35,
             "unit": "stem",
@@ -144,7 +144,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
         {
             "code": "E-042",
             "name": "Silver Dollar Eucalyptus",
-            "category": "Foliage",
+            "category": "植葉類",
             "stock": 12,
             "par": 20,
             "unit": "bunch",
@@ -154,7 +154,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
         {
             "code": "P-017",
             "name": "Pink Peony",
-            "category": "Fresh Flowers",
+            "category": "鮮花",
             "stock": 18,
             "par": 15,
             "unit": "stem",
@@ -164,7 +164,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
         {
             "code": "R-028",
             "name": "Garden Rose",
-            "category": "Fresh Flowers",
+            "category": "鮮花",
             "stock": 64,
             "par": 25,
             "unit": "stem",
@@ -174,7 +174,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
         {
             "code": "H-033",
             "name": "Hydrangea",
-            "category": "Fresh Flowers",
+            "category": "鮮花",
             "stock": 24,
             "par": 18,
             "unit": "stem",
@@ -184,7 +184,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
         {
             "code": "B-010",
             "name": "Baby's Breath",
-            "category": "Filler Flowers",
+            "category": "填充花",
             "stock": 31,
             "par": 12,
             "unit": "bunch",
@@ -194,7 +194,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
         {
             "code": "L-022",
             "name": "Lavender",
-            "category": "Filler Flowers",
+            "category": "填充花",
             "stock": 14,
             "par": 10,
             "unit": "bunch",
@@ -204,7 +204,7 @@ def build_seed_snapshot(timezone_name: str = "Asia/Shanghai") -> dict:
         {
             "code": "V-102",
             "name": 'Glass Cylinder 8"',
-            "category": "Hardgoods",
+            "category": "花器配件",
             "stock": 34,
             "par": 10,
             "unit": "piece",

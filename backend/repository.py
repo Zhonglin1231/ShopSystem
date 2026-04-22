@@ -335,9 +335,9 @@ def _format_datetime_label(value: str, timezone_name: str) -> str:
     today = datetime.now(ZoneInfo(timezone_name)).date()
 
     if local_dt.date() == today:
-        return f"Today, {local_dt.strftime('%H:%M')}"
+        return f"今日, {local_dt.strftime('%H:%M')}"
     if local_dt.date() == today - timedelta(days=1):
-        return "Yesterday"
+        return "昨日"
     return local_dt.strftime("%b %d, %Y")
 
 
@@ -346,9 +346,9 @@ def _format_delivery_label(value: str, timezone_name: str) -> str:
     today = datetime.now(ZoneInfo(timezone_name)).date()
 
     if local_dt.date() == today:
-        return f"Today, {local_dt.strftime('%b %d')}"
+        return f"今日, {local_dt.strftime('%b %d')}"
     if local_dt.date() == today - timedelta(days=1):
-        return f"Yesterday, {local_dt.strftime('%b %d')}"
+        return f"昨日, {local_dt.strftime('%b %d')}"
     return local_dt.strftime("%b %d, %Y")
 
 
@@ -539,31 +539,31 @@ class ShopRepository:
         latest_backup = self._latest_backup_snapshot()
 
         firebase_status = "ok" if self._using_firestore() else "degraded"
-        firebase_label = "Connected" if self._using_firestore() else "Fallback mode"
-        firebase_details = "Firestore is connected and serving live shop data."
+        firebase_label = "已連線" if self._using_firestore() else "故障但仍可繼續"
+        firebase_details = "Firestore 後端日常上電，提供客抷正常使用正常的店鵠資料。"
         if not self._using_firestore():
-            firebase_details = "Firebase is unavailable. The app is currently serving data from the local JSON snapshot."
+            firebase_details = "Firebase 不可用。整個店鵠正在使用本機保存的 JSON 快照提供數據。"
             if self._firestore_failure_message:
                 firebase_details = (
-                    "Firebase is unavailable due to quota or connectivity issues. "
-                    f"Fallback mode active: {self._firestore_failure_message}"
+                    "Firebase 因隔量連限或連線問題不可用。 "
+                    f"故障轉移模式发動，驗詉訊息: {self._firestore_failure_message}"
                 )
 
         notification_status = "disabled"
-        notification_label = "Not configured"
-        notification_details = "SMTP delivery is not configured. Maintenance reports stay downloadable only."
+        notification_label = "未設定"
+        notification_details = "SMTP 傳酋未設定。每週維護報告只能下載使用。"
         if self.config.smtp_host and self.config.smtp_sender:
             notification_status = "ok"
-            notification_label = "Configured"
-            notification_details = "SMTP delivery is configured for maintenance notifications."
+            notification_label = "已設定"
+            notification_details = "SMTP 已設定、可溫会情报会翻這错事頵送出。"
             if latest_report and latest_report.get("notification_status") == "failed":
                 notification_status = "warning"
-                notification_label = "Attention needed"
-                notification_details = latest_report.get("delivery_message") or "Latest notification delivery failed."
+                notification_label = "需要關注"
+                notification_details = latest_report.get("delivery_message") or "最近的通知傳送失敗。"
 
         backup_status = "ok" if latest_backup is not None else "warning"
         backup_label = (
-            _format_datetime_label(latest_backup["created_at"], settings["timezone"]) if latest_backup is not None else "Never"
+            _format_datetime_label(latest_backup["created_at"], settings["timezone"]) if latest_backup is not None else "從不"
         )
 
         overall_status = "ok"
@@ -590,7 +590,7 @@ class ShopRepository:
             "backups": {
                 "status": backup_status,
                 "label": backup_label,
-                "details": "Rolling local snapshot backups are stored on disk for emergency recovery.",
+                "details": "本機每天自動備份，以備緊急恢復之需。",
                 "lastBackupAt": latest_backup["created_at"] if latest_backup is not None else None,
                 "directory": str(self.config.backup_dir.relative_to(self.config.project_root)),
                 "fileCount": self._backup_file_count(),
@@ -2078,10 +2078,12 @@ class ShopRepository:
             if created_day in revenue_by_day:
                 revenue_by_day[created_day] += float(order["total"])
 
+        weekday_labels = ["一", "二", "三", "四", "五", "六", "日"]
+        
         return [
             {
                 "date": day.isoformat(),
-                "label": day.strftime("%a"),
+                "label": weekday_labels[day.weekday()],
                 "amount": round(revenue_by_day[day], 2),
             }
             for day in window_days
