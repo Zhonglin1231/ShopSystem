@@ -16,6 +16,7 @@ export function Settings() {
   const [saving, setSaving] = useState(false);
   const [aiPreviewApi, setAiPreviewApi] = useState("");
   const [aiPreviewModelName, setAiPreviewModelName] = useState("");
+  const [aiPreviewImageSize, setAiPreviewImageSize] = useState("2560x1440");
   const [loadingAiPreview, setLoadingAiPreview] = useState(true);
   const [savingAiPreview, setSavingAiPreview] = useState(false);
 
@@ -32,6 +33,7 @@ export function Settings() {
         if (isMounted) {
           setAiPreviewApi(payload.apiKey ?? "");
           setAiPreviewModelName(payload.modelName ?? "");
+          setAiPreviewImageSize(payload.imageSize?.trim() || "2560x1440");
         }
       } catch (error) {
         if (isMounted) {
@@ -324,6 +326,27 @@ export function Settings() {
               }}
             />
           </div>
+          
+          <div style={{ marginBottom: "var(--s-3)" }}>
+            <label className="block" style={{ marginBottom: "var(--s-2)", fontSize: "0.85rem" }}>
+              圖片尺寸
+            </label>
+            <input
+              type="text"
+              value={aiPreviewImageSize}
+              onChange={(event) => setAiPreviewImageSize(event.target.value)}
+              placeholder={loadingAiPreview ? "載入中..." : "例如：2560x1440"}
+              disabled={loadingAiPreview || savingAiPreview}
+              className="w-full border transition-all"
+              style={{
+                padding: "var(--s-2) var(--s-3)",
+                borderColor: "var(--c-border)",
+                fontFamily: "var(--f-sans)",
+                fontSize: "0.95rem",
+                transition: "var(--t-fast)",
+              }}
+            />
+          </div>
 
           <div style={{ marginBottom: "var(--s-4)" }}>
             <button
@@ -332,7 +355,11 @@ export function Settings() {
               onClick={async () => {
                 setSavingAiPreview(true);
                 try {
-                  await updateAiPreviewSettings({ apiKey: aiPreviewApi, modelName: aiPreviewModelName });
+                  await updateAiPreviewSettings({
+                    apiKey: aiPreviewApi,
+                    modelName: aiPreviewModelName,
+                    imageSize: aiPreviewImageSize,
+                  });
                   toast.success("AI API 已儲存。");
                 } catch (error) {
                   toast.error(error instanceof Error ? error.message : "無法儲存 AI API。");

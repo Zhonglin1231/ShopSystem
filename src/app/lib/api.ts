@@ -250,6 +250,7 @@ export interface StoreSettings {
 export interface AiPreviewSettings {
   apiKey: string;
   modelName: string;
+  imageSize: string;
 }
 
 export interface InventoryPayload {

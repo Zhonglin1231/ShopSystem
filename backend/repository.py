@@ -1300,7 +1300,8 @@ class ShopRepository:
                 payload = doc.to_dict() if doc.exists else {}
                 api_key = str((payload or {}).get("apiKey") or (payload or {}).get("api") or "").strip()
                 model_name = str((payload or {}).get("modelName") or (payload or {}).get("model") or "").strip()
-                return {"apiKey": api_key, "modelName": model_name}
+                image_size = str((payload or {}).get("imageSize") or (payload or {}).get("size") or "").strip()
+                return {"apiKey": api_key, "modelName": model_name, "imageSize": image_size}
             except Exception as error:
                 if not self._should_fallback_to_local(error):
                     raise
@@ -1310,22 +1311,24 @@ class ShopRepository:
         return {
             "apiKey": str(snapshot.get("settings", {}).get("aiPreviewApi", "")).strip(),
             "modelName": str(snapshot.get("settings", {}).get("aiPreviewModelName", "")).strip(),
+            "imageSize": str(snapshot.get("settings", {}).get("aiPreviewImageSize", "")).strip(),
         }
 
     def update_ai_preview_settings(self, payload: dict) -> dict:
         api_key = str(payload.get("apiKey") or payload.get("api") or "").strip()
         model_name = str(payload.get("modelName") or payload.get("model") or "").strip()
+        image_size = str(payload.get("imageSize") or payload.get("size") or "").strip()
 
         if self._using_firestore():
             try:
                 self.store.client.collection(FirestoreStore.SETTINGS_COLLECTION).document(
                     FirestoreStore.AI_PREVIEW_DOCUMENT
                 ).set(
-                    {"apiKey": api_key, "modelName": model_name},
+                    {"apiKey": api_key, "modelName": model_name, "imageSize": image_size},
                     merge=True,
                     timeout=2,
                 )
-                return {"apiKey": api_key, "modelName": model_name}
+                return {"apiKey": api_key, "modelName": model_name, "imageSize": image_size}
             except Exception as error:
                 if not self._should_fallback_to_local(error):
                     raise
@@ -1336,9 +1339,10 @@ class ShopRepository:
             settings = snapshot.get("settings") or {}
             settings["aiPreviewApi"] = api_key
             settings["aiPreviewModelName"] = model_name
+            settings["aiPreviewImageSize"] = image_size
             snapshot["settings"] = settings
             self._persist_snapshot(snapshot)
-            return {"apiKey": api_key, "modelName": model_name}
+            return {"apiKey": api_key, "modelName": model_name, "imageSize": image_size}
 
     def update_settings(self, payload: dict) -> dict:
         with self._lock:

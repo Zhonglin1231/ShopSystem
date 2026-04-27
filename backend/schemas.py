@@ -78,6 +78,7 @@ class UpdateSettingsRequest(BaseModel):
 class UpdateAiPreviewApiRequest(BaseModel):
     apiKey: str = ""
     modelName: str = ""
+    imageSize: str = "2560x1440"
 
 
 class UpdateOrderStatusRequest(BaseModel):

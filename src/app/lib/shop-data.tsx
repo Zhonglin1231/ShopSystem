@@ -137,6 +137,7 @@ interface ShopDataContextValue {
 
 const OFFLINE_STATE_KEY = "shopsystem.offline-state";
 const DEFAULT_ORDERS_PAGE_SIZE = 10;
+const ORDER_POLL_INTERVAL_MS = 8000;
 
 const defaultSettings: StoreSettings = {
   storeName: "Wai Lan Garden",
@@ -832,19 +833,34 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const refreshOrdersOnly = async () => {
+  const refreshOrdersOnly = async (options?: { notify?: boolean }) => {
     if (!isOnline || orderRefreshInFlightRef.current) {
       return;
     }
+
+    const shouldNotify = options?.notify ?? false;
 
     orderRefreshInFlightRef.current = true;
 
     try {
       const nextOrdersPage = await getOrders(1, baseOrdersPage.pageSize || DEFAULT_ORDERS_PAGE_SIZE);
+      const currentOrderIds = new Set(baseOrdersRef.current.map((order) => order.id));
+      const incomingOrders = nextOrdersPage.items.filter((order) => !currentOrderIds.has(order.id));
+
       baseOrdersRef.current = nextOrdersPage.items;
       hasOrderBaselineRef.current = true;
       setBaseOrders(nextOrdersPage.items);
       setBaseOrdersPage(nextOrdersPage);
+
+      if (incomingOrders.length > 0 && shouldNotify) {
+        playNewOrderAlertSound();
+
+        if (!isOrdersRouteActive()) {
+          setNewOrderAlertCount((current) => current + incomingOrders.length);
+        }
+
+        await loadAll(false);
+      }
     } catch {
       // Keep listener resync failures silent while EventSource reconnects.
     } finally {
@@ -1062,6 +1078,20 @@ export function ShopDataProvider({ children }: { children: ReactNode }) {
       eventSource.close();
     };
   }, [isOnline, storageBackend]);
+
+  useEffect(() => {
+    if (!isOnline) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      void refreshOrdersOnly({ notify: true });
+    }, ORDER_POLL_INTERVAL_MS);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [isOnline, baseOrdersPage.pageSize]);
 
   const refreshInventoryRelatedData = async () => {
     const [nextDashboard, nextFlowers, nextInventory] = await Promise.all([
